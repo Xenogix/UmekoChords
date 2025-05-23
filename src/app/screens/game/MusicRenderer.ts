@@ -51,12 +51,8 @@ export class MusicRenderer extends Container {
             
             // Render ABC notation to SVG
             const renderOptions: Partial<abcjs.AbcVisualParams> = {
-                staffwidth: this._width - 20,
+                staffwidth: this._width,
                 scale: 2,
-                paddingleft: 10,
-                paddingright: 10,
-                paddingtop: 10,
-                paddingbottom: 10,
                 add_classes: true
             };
             

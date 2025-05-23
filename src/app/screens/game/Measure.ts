@@ -9,8 +9,7 @@ export class Measure extends Container {
     constructor() {
         super();
 
-        this.musicRenderer = new MusicRenderer(this.getDefaultNotation());
-        this.musicRenderer.position.set(0, 0);
+        this.musicRenderer = new MusicRenderer();
         this.addChild(this.musicRenderer);
 
         this.graphics = new Graphics();
@@ -18,13 +17,12 @@ export class Measure extends Container {
     }
 
     public resize(width: number, height: number) {
-
-        // Draw rectangle to debug the size
-        this.graphics.clear();
-
         this.width = width;
         this.height = height;
-        this.musicRenderer.render();
+        this.musicRenderer.width = width;
+
+        this.graphics.clear();
+        this.graphics.rect(0, 0, width, height).fill(0xFFFFFF, 0.5);
     }
 
     // Method to add notes to the measure
