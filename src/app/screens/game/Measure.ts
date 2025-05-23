@@ -1,27 +1,48 @@
 import { Container, Graphics } from 'pixi.js';
+import { MusicRenderer } from './MusicRenderer.ts';
 
 export class Measure extends Container {
 
-    private static readonly LINE_COUNT = 5;
-    private static readonly LINE_THICKNESS = 10;
-    private static readonly COLOR = 0xffffff; // White
-
     private graphics: Graphics;
+    private musicRenderer: MusicRenderer;
 
     constructor() {
         super();
+
+        this.musicRenderer = new MusicRenderer(this.getDefaultNotation());
+        this.musicRenderer.position.set(0, 0);
+        this.addChild(this.musicRenderer);
+
         this.graphics = new Graphics();
         this.addChild(this.graphics);
     }
 
     public resize(width: number, height: number) {
 
+        // Draw rectangle to debug the size
         this.graphics.clear();
 
-        // Draw the measure lines
-        for (let i = 1; i < Measure.LINE_COUNT; i++) {
-            const y = (height / Measure.LINE_COUNT) * i;
-            this.graphics.rect(0, y, width, Measure.LINE_THICKNESS).fill(Measure.COLOR);
+        this.width = width;
+        this.height = height;
+        this.musicRenderer.render();
+    }
+
+    // Method to add notes to the measure
+    public setNotes(notes: string) {
+        if (!notes.endsWith('|')) {
+            notes = notes + '|';
         }
+        
+        const abcNotation = this.getDefaultNotation() + notes;
+        this.musicRenderer.setNotation(abcNotation);
+    }
+
+    private getDefaultNotation(): string {
+        return `
+X: 1
+K: clef=treble
+M: 4/4
+L: 1/4
+|`;
     }
 }
