@@ -19,28 +19,12 @@ export class Measure extends Container {
     public resize(width: number, height: number) {
         this.width = width;
         this.height = height;
-        this.musicRenderer.width = width;
 
+        // Debug rectangle
         this.graphics.clear();
         this.graphics.rect(0, 0, width, height).fill(0xFFFFFF, 0.5);
-    }
 
-    // Method to add notes to the measure
-    public setNotes(notes: string) {
-        if (!notes.endsWith('|')) {
-            notes = notes + '|';
-        }
-        
-        const abcNotation = this.getDefaultNotation() + notes;
-        this.musicRenderer.setNotation(abcNotation);
-    }
-
-    private getDefaultNotation(): string {
-        return `
-X: 1
-K: clef=treble
-M: 4/4
-L: 1/4
-|`;
+        // Render the music
+        this.musicRenderer.render(width, height);
     }
 }

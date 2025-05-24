@@ -12,8 +12,6 @@ export class GameScreen extends Container {
 
         this.measure = new Measure();
         this.addChild(this.measure);
-
-        this.measure.setNotes("[CEG]1 [FAC]1 [CEG]1 [FAC]0.5 [CEG]0.5 [FAC]0.5");
     }
 
     public resize(width: number, height: number) {
