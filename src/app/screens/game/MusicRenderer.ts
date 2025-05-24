@@ -1,11 +1,15 @@
 import { DOMContainer } from 'pixi.js';
 import { Factory } from 'vexflow';
 
+/**
+ * MusicRenderer class that uses VexFlow to render musical notation.
+ * It creates a container for the VexFlow output and provides a method to render the music.
+ */
 export class MusicRenderer extends DOMContainer {
 
-    private factory: Factory;
+    private _factory: Factory;
 
-    public factoryCallback: (factory: Factory) => void;
+    private _factoryCallback: (factory: Factory) => void;
 
     constructor(factoryCallback: (factory: Factory) => void) {
         super();
@@ -18,26 +22,26 @@ export class MusicRenderer extends DOMContainer {
         document.body.appendChild(this.element);
 
         // Initialize VexFlow
-        this.factory = Factory.newFromElementId(this.element.id);
+        this._factory = Factory.newFromElementId(this.element.id);
 
         // Set the factory callback
-        this.factoryCallback = factoryCallback;
+        this._factoryCallback = factoryCallback;
     }
 
     public render(width: number, height: number): void {
 
         // Clear the previous content
-        this.factory.getContext().clear();
+        this._factory.getContext().clear();
 
         // Set dimensions
-        this.factory.getContext().resize(width, height);
+        this._factory.getContext().resize(width, height);
 
         // Configure the factory if a callback is provided
-        if (this.factoryCallback) {
-            this.factoryCallback(this.factory);
+        if (this._factoryCallback) {
+            this._factoryCallback(this._factory);
         }
 
         // Draw the system
-        this.factory.draw();
+        this._factory.draw();
     }
 }

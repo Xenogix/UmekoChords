@@ -3,20 +3,24 @@ import { MusicRenderer } from './MusicRenderer.ts';
 import { Factory } from 'vexflow';
 
 
+/**
+ * Measure class that represents a musical measure in the game.
+ * It uses VexFlow to render musical notation based on the provided notes and properties.
+ */
 export class Measure extends Container {
 
+    // Private properties
     private _width: number = 0;
     private _musicRenderer: MusicRenderer;
-    private _notes: string[] = [];
 
     // Default musical properties
+    private _notes: string[] = [];
     private _clef: string = 'treble';
     private _timeSignature: string = '4/4';
     private _tempo: number = 80;
     
     constructor() {
         super();
-
         this._musicRenderer = new MusicRenderer(this.musicRendererCallback.bind(this));
         this.addChild(this._musicRenderer);
     }
@@ -58,6 +62,9 @@ export class Measure extends Container {
         this._tempo = tempo;
     }
 
+    /**
+     * Callback function to configure the VexFlow factory with the current musical properties.
+     */
     private musicRendererCallback(factory: Factory): void {
 
         // Get voices from the notes
