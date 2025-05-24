@@ -1,45 +1,43 @@
 import { DOMContainer } from 'pixi.js';
-import { VexFlow } from 'vexflow';
+import { Factory } from 'vexflow';
 
 export class MusicRenderer extends DOMContainer {
 
-    constructor() {
+    private factory: Factory;
+
+    public factoryCallback: (factory: Factory) => void;
+
+    constructor(factoryCallback: (factory: Factory) => void) {
         super();
 
         // Create a container for the VexFlow output
-        this.element = document.createElement('div');
-        this.element.id = 'output';
+        this.element = document.createElement('div')
+        this.element.id = 'vexflow-container';
+
+        // Add the container to the body temporarily to ensure it is in the DOM
+        document.body.appendChild(this.element);
+
+        // Initialize VexFlow
+        this.factory = Factory.newFromElementId(this.element.id);
+
+        // Set the factory callback
+        this.factoryCallback = factoryCallback;
     }
 
     public render(width: number, height: number): void {
 
-        // Clear previous content
-        this.element.innerHTML = '';
-        this.element.style.width = `${width}px`;
-        this.element.style.height = `${height}px`;
+        // Clear the previous content
+        this.factory.getContext().clear();
 
-        // Need to wait until the element is added to DOM
-        // Use requestAnimationFrame to ensure the element is in the DOM
-        requestAnimationFrame(() => {
-            // Create factory after element is in the DOM
-            const factory = new VexFlow.Factory({
-                renderer: { elementId: 'output', width: width, height: height },
-            });
+        // Set dimensions
+        this.factory.getContext().resize(width, height);
 
-            const score = factory.EasyScore();
-            const system = factory.System();
+        // Configure the factory if a callback is provided
+        if (this.factoryCallback) {
+            this.factoryCallback(this.factory);
+        }
 
-            system
-                .addStave({
-                    voices: [
-                    score.voice(score.notes('C#5/q, B4, A4, G#4', { stem: 'up' })),
-                    score.voice(score.notes('C#4/h, C#4', { stem: 'down' })),
-                    ],
-                })
-                .addClef('treble')
-                .addTimeSignature('4/4');
-
-            factory.draw();
-        });
+        // Draw the system
+        this.factory.draw();
     }
 }
