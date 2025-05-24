@@ -8,20 +8,22 @@ import { Factory } from 'vexflow';
  */
 export class Measure extends Container {
 
+    // Default musical properties
+    public notes: string[] = [];
+    public clef: string = 'treble';
+    public timeSignature: string = '4/4';
+    public tempo: number = 80;
+    
     // Private properties
     private _width: number = 0;
+    private _height: number = 0;
     private _musicRenderer: MusicRenderer;
     private _rendererScale: number = 2;
 
-    // Default musical properties
-    private _notes: string[] = [];
-    private _clef: string = 'treble';
-    private _timeSignature: string = '4/4';
-    private _tempo: number = 80;
-    
     constructor() {
         super();
-        this._musicRenderer = new MusicRenderer(this.musicRendererCallback.bind(this));
+
+        this._musicRenderer = new MusicRenderer(this.musicRendererCallback);
         this.addChild(this._musicRenderer);
     }
 
@@ -30,46 +32,18 @@ export class Measure extends Container {
         this._musicRenderer.render(width, height);
     }
 
-    public getNotes(): string[] {
-        return this._notes;
-    }
-
-    public setNotes(notes: string[]): void {
-        this._notes = notes;
-    }
-
-    public getClef(): string {
-        return this._clef;
-    }
-
-    public setClef(clef: string): void {
-        this._clef = clef;
-    }
-
-    public getTimeSignature(): string {
-        return this._timeSignature;
-    }
-
-    public setTimeSignature(timeSignature: string): void {
-        this._timeSignature = timeSignature;
-    }
-
-    public getTempo(): number {
-        return this._tempo;
-    }
-
-    public setTempo(tempo: number): void {
-        this._tempo = tempo;
+    public updateRenderer(): void {
+        this._musicRenderer.render(this._width, this._height);
     }
 
     /**
      * Callback function to configure the VexFlow factory with the current musical properties.
      */
-    private musicRendererCallback(factory: Factory): void {
+    private musicRendererCallback = (factory: Factory): void => {
 
         // Get voices from the notes
         const score = factory.EasyScore();
-        const voices = this._notes.map(_notes => { return score.voice(score.notes(_notes, { stem: 'up' }));});
+        const voices = this.notes.map(notes => { return score.voice(score.notes(notes, { stem: 'up' }));});
 
         // Set the scale for rendering as the default scale is too small
         factory.getContext().scale(this._rendererScale, this._rendererScale);
@@ -79,8 +53,8 @@ export class Measure extends Container {
         factory.System({ width: this._width, x: 0, y: 0 })
         .addStave({ voices: voices })
         .setStyle({ fillStyle: '#ffffff', strokeStyle: '#ffffff' })
-        .addClef(this._clef)
-        .addTimeSignature(this._timeSignature)
-        .setTempo({ bpm: this._tempo }, 0);
+        .addClef(this.clef)
+        .addTimeSignature(this.timeSignature)
+        .setTempo({ bpm: this.tempo }, 0);
     }
 }
