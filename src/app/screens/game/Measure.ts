@@ -17,7 +17,6 @@ export class Measure extends Container {
   private _width: number = 0;
   private _height: number = 0;
   private _musicRenderer: MusicRenderer;
-  private _rendererScale: number = 2;
 
   constructor() {
     super();
@@ -28,6 +27,7 @@ export class Measure extends Container {
 
   public resize(width: number, height: number) {
     this._width = width;
+    this._height = height;
     this._musicRenderer.render(width, height);
   }
 
@@ -45,11 +45,7 @@ export class Measure extends Container {
       return score.voice(score.notes(notes, { stem: "up" }));
     });
 
-    // Set the scale for rendering as the default scale is too small
-    factory.getContext().scale(this._rendererScale, this._rendererScale);
-
     // Configure the factory with the generated voices
-    factory.getContext().clear();
     factory
       .System({ width: this._width, x: 0, y: 0 })
       .addStave({ voices: voices })

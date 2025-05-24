@@ -2,6 +2,7 @@ import { Container, Ticker } from "pixi.js";
 import { Measure } from "./Measure";
 import { Piano } from "./Piano";
 import { WaveBackground } from "../../ui/WaveBackground";
+import { KeyboardInput } from "../../game/inputs/inputs";
 
 export class GameScreen extends Container {
   // Asset bundles
@@ -18,6 +19,7 @@ export class GameScreen extends Container {
   private _background: WaveBackground;
   private _measure: Measure;
   private _piano: Piano;
+  private _keyboardInput: KeyboardInput;
 
   constructor() {
     super();
@@ -30,6 +32,19 @@ export class GameScreen extends Container {
 
     this._piano = new Piano();
     this.addChild(this._piano);
+
+    // Setup the keyboard input
+    this._keyboardInput = new KeyboardInput();
+    this._piano.connectKeyboardInput(this._keyboardInput);
+  }
+
+  public shown() {
+    this._keyboardInput.start();
+  }
+
+  public hidden() {
+    this._keyboardInput.stop();
+    this._piano.disconnectKeyboardInput();
   }
 
   public update(tick: Ticker) {
