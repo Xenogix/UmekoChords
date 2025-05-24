@@ -15,8 +15,8 @@ export class GameScreen extends Container {
     }
 
     public resize(width: number, height: number) {
-        this.measure.resize(width - 100, height * 0.2);
-        this.measure.x = width / 2 - this.measure.width / 2;
-        this.measure.y = height / 2 - this.measure.height / 2;
+        this.measure.resize(width - 100, 100);
+        this.measure.x = 50;
+        this.measure.y = height / 2 - 50;
     }
 }
