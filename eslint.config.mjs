@@ -15,6 +15,17 @@ export default tseslint.config(
       ecmaVersion: "latest",
       sourceType: "module",
     },
-    rules: {},
+    rules: {
+      "prettier/prettier": [
+        "error",
+        {
+          tabWidth: 2,
+          useTabs: true,
+          printWidth: 100,
+          semi: true,
+          singleQuote: false
+        }
+      ]
+    },
   },
 );

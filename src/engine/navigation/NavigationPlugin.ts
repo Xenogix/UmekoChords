@@ -12,30 +12,29 @@ import { Navigation } from "./navigation";
  * * Application#navigation
  */
 export class CreationNavigationPlugin {
-  /** @ignore */
-  public static extension: ExtensionMetadata = ExtensionType.Application;
+	/** @ignore */
+	public static extension: ExtensionMetadata = ExtensionType.Application;
 
-  private static _onResize: (() => void) | null;
+	private static _onResize: (() => void) | null;
 
-  /**
-   * Initialize the plugin with scope of application instance
-   */
-  public static init(): void {
-    const app = this as unknown as CreationEngine;
+	/**
+	 * Initialize the plugin with scope of application instance
+	 */
+	public static init(): void {
+		const app = this as unknown as CreationEngine;
 
-    app.navigation = new Navigation();
-    app.navigation.init(app);
-    this._onResize = () =>
-      app.navigation.resize(app.renderer.width, app.renderer.height);
-    app.renderer.on("resize", this._onResize);
-    app.resize();
-  }
+		app.navigation = new Navigation();
+		app.navigation.init(app);
+		this._onResize = () => app.navigation.resize(app.renderer.width, app.renderer.height);
+		app.renderer.on("resize", this._onResize);
+		app.resize();
+	}
 
-  /**
-   * Clean up the ticker, scoped to application
-   */
-  public static destroy(): void {
-    const app = this as unknown as Application;
-    app.navigation = null as unknown as Navigation;
-  }
+	/**
+	 * Clean up the ticker, scoped to application
+	 */
+	public static destroy(): void {
+		const app = this as unknown as Application;
+		app.navigation = null as unknown as Navigation;
+	}
 }
