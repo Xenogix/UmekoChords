@@ -20,12 +20,12 @@ export default tseslint.config(
         "error",
         {
           tabWidth: 2,
-          useTabs: true,
+          useTabs: false,
           printWidth: 100,
           semi: true,
-          singleQuote: false
-        }
-      ]
+          singleQuote: false,
+        },
+      ],
     },
-  },
+  }
 );

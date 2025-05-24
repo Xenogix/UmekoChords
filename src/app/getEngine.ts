@@ -7,9 +7,9 @@ let instance: CreationEngine | null = null;
  * This is a simple way to access the engine instance from anywhere in the app
  */
 export function engine(): CreationEngine {
-	return instance!;
+  return instance!;
 }
 
 export function setEngine(app: CreationEngine) {
-	instance = app;
+  instance = app;
 }

@@ -15,17 +15,17 @@ const engine = new CreationEngine();
 setEngine(engine);
 
 (async () => {
-	// Initialize the creation engine instance
-	await engine.init({
-		background: "#1E1E1E",
-		resizeOptions: { minWidth: 768, minHeight: 1024, letterbox: false },
-	});
+  // Initialize the creation engine instance
+  await engine.init({
+    background: "#1E1E1E",
+    resizeOptions: { minWidth: 768, minHeight: 1024, letterbox: false },
+  });
 
-	// Initialize the user settings
-	userSettings.init();
+  // Initialize the user settings
+  userSettings.init();
 
-	// Show the load screen
-	await engine.navigation.showScreen(LoadScreen);
-	// Show the game screen once the load screen is dismissed
-	await engine.navigation.showScreen(GameScreen);
+  // Show the load screen
+  await engine.navigation.showScreen(LoadScreen);
+  // Show the game screen once the load screen is dismissed
+  await engine.navigation.showScreen(GameScreen);
 })();
