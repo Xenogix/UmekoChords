@@ -15,10 +15,8 @@ export enum GameEventType {
   WAVE_CHANGED = "waveChanged",
 }
 
-export class Game {
+export class Game extends EventEmitter {
   public readonly maxHp: number = 100;
-
-  private readonly eventEmitter: EventEmitter = new EventEmitter();
   private readonly waveGenerator: WavesGenerator = new WavesGenerator();
 
   // Game state
@@ -52,12 +50,12 @@ export class Game {
       // Move to the next wave
       const wave = this.getWave();
       this._wave++;
-      this.eventEmitter.emit(GameEventType.WAVE_CHANGED, this._wave, wave);
+      this.emit(GameEventType.WAVE_CHANGED, this._wave, wave);
 
       // Spawn the first enemy of the new wave
       this._enemyIndex = 0;
       const enemy = this.getEnemy();
-      if (enemy) this.eventEmitter.emit(GameEventType.ENEMY_SPAWNED, enemy);
+      if (enemy) this.emit(GameEventType.ENEMY_SPAWNED, enemy);
     } else {
       // No more waves available, game over
       this.gameOver();
@@ -73,7 +71,7 @@ export class Game {
     if (this._enemyIndex < wave.enemies.length - 1) {
       this._enemyIndex++;
       const enemy = this.getEnemy();
-      if (enemy) this.eventEmitter.emit(GameEventType.ENEMY_SPAWNED, enemy);
+      if (enemy) this.emit(GameEventType.ENEMY_SPAWNED, enemy);
     } else {
       this.nextWave();
     }
@@ -81,8 +79,8 @@ export class Game {
 
   public dealDamageToPlayer(damage: number): void {
     this._hp = Math.max(0, this._hp - damage);
-    this.eventEmitter.emit(GameEventType.PLAYER_DAMAGED, damage);
-    this.eventEmitter.emit(GameEventType.HP_CHANGED, this._hp);
+    this.emit(GameEventType.PLAYER_DAMAGED, damage);
+    this.emit(GameEventType.HP_CHANGED, this._hp);
 
     if (this._hp <= 0) {
       this.gameOver();
@@ -96,31 +94,31 @@ export class Game {
 
     // Apply damage to the enemy
     enemy.applyDamage(damage);
-    this.eventEmitter.emit(GameEventType.ENEMY_DAMAGED, enemy, damage);
+    this.emit(GameEventType.ENEMY_DAMAGED, enemy, damage);
 
     // Check if the enemy is defeated
     if (enemy.isDefeated()) {
       this._score += enemy.score;
-      this.eventEmitter.emit(GameEventType.SCORE_CHANGED, this._score);
-      this.eventEmitter.emit(GameEventType.ENEMY_DEFEATED, enemy);
+      this.emit(GameEventType.SCORE_CHANGED, this._score);
+      this.emit(GameEventType.ENEMY_DEFEATED, enemy);
       this.nextEnemy();
     }
   }
 
   public setBps(bps: number): void {
     this._bps = bps;
-    this.eventEmitter.emit(GameEventType.BPS_CHANGED, this._bps);
+    this.emit(GameEventType.BPS_CHANGED, this._bps);
   }
 
   public resetGame(): void {
     this._wave = 0;
-    this.eventEmitter.emit(GameEventType.WAVE_CHANGED, this._wave, undefined);
+    this.emit(GameEventType.WAVE_CHANGED, this._wave, undefined);
 
     this._score = 0;
-    this.eventEmitter.emit(GameEventType.SCORE_CHANGED, this._score);
+    this.emit(GameEventType.SCORE_CHANGED, this._score);
 
     this._hp = this.maxHp;
-    this.eventEmitter.emit(GameEventType.HP_CHANGED, this._hp);
+    this.emit(GameEventType.HP_CHANGED, this._hp);
 
     this._waves = undefined;
     this.generateWaves();
@@ -131,6 +129,6 @@ export class Game {
   }
 
   private gameOver(): void {
-    this.eventEmitter.emit(GameEventType.GAME_OVER, this._score);
+    this.emit(GameEventType.GAME_OVER, this._score);
   }
 }

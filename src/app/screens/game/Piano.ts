@@ -1,19 +1,32 @@
-import { Container, Graphics } from "pixi.js";
-import { KeyboardEventType, KeyboardInput, NoteEvent } from "../../game/inputs/Inputs";
+import { Container, DestroyOptions, Graphics } from "pixi.js";
+import { GameInput, GameInputEventType, NoteEvent } from "../../game/inputs/GameInput";
+import { GameManager } from "../../game/GameManager";
 
 export class Piano extends Container {
+  private readonly gameManager = GameManager.getInstance();
+
   private _graphics: Graphics;
   private _width: number = 0;
   private _height: number = 0;
   private _keyCount: number = 61;
   private _firstNote: number = 31;
   private _activeNotes: Set<number> = new Set();
-  private _keyboardInput?: KeyboardInput;
 
   constructor() {
     super();
+
     this._graphics = new Graphics();
     this.addChild(this._graphics);
+
+    // Listen to note events
+    this.gameManager.inputManager.on(
+      GameInputEventType.NOTE_PRESSED,
+      this.handleNotePressed.bind(this),
+    );
+    this.gameManager.inputManager.on(
+      GameInputEventType.NOTE_RELEASED,
+      this.handleNoteReleased.bind(this),
+    );
   }
 
   public resize(width: number, height: number) {
@@ -28,38 +41,6 @@ export class Piano extends Container {
 
   public setKeyCount(count: number): void {
     this._keyCount = count;
-  }
-
-  /**
-   * Connect to keyboard input events
-   */
-  public connectKeyboardInput(keyboard: KeyboardInput): void {
-    // Remove previous listeners if they exist
-    if (this._keyboardInput) {
-      this._keyboardInput.off(KeyboardEventType.NOTE_PRESSED, this.handleNotePressed);
-      this._keyboardInput.off(KeyboardEventType.NOTE_RELEASED, this.handleNoteReleased);
-    }
-
-    this._keyboardInput = keyboard;
-
-    // Bind event handlers
-    this.handleNotePressed = this.handleNotePressed.bind(this);
-    this.handleNoteReleased = this.handleNoteReleased.bind(this);
-
-    // Subscribe to events
-    keyboard.on(KeyboardEventType.NOTE_PRESSED, this.handleNotePressed);
-    keyboard.on(KeyboardEventType.NOTE_RELEASED, this.handleNoteReleased);
-  }
-
-  /**
-   * Disconnect from keyboard input events
-   */
-  public disconnectKeyboardInput(): void {
-    if (this._keyboardInput) {
-      this._keyboardInput.off(KeyboardEventType.NOTE_PRESSED, this.handleNotePressed);
-      this._keyboardInput.off(KeyboardEventType.NOTE_RELEASED, this.handleNoteReleased);
-      this._keyboardInput = undefined;
-    }
   }
 
   private handleNotePressed(noteEvent: NoteEvent): void {
@@ -151,5 +132,19 @@ export class Piano extends Container {
         }
       }
     }
+  }
+
+  public destroy(): void {
+    // Remove note event listeners
+    this.gameManager.inputManager.off(
+      GameInputEventType.NOTE_PRESSED,
+      this.handleNotePressed.bind(this),
+    );
+    this.gameManager.inputManager.off(
+      GameInputEventType.NOTE_RELEASED,
+      this.handleNoteReleased.bind(this),
+    );
+
+    this.removeAllListeners();
   }
 }

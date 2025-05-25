@@ -1,28 +1,20 @@
-import Soundfont, { InstrumentName, Player } from "soundfont-player";
+import { SplendidGrandPiano } from "smplr";
+
+export type NoteStopCallback = (time?: number) => void;
 
 export class SoundPlayer {
   private audioContext = new AudioContext();
-  private instruments: Map<InstrumentName, Player> = new Map();
+  private instrument: SplendidGrandPiano = new SplendidGrandPiano(this.audioContext);
   private isInitialized = false;
 
+  /**
+   * Initialize the sound player and load the instrument
+   */
   public async initialize(): Promise<void> {
-    await this.resumeAudio();
-
-    // Define the instruments to load
-    const instrumentsToLoad: InstrumentName[] = ["acoustic_grand_piano", "acoustic_guitar_nylon"];
-
-    // Load each instrument
-    const loadPromises = instrumentsToLoad.map(async (name) => {
-      try {
-        const player = await Soundfont.instrument(this.audioContext, name);
-        this.instruments.set(name, player);
-        console.log(`Loaded instrument: ${name}`);
-      } catch (error) {
-        console.error(`Failed to load instrument: ${name}`, error);
-      }
-    });
-
-    await Promise.all(loadPromises);
+    if (this.isInitialized) {
+      return;
+    }
+    await this.instrument.loaded();
     this.isInitialized = true;
   }
 
@@ -40,39 +32,23 @@ export class SoundPlayer {
    */
   public playNote(
     midiNote: number,
-    duration: number,
-    instrumentName: InstrumentName,
+    duration?: number,
     when?: number,
-  ): void {
+  ): NoteStopCallback | undefined {
+    // Ensure the player is initialized
     if (!this.isInitialized) {
       console.warn("SoundPlayer not initialized");
-      return;
-    }
-
-    const player = this.instruments.get(instrumentName);
-    if (!player) {
-      console.warn(`Instrument ${instrumentName} not loaded`);
-      return;
+      return undefined;
     }
 
     // Calculate when to play
     const startTime = when !== undefined ? when : this.audioContext.currentTime;
 
     // Play the note
-    player.play(midiNote.toString(), startTime, { duration });
-  }
-
-  /**
-   * Stop all currently playing notes
-   */
-  public stopAll(): void {
-    this.instruments.forEach((player) => player.stop());
-  }
-
-  /**
-   * Get the current time from the audio context
-   */
-  public getCurrentTime(): number {
-    return this.audioContext.currentTime;
+    return this.instrument.start({
+      note: midiNote,
+      time: startTime,
+      duration: duration,
+    });
   }
 }

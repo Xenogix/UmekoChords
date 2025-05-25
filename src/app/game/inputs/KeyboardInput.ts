@@ -1,18 +1,6 @@
-import { EventEmitter } from "pixi.js";
+import { GameInput, GameInputEventType } from "./GameInput";
 
-export enum KeyboardEventType {
-  NOTE_PRESSED = "notePressed",
-  NOTE_RELEASED = "noteReleased",
-}
-
-export interface NoteEvent {
-  note: number; // MIDI note number (0-127)
-  velocity: number; // Velocity (0-127)
-  timestamp: number; // When the event occurred
-}
-
-export class KeyboardInput {
-  private readonly eventEmitter: EventEmitter = new EventEmitter();
+export class KeyboardInput extends GameInput {
   private readonly activeKeys: Set<string> = new Set(); // Currently pressed keys
   private readonly keyMap: Map<string, number>; // Maps keyboard keys to MIDI notes
 
@@ -21,6 +9,8 @@ export class KeyboardInput {
    * @param keyMap Optional custom key mapping. Default provides a simple piano layout on QWERTY
    */
   constructor(keyMap?: Map<string, number>) {
+    super();
+
     // Default mapping: Simple one octave piano layout on QWERTY keyboard
     // a=C, w=C#, s=D, e=D#, d=F, etc.
     this.keyMap =
@@ -40,23 +30,14 @@ export class KeyboardInput {
         ["j", 71], // B4
         ["k", 72], // C5
       ]);
+  }
 
-    // Register event listeners for input
+  public start(): void {
     this.registerEventListeners();
   }
 
-  /**
-   * Subscribe to keyboard note events
-   */
-  public on(event: KeyboardEventType, callback: (noteEvent: NoteEvent) => void): void {
-    this.eventEmitter.on(event, callback);
-  }
-
-  /**
-   * Unsubscribe from keyboard note events
-   */
-  public off(event: KeyboardEventType, callback: (noteEvent: NoteEvent) => void): void {
-    this.eventEmitter.off(event, callback);
+  public stop(): void {
+    this.unregisterEventListeners();
   }
 
   private registerEventListeners(): void {
@@ -82,12 +63,12 @@ export class KeyboardInput {
     if (this.keyMap.has(key) && !this.activeKeys.has(key)) {
       const note = this.keyMap.get(key)!;
       const timestamp = performance.now();
-      const velocity = 100; // Default velocity, could be made dynamic
+      const velocity = 100;
 
       this.activeKeys.add(key);
 
       // Emit note pressed event
-      this.eventEmitter.emit(KeyboardEventType.NOTE_PRESSED, {
+      this.emit(GameInputEventType.NOTE_PRESSED, {
         note,
         velocity,
         timestamp,
@@ -102,12 +83,12 @@ export class KeyboardInput {
     if (this.keyMap.has(key) && this.activeKeys.has(key)) {
       const note = this.keyMap.get(key)!;
       const timestamp = performance.now();
-      const velocity = 0; // Release velocity
+      const velocity = 0;
 
       this.activeKeys.delete(key);
 
       // Emit note released event
-      this.eventEmitter.emit(KeyboardEventType.NOTE_RELEASED, {
+      this.emit(GameInputEventType.NOTE_RELEASED, {
         note,
         velocity,
         timestamp,
@@ -117,6 +98,6 @@ export class KeyboardInput {
 
   public destroy(): void {
     this.unregisterEventListeners();
-    this.eventEmitter.removeAllListeners();
+    this.removeAllListeners();
   }
 }

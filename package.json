@@ -15,7 +15,7 @@
     "@pixi/ui": "^2.2.2",
     "motion": "^12.4.7",
     "pixi.js": "^8.8.1",
-    "soundfont-player": "^0.12.0",
+    "smplr": "^0.16.3",
     "vexflow": "^5.0.0"
   },
   "devDependencies": {
