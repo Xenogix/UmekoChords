@@ -20,7 +20,7 @@ export class Game extends EventEmitter {
   private readonly waveGenerator: WavesGenerator = new WavesGenerator();
 
   // Game state
-  private wave: number = 0;
+  private wave: number = -1;
   private score: number = 0;
   private hp: number = 0;
   private waves: Wave[] | undefined;
@@ -88,6 +88,7 @@ export class Game extends EventEmitter {
   }
 
   public dealDamageToPlayer(damage: number): void {
+    if(damage == 0) return;
     this.hp = Math.max(0, this.hp - damage);
     this.emit(GameEventType.PLAYER_DAMAGED, damage);
     this.emit(GameEventType.HP_CHANGED, this.hp, this.maxHp);
@@ -100,7 +101,7 @@ export class Game extends EventEmitter {
   public dealDamageToEnemy(damage: number): void {
     // Check if there is an enemy to deal damage to
     const enemy = this.getEnemy();
-    if (!enemy) return;
+    if (!enemy || damage == 0) return;
 
     // Apply damage to the enemy
     enemy.applyDamage(damage);
@@ -127,10 +128,10 @@ export class Game extends EventEmitter {
     this.emit(GameEventType.SCORE_CHANGED, this.score);
 
     this.hp = this.maxHp;
-    this.emit(GameEventType.HP_CHANGED, this.hp);
+    this.emit(GameEventType.HP_CHANGED, this.hp, this.maxHp);
 
     this.enemyIndex = 0;
-    this.wave = 0;
+    this.wave = -1;
     this.waves = undefined;
     this.generateWaves();
   }

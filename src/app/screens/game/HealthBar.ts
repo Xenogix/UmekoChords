@@ -1,10 +1,10 @@
-import { Container, Graphics, Sprite } from "pixi.js";
+import { Container, Graphics, NineSliceSprite, Sprite, Texture } from "pixi.js";
 
 export class HealthBar extends Container {
 
-  private healthBar: Sprite
-  private healthBarFill: Graphics;
-  private fillColor: number = 0xee0011;
+  private healthBar: NineSliceSprite;
+  private healthBarFill: NineSliceSprite;
+
   private maxHealth: number = 100;
   private currentHealth: number = 100;
   private internalWidth: number = 0;
@@ -14,12 +14,29 @@ export class HealthBar extends Container {
     super();
 
     // Create the health bar background
-    this.healthBar = Sprite.from("healthBarBackground");
+    this.healthBar = new NineSliceSprite({
+      texture: Texture.from("healthBar.png"),
+      width: 32,
+      height: 32,
+      leftWidth: 15,
+      rightWidth: 15,
+      topHeight: 15,
+      bottomHeight: 15,
+    });
     this.addChild(this.healthBar);
 
     // Create the health bar fill
-    this.healthBarFill = new Graphics()
+    this.healthBarFill = new NineSliceSprite({
+      texture: Texture.from("healthBarFill.png"),
+      width: 32,
+      height: 32,
+      leftWidth: 15,
+      rightWidth: 15,
+      topHeight: 15,
+      bottomHeight: 15,
+    });
     this.addChild(this.healthBarFill);
+
   }
 
   public setMaxHealth(maxHealth: number): void {
@@ -48,9 +65,7 @@ export class HealthBar extends Container {
 
     // Resize the health bar fill
     const fillWidth = Math.min(Math.max(this.currentHealth / this.maxHealth, 0), 1) * this.internalWidth;
-    this.healthBarFill.clear();
-    this.healthBarFill
-        .rect(0, 0, fillWidth, this.healthBar.height)
-        .fill(this.fillColor)
+    this.healthBarFill.width = fillWidth;
+    this.healthBarFill.height = this.internalHeight;
   }
 }

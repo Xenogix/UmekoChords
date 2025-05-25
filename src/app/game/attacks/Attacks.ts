@@ -5,7 +5,7 @@ export interface AttackPart {
   duration: number;
   note: number;
   damage: number;
-  weight: number;
+  weight: number | 1;
   startAccuracy?: AttackAccuracy; // The accuracy of the key press
   endAccuracy?: AttackAccuracy; // The accuracy of the key release
 }
@@ -71,7 +71,7 @@ export class Attack {
     return this.parts.reduce((total, part) => {
       if (part.startAccuracy && part.endAccuracy) {
         const multiplier = this.getDamageMultiplier(part.startAccuracy);
-        return total + part.damage * multiplier * part.weight;
+        return total + part.damage * multiplier * part.weight || 1;
       }
       return total;
     }, 0);
