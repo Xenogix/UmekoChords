@@ -90,7 +90,7 @@ export class Game extends EventEmitter {
   public dealDamageToPlayer(damage: number): void {
     this.hp = Math.max(0, this.hp - damage);
     this.emit(GameEventType.PLAYER_DAMAGED, damage);
-    this.emit(GameEventType.HP_CHANGED, this.hp);
+    this.emit(GameEventType.HP_CHANGED, this.hp, this.maxHp);
 
     if (this.hp <= 0) {
       this.gameOver();

@@ -3,6 +3,9 @@ import { Measure } from "./Measure";
 import { Piano } from "./Piano";
 import { WaveBackground } from "../../ui/WaveBackground";
 import { GameManager } from "../../game/GameManager";
+import { HealthBar } from "./HealthBar";
+import { GameInputEventType } from "../../game/inputs/GameInput";
+import { GameEventType } from "../../game/Game";
 
 export class GameScreen extends Container {
   // Asset bundles
@@ -19,6 +22,7 @@ export class GameScreen extends Container {
   private background: WaveBackground;
   private measure: Measure;
   private piano: Piano;
+  private healthBar: HealthBar;
   private gameManager: GameManager = GameManager.getInstance();
 
   constructor() {
@@ -32,6 +36,11 @@ export class GameScreen extends Container {
 
     this.piano = new Piano();
     this.addChild(this.piano);
+
+    this.healthBar = new HealthBar();
+    this.addChild(this.healthBar);
+
+    this.setupEventHandlers();
   }
 
   public async show(): Promise<void> {
@@ -65,5 +74,14 @@ export class GameScreen extends Container {
 
     // Resize the background
     this.background.resize(width, height);
+  }
+
+  private setupEventHandlers() {
+    this.gameManager.on(GameInputEventType.NOTE_PRESSED, (event) => this.piano.pressNote(event.note));
+    this.gameManager.on(GameInputEventType.NOTE_RELEASED, (event) => this.piano.releaseNote(event.note));
+    this.gameManager.on(GameEventType.HP_CHANGED, (event) => {
+      this.healthBar.setCurrentHealth(event.currentHealth);
+      this.healthBar.setMaxHealth(event.maxHealth);
+    });
   }
 }

@@ -64,7 +64,6 @@ export class GameManager extends EventEmitter {
 
   public stopGame(): void {
     this.game.stopGame();
-    this.removeInputListeners();
     this.playedNotesCallbacks.forEach((callback) => callback());
     this.playedNotesCallbacks.clear();
     this.isPlayerTurn = false;
@@ -252,13 +251,5 @@ export class GameManager extends EventEmitter {
     this.inputManager.on(GameInputEventType.NOTE_RELEASED, (event) => {
       this.handleNoteReleaseEvent(event);
     });
-  }
-
-  /**
-   * Stop listening to input events
-   */
-  public removeInputListeners(): void {
-    this.inputManager.off(GameInputEventType.NOTE_PRESSED);
-    this.inputManager.off(GameInputEventType.NOTE_RELEASED);
   }
 }

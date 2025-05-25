@@ -1,9 +1,6 @@
 import { Container, Graphics } from "pixi.js";
-import { GameInputEventType, NoteEvent } from "../../game/inputs/GameInput";
-import { GameManager } from "../../game/GameManager";
 
 export class Piano extends Container {
-  private readonly gameManager = GameManager.getInstance();
 
   private graphics: Graphics;
   private internalWidth: number = 0;
@@ -17,10 +14,6 @@ export class Piano extends Container {
 
     this.graphics = new Graphics();
     this.addChild(this.graphics);
-
-    // Listen to note events
-    this.gameManager.on(GameInputEventType.NOTE_PRESSED, this.handleNotePressed.bind(this));
-    this.gameManager.on(GameInputEventType.NOTE_RELEASED, this.handleNoteReleased.bind(this));
   }
 
   public resize(width: number, height: number) {
@@ -37,14 +30,14 @@ export class Piano extends Container {
     this.keyCount = count;
   }
 
-  private handleNotePressed(noteEvent: NoteEvent): void {
-    this.activeNotes.add(noteEvent.note);
-    this.drawKeys(); // Redraw with highlighted keys
+  public pressNote(note: number): void {
+    this.activeNotes.add(note);
+    this.drawKeys();
   }
 
-  private handleNoteReleased(noteEvent: NoteEvent): void {
-    this.activeNotes.delete(noteEvent.note);
-    this.drawKeys(); // Redraw without highlighted key
+  public releaseNote(note: number): void {
+    this.activeNotes.delete(note);
+    this.drawKeys();
   }
 
   private drawKeys(): void {
@@ -125,13 +118,5 @@ export class Piano extends Container {
         }
       }
     }
-  }
-
-  public destroy(): void {
-    // Remove note event listeners
-    this.gameManager.off(GameInputEventType.NOTE_PRESSED, this.handleNotePressed.bind(this));
-    this.gameManager.off(GameInputEventType.NOTE_RELEASED, this.handleNoteReleased.bind(this));
-
-    this.removeAllListeners();
   }
 }
