@@ -34,8 +34,7 @@ export class Attack {
     );
     // Return the one with the smallest beat
     return candidates.reduce(
-      (earliest, part) =>
-        !earliest || part.beat < earliest.beat ? part : earliest,
+      (earliest, part) => (!earliest || part.beat < earliest.beat ? part : earliest),
       undefined as AttackPart | undefined,
     );
   }
@@ -50,8 +49,7 @@ export class Attack {
     );
     // Return the one with the smallest beat
     return candidates.reduce(
-      (earliest, part) =>
-        !earliest || part.beat < earliest.beat ? part : earliest,
+      (earliest, part) => (!earliest || part.beat < earliest.beat ? part : earliest),
       undefined as AttackPart | undefined,
     );
   }

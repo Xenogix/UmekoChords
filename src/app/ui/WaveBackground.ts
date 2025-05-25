@@ -61,8 +61,7 @@ export class WaveBackground extends Graphics {
 
       // The phase offset creates the animation
       const shearingFactor =
-        (this._waveShearing + 1) *
-        (Math.abs(centeredIndex / this._waveCount) + 1);
+        (this._waveShearing + 1) * (Math.abs(centeredIndex / this._waveCount) + 1);
       const waveOffset = this._wavePhase * shearingFactor + w * 0.7;
 
       // Draw the wave

@@ -66,9 +66,7 @@ export class AttackResolver {
   private getTimingOffset(input: AttackInput, part: AttackPart): number {
     // Convert the beat to milliseconds based on the game's bps
     if (input.isReleased) {
-      return (
-        ((input.beat - (part.beat + part.duration)) / this.game.getBps()) * 1000
-      );
+      return ((input.beat - (part.beat + part.duration)) / this.game.getBps()) * 1000;
     }
     return ((input.beat - part.beat) / this.game.getBps()) * 1000;
   }

@@ -1,9 +1,5 @@
 import { Container, Graphics } from "pixi.js";
-import {
-  KeyboardEventType,
-  KeyboardInput,
-  NoteEvent,
-} from "../../game/inputs/Inputs";
+import { KeyboardEventType, KeyboardInput, NoteEvent } from "../../game/inputs/Inputs";
 
 export class Piano extends Container {
   private _graphics: Graphics;
@@ -40,14 +36,8 @@ export class Piano extends Container {
   public connectKeyboardInput(keyboard: KeyboardInput): void {
     // Remove previous listeners if they exist
     if (this._keyboardInput) {
-      this._keyboardInput.off(
-        KeyboardEventType.NOTE_PRESSED,
-        this.handleNotePressed,
-      );
-      this._keyboardInput.off(
-        KeyboardEventType.NOTE_RELEASED,
-        this.handleNoteReleased,
-      );
+      this._keyboardInput.off(KeyboardEventType.NOTE_PRESSED, this.handleNotePressed);
+      this._keyboardInput.off(KeyboardEventType.NOTE_RELEASED, this.handleNoteReleased);
     }
 
     this._keyboardInput = keyboard;
@@ -66,14 +56,8 @@ export class Piano extends Container {
    */
   public disconnectKeyboardInput(): void {
     if (this._keyboardInput) {
-      this._keyboardInput.off(
-        KeyboardEventType.NOTE_PRESSED,
-        this.handleNotePressed,
-      );
-      this._keyboardInput.off(
-        KeyboardEventType.NOTE_RELEASED,
-        this.handleNoteReleased,
-      );
+      this._keyboardInput.off(KeyboardEventType.NOTE_PRESSED, this.handleNotePressed);
+      this._keyboardInput.off(KeyboardEventType.NOTE_RELEASED, this.handleNoteReleased);
       this._keyboardInput = undefined;
     }
   }

@@ -1,9 +1,5 @@
 import { sound } from "@pixi/sound";
-import type {
-  ApplicationOptions,
-  DestroyOptions,
-  RendererDestroyOptions,
-} from "pixi.js";
+import type { ApplicationOptions, DestroyOptions, RendererDestroyOptions } from "pixi.js";
 import { Application, Assets, extensions, ResizePlugin } from "pixi.js";
 import "pixi.js/app";
 

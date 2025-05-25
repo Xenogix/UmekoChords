@@ -38,12 +38,7 @@ export class GameScreen extends Container {
     this._piano.connectKeyboardInput(this._keyboardInput);
   }
 
-  public shown() {
-    this._keyboardInput.start();
-  }
-
   public hidden() {
-    this._keyboardInput.stop();
     this._piano.disconnectKeyboardInput();
   }
 

@@ -24,8 +24,27 @@ export default tseslint.config(
           printWidth: 100,
           semi: true,
           singleQuote: false,
-        },
+        }
       ],
+
+      "@typescript-eslint/naming-convention": [
+        "error",
+        {
+          selector: 'memberLike',
+          modifiers: ['private'],
+          format: ['camelCase'],
+        },
+        {
+          selector: 'property',
+          modifiers: ['readonly'],
+          format: ['camelCase', 'PascalCase'],
+        },
+        {
+          selector: 'variable',
+          modifiers: ['const'],
+          format: ['UPPER_CASE', 'camelCase'],
+        }
+      ]
     },
   }
 );

@@ -48,20 +48,14 @@ export class KeyboardInput {
   /**
    * Subscribe to keyboard note events
    */
-  public on(
-    event: KeyboardEventType,
-    callback: (noteEvent: NoteEvent) => void,
-  ): void {
+  public on(event: KeyboardEventType, callback: (noteEvent: NoteEvent) => void): void {
     this.eventEmitter.on(event, callback);
   }
 
   /**
    * Unsubscribe from keyboard note events
    */
-  public off(
-    event: KeyboardEventType,
-    callback: (noteEvent: NoteEvent) => void,
-  ): void {
+  public off(event: KeyboardEventType, callback: (noteEvent: NoteEvent) => void): void {
     this.eventEmitter.off(event, callback);
   }
 
