@@ -14,25 +14,25 @@ export class Measure extends Container {
   public tempo: number = 80;
 
   // Private properties
-  private _width: number = 0;
-  private _height: number = 0;
-  private _musicRenderer: MusicRenderer;
+  private internalWidth: number = 0;
+  private internalHeight: number = 0;
+  private musicRenderer: MusicRenderer;
 
   constructor() {
     super();
 
-    this._musicRenderer = new MusicRenderer(this.musicRendererCallback);
-    this.addChild(this._musicRenderer);
+    this.musicRenderer = new MusicRenderer(this.musicRendererCallback);
+    this.addChild(this.musicRenderer);
   }
 
   public resize(width: number, height: number) {
-    this._width = width;
-    this._height = height;
-    this._musicRenderer.render(width, height);
+    this.internalWidth = width;
+    this.internalHeight = height;
+    this.musicRenderer.render(width, height);
   }
 
   public updateRenderer(): void {
-    this._musicRenderer.render(this._width, this._height);
+    this.musicRenderer.render(this.internalWidth, this.internalHeight);
   }
 
   /**
@@ -47,7 +47,7 @@ export class Measure extends Container {
 
     // Configure the factory with the generated voices
     factory
-      .System({ width: this._width, x: 0, y: 0 })
+      .System({ width: this.internalWidth, x: 0, y: 0 })
       .addStave({ voices: voices })
       .setStyle({ fillStyle: "#ffffff", strokeStyle: "#ffffff" })
       .addClef(this.clef)

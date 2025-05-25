@@ -7,7 +7,7 @@ import { GameInputEventType, NoteEvent } from "./inputs/GameInput";
 
 export class GameManager {
   // Singleton instance
-  private static _instance: GameManager;
+  private static instance: GameManager;
 
   // Managers and components
   public readonly inputManager: InputManager = new InputManager();
@@ -21,10 +21,10 @@ export class GameManager {
   private constructor() {}
 
   public static getInstance(): GameManager {
-    if (!GameManager._instance) {
-      GameManager._instance = new GameManager();
+    if (!GameManager.instance) {
+      GameManager.instance = new GameManager();
     }
-    return GameManager._instance;
+    return GameManager.instance;
   }
 
   public async initialize(): Promise<void> {

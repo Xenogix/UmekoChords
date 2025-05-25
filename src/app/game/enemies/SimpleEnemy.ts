@@ -1,4 +1,4 @@
-import { Attack, AttackPart } from "../attacks/Attacks";
+import { Attack } from "../attacks/Attacks";
 import { Enemy } from "./Enemy";
 
 export class SimpleEnemy extends Enemy {

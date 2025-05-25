@@ -15,61 +15,61 @@ export class GameScreen extends Container {
   private readonly maxMeasureWidth: number = 800;
   private readonly pianoHeight: number = 150;
   private readonly maxPianoWidth: number = 1200;
-  private readonly padding_x: number = 100;
+  private readonly paddingX: number = 100;
 
   // Private properties
-  private _background: WaveBackground;
-  private _measure: Measure;
-  private _piano: Piano;
-  private _keyboardInput: GameInput = new KeyboardInput();
-  private _gameManager: GameManager = GameManager.getInstance();
+  private background: WaveBackground;
+  private measure: Measure;
+  private piano: Piano;
+  private keyboardInput: GameInput = new KeyboardInput();
+  private gameManager: GameManager = GameManager.getInstance();
 
   constructor() {
     super();
 
-    this._background = new WaveBackground();
-    this.addChild(this._background);
+    this.background = new WaveBackground();
+    this.addChild(this.background);
 
-    this._measure = new Measure();
-    this.addChild(this._measure);
+    this.measure = new Measure();
+    this.addChild(this.measure);
 
-    this._piano = new Piano();
-    this.addChild(this._piano);
+    this.piano = new Piano();
+    this.addChild(this.piano);
 
     // Start a round
-    this._gameManager.startGame();
-    this._gameManager.startRound();
+    this.gameManager.startGame();
+    this.gameManager.startRound();
   }
 
   public async show(): Promise<void> {
-    await this._gameManager.initialize();
-    this._keyboardInput.start();
+    await this.gameManager.initialize();
+    this.keyboardInput.start();
   }
 
   public hide(): Promise<void> {
-    this._keyboardInput.stop();
+    this.keyboardInput.stop();
     return Promise.resolve();
   }
 
   public update(tick: Ticker) {
     // Update the background
-    this._background.update(tick);
+    this.background.update(tick);
   }
 
   public resize(width: number, height: number) {
     // Resize the measure
-    const measureWidth = Math.min(width - this.padding_x, this.maxMeasureWidth);
-    this._measure.resize(measureWidth, this.measureHeight);
-    this._measure.x = (width - measureWidth) / 2;
-    this._measure.y = (height - this.measureHeight) / 2;
+    const measureWidth = Math.min(width - this.paddingX, this.maxMeasureWidth);
+    this.measure.resize(measureWidth, this.measureHeight);
+    this.measure.x = (width - measureWidth) / 2;
+    this.measure.y = (height - this.measureHeight) / 2;
 
     // Resize the piano
-    const pianoWidth = Math.min(width - this.padding_x, this.maxPianoWidth);
-    this._piano.resize(pianoWidth, this.pianoHeight);
-    this._piano.x = (width - pianoWidth) / 2;
-    this._piano.y = height - this.pianoHeight;
+    const pianoWidth = Math.min(width - this.paddingX, this.maxPianoWidth);
+    this.piano.resize(pianoWidth, this.pianoHeight);
+    this.piano.x = (width - pianoWidth) / 2;
+    this.piano.y = height - this.pianoHeight;
 
     // Resize the background
-    this._background.resize(width, height);
+    this.background.resize(width, height);
   }
 }

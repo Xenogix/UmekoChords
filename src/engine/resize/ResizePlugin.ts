@@ -42,9 +42,9 @@ export class CreationResizePlugin {
   /** @ignore */
   public static extension: ExtensionMetadata = ExtensionType.Application;
 
-  private static _resizeId: number | null;
-  private static _resizeTo: Window | HTMLElement | null;
-  private static _cancelResize: (() => void) | null;
+  private static resizeId: number | null;
+  private static resizeTo: Window | HTMLElement | null;
+  private static cancelResize: (() => void) | null;
 
   /**
    * Initialize the plugin with scope of application instance
@@ -80,14 +80,14 @@ export class CreationResizePlugin {
      * only be called once.
      */
     app.queueResize = (): void => {
-      if (!this._resizeTo) {
+      if (!this.resizeTo) {
         return;
       }
 
-      this._cancelResize!();
+      this.cancelResize!();
 
       // Throttle resize events per raf
-      this._resizeId = requestAnimationFrame(() => app.resize!());
+      this.resizeId = requestAnimationFrame(() => app.resize!());
     };
 
     /**
@@ -96,24 +96,24 @@ export class CreationResizePlugin {
      * Will resize only if `resizeTo` property is set.
      */
     app.resize = (): void => {
-      if (!this._resizeTo) {
+      if (!this.resizeTo) {
         return;
       }
 
       // clear queue resize
-      this._cancelResize!();
+      this.cancelResize!();
 
       let canvasWidth: number;
       let canvasHeight: number;
 
       // Resize to the window
-      if (this._resizeTo === globalThis.window) {
+      if (this.resizeTo === globalThis.window) {
         canvasWidth = globalThis.innerWidth;
         canvasHeight = globalThis.innerHeight;
       }
       // Resize to other HTML entities
       else {
-        const { clientWidth, clientHeight } = this._resizeTo as HTMLElement;
+        const { clientWidth, clientHeight } = this.resizeTo as HTMLElement;
 
         canvasWidth = clientWidth;
         canvasHeight = clientHeight;
@@ -134,14 +134,14 @@ export class CreationResizePlugin {
       app.renderer.resize(width, height);
     };
 
-    this._cancelResize = (): void => {
-      if (this._resizeId) {
-        cancelAnimationFrame(this._resizeId);
-        this._resizeId = null;
+    this.cancelResize = (): void => {
+      if (this.resizeId) {
+        cancelAnimationFrame(this.resizeId);
+        this.resizeId = null;
       }
     };
-    this._resizeId = null;
-    this._resizeTo = null;
+    this.resizeId = null;
+    this.resizeTo = null;
     app.resizeOptions = {
       minWidth: 768,
       minHeight: 1024,
@@ -158,8 +158,8 @@ export class CreationResizePlugin {
     const app = this as unknown as Application;
 
     globalThis.removeEventListener("resize", app.queueResize);
-    this._cancelResize!();
-    this._cancelResize = null;
+    this.cancelResize!();
+    this.cancelResize = null;
     app.queueResize = null as unknown as () => void;
     app.resizeTo = null as unknown as Window | HTMLElement;
     app.resize = null as unknown as () => void;

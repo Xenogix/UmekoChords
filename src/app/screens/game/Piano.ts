@@ -1,22 +1,22 @@
-import { Container, DestroyOptions, Graphics } from "pixi.js";
-import { GameInput, GameInputEventType, NoteEvent } from "../../game/inputs/GameInput";
+import { Container, Graphics } from "pixi.js";
+import { GameInputEventType, NoteEvent } from "../../game/inputs/GameInput";
 import { GameManager } from "../../game/GameManager";
 
 export class Piano extends Container {
   private readonly gameManager = GameManager.getInstance();
 
-  private _graphics: Graphics;
-  private _width: number = 0;
-  private _height: number = 0;
-  private _keyCount: number = 61;
-  private _firstNote: number = 31;
-  private _activeNotes: Set<number> = new Set();
+  private graphics: Graphics;
+  private internalWidth: number = 0;
+  private internalHeight: number = 0;
+  private keyCount: number = 61;
+  private firstNote: number = 31;
+  private activeNotes: Set<number> = new Set();
 
   constructor() {
     super();
 
-    this._graphics = new Graphics();
-    this.addChild(this._graphics);
+    this.graphics = new Graphics();
+    this.addChild(this.graphics);
 
     // Listen to note events
     this.gameManager.inputManager.on(
@@ -30,32 +30,32 @@ export class Piano extends Container {
   }
 
   public resize(width: number, height: number) {
-    this._width = width;
-    this._height = height;
+    this.internalWidth = width;
+    this.internalHeight = height;
     this.drawKeys();
   }
 
   public getKeyCount(): number {
-    return this._keyCount;
+    return this.keyCount;
   }
 
   public setKeyCount(count: number): void {
-    this._keyCount = count;
+    this.keyCount = count;
   }
 
   private handleNotePressed(noteEvent: NoteEvent): void {
-    this._activeNotes.add(noteEvent.note);
+    this.activeNotes.add(noteEvent.note);
     this.drawKeys(); // Redraw with highlighted keys
   }
 
   private handleNoteReleased(noteEvent: NoteEvent): void {
-    this._activeNotes.delete(noteEvent.note);
+    this.activeNotes.delete(noteEvent.note);
     this.drawKeys(); // Redraw without highlighted key
   }
 
   private drawKeys(): void {
     // Clear previous graphics
-    this._graphics.clear();
+    this.graphics.clear();
 
     // Piano key layout pattern (which keys in an octave are white/black)
     // C, C#, D, D#, E, F, F#, G, G#, A, A#, B
@@ -76,30 +76,30 @@ export class Piano extends Container {
 
     // Calculate the number of white keys in the range
     let whiteKeyCount = 0;
-    for (let i = 0; i < this._keyCount; i++) {
-      const notePosition = (i + this._firstNote) % 12;
+    for (let i = 0; i < this.keyCount; i++) {
+      const notePosition = (i + this.firstNote) % 12;
       if (!isBlackKey[notePosition]) {
         whiteKeyCount++;
       }
     }
 
     // Calculate key dimensions based on white key count
-    const whiteKeyWidth = this._width / whiteKeyCount;
+    const whiteKeyWidth = this.internalWidth / whiteKeyCount;
     const blackKeyWidth = whiteKeyWidth * 0.6;
-    const blackKeyHeight = this._height * 0.6;
+    const blackKeyHeight = this.internalHeight * 0.6;
 
     // First pass: Draw white keys
     let whiteKeyIndex = 0;
-    for (let i = 0; i < this._keyCount; i++) {
-      const notePosition = (i + this._firstNote) % 12;
-      const midiNote = this._firstNote + i;
+    for (let i = 0; i < this.keyCount; i++) {
+      const notePosition = (i + this.firstNote) % 12;
+      const midiNote = this.firstNote + i;
 
       if (!isBlackKey[notePosition]) {
         const x = whiteKeyIndex * whiteKeyWidth;
-        const isActive = this._activeNotes.has(midiNote);
+        const isActive = this.activeNotes.has(midiNote);
 
-        this._graphics
-          .rect(x, 0, whiteKeyWidth, this._height)
+        this.graphics
+          .rect(x, 0, whiteKeyWidth, this.internalHeight)
           .stroke({ width: 1, color: 0x000000, alpha: 1 })
           .fill(isActive ? 0xaaccff : 0xffffff);
 
@@ -109,22 +109,21 @@ export class Piano extends Container {
 
     // Second pass: Draw black keys on top
     whiteKeyIndex = 0;
-    for (let i = 0; i < this._keyCount; i++) {
-      const notePosition = (i + this._firstNote) % 12;
-      const midiNote = this._firstNote + i;
+    for (let i = 0; i < this.keyCount; i++) {
+      const notePosition = (i + this.firstNote) % 12;
 
       if (!isBlackKey[notePosition]) {
         whiteKeyIndex++;
 
         // Check if next key is a black key and draw it
-        if (i + 1 < this._keyCount) {
-          const nextNotePosition = (i + 1 + this._firstNote) % 12;
+        if (i + 1 < this.keyCount) {
+          const nextNotePosition = (i + 1 + this.firstNote) % 12;
           if (isBlackKey[nextNotePosition]) {
-            const nextMidiNote = this._firstNote + i + 1;
+            const nextMidiNote = this.firstNote + i + 1;
             const x = whiteKeyIndex * whiteKeyWidth - blackKeyWidth / 2;
-            const isActive = this._activeNotes.has(nextMidiNote);
+            const isActive = this.activeNotes.has(nextMidiNote);
 
-            this._graphics
+            this.graphics
               .rect(x, 0, blackKeyWidth, blackKeyHeight)
               .stroke({ width: 1, color: 0x000000, alpha: 1 })
               .fill(isActive ? 0x445566 : 0x000000);

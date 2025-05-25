@@ -15,7 +15,7 @@ export class CreationNavigationPlugin {
   /** @ignore */
   public static extension: ExtensionMetadata = ExtensionType.Application;
 
-  private static _onResize: (() => void) | null;
+  private static onResize: (() => void) | null;
 
   /**
    * Initialize the plugin with scope of application instance
@@ -25,8 +25,8 @@ export class CreationNavigationPlugin {
 
     app.navigation = new Navigation();
     app.navigation.init(app);
-    this._onResize = () => app.navigation.resize(app.renderer.width, app.renderer.height);
-    app.renderer.on("resize", this._onResize);
+    this.onResize = () => app.navigation.resize(app.renderer.width, app.renderer.height);
+    app.renderer.on("resize", this.onResize);
     app.resize();
   }
 

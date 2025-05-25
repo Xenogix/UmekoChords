@@ -1,19 +1,19 @@
 import { FillGradient, Graphics, Ticker } from "pixi.js";
 
 export class WaveBackground extends Graphics {
-  private _width: number = 0;
-  private _height: number = 0;
+  private internalWidth: number = 0;
+  private internalHeight: number = 0;
 
   // Background wave properties
-  private _backgroundColor: number = 0x1e1e1e;
-  private _wavePhase: number = 0;
-  private _waveSpeed: number = 0.01;
-  private _waveCount: number = 10;
-  private _waveAmplitude: number = 20;
-  private _waveSpacing: number = 50;
-  private _waveWidth: number = 4;
-  private _waveShearing: number = 1;
-  private _waveGradient = new FillGradient({
+  private backgroundColor: number = 0x1e1e1e;
+  private wavePhase: number = 0;
+  private waveSpeed: number = 0.01;
+  private waveCount: number = 10;
+  private waveAmplitude: number = 20;
+  private waveSpacing: number = 50;
+  private waveWidth: number = 4;
+  private waveShearing: number = 1;
+  private waveGradient = new FillGradient({
     type: "linear",
     colorStops: [
       { offset: 0, color: 0xff40f9 },
@@ -28,14 +28,14 @@ export class WaveBackground extends Graphics {
   }
 
   public resize(width: number, height: number) {
-    this._width = width;
-    this._height = height;
+    this.internalWidth = width;
+    this.internalHeight = height;
     this.render();
   }
 
   public update(tick: Ticker) {
     // Update wave phase for animation
-    this._wavePhase += this._waveSpeed * tick.deltaTime;
+    this.wavePhase += this.waveSpeed * tick.deltaTime;
     // Redraw waves with new phase
     this.render();
   }
@@ -45,36 +45,36 @@ export class WaveBackground extends Graphics {
     this.clear();
 
     // Main background - light color
-    this.rect(0, 0, this._width, this._height).fill(this._backgroundColor);
+    this.rect(0, 0, this.internalWidth, this.internalHeight).fill(this.backgroundColor);
 
     // Center point for the waves
-    const centerY = this._height / 2;
+    const centerY = this.internalHeight / 2;
 
     // Make the waves semi-transparent to enhance visibility
     this.alpha = 0.2;
 
-    for (let w = 0; w < this._waveCount; w++) {
+    for (let w = 0; w < this.waveCount; w++) {
       // Start from left edge at the vertical center position
-      const centeredIndex = w - (this._waveCount - 1) / 2;
-      const waveY = centerY + w - centeredIndex * this._waveSpacing;
+      const centeredIndex = w - (this.waveCount - 1) / 2;
+      const waveY = centerY + w - centeredIndex * this.waveSpacing;
       this.moveTo(-100, waveY);
 
       // The phase offset creates the animation
       const shearingFactor =
-        (this._waveShearing + 1) * (Math.abs(centeredIndex / this._waveCount) + 1);
-      const waveOffset = this._wavePhase * shearingFactor + w * 0.7;
+        (this.waveShearing + 1) * (Math.abs(centeredIndex / this.waveCount) + 1);
+      const waveOffset = this.wavePhase * shearingFactor + w * 0.7;
 
       // Draw the wave
-      for (let i = 0; i <= this._width; i += 10) {
-        const y = waveY + Math.sin(i * 0.01 + waveOffset) * this._waveAmplitude;
+      for (let i = 0; i <= this.internalWidth; i += 10) {
+        const y = waveY + Math.sin(i * 0.01 + waveOffset) * this.waveAmplitude;
         this.lineTo(i, y);
       }
 
       // Draw the wave with stroke and fill
       this.stroke({
-        width: this._waveWidth,
+        width: this.waveWidth,
         alpha: 0.7,
-        fill: this._waveGradient,
+        fill: this.waveGradient,
       });
     }
   }

@@ -1,18 +1,9 @@
 import { Enemy } from "../enemies/Enemy";
 
 export class Wave {
-  private _enemies?: Enemy[] | undefined;
-
-  constructor(enemies?: Enemy[]) {
-    this._enemies = enemies;
-  }
-
-  public get enemies(): Enemy[] | undefined {
-    return this._enemies;
-  }
+  private readonly enemies: Enemy[] = [];
 
   public addEnemy(enemy: Enemy): void {
-    this._enemies ??= [];
-    this._enemies.push(enemy);
+    this.enemies.push(enemy);
   }
 }
