@@ -1,5 +1,6 @@
 import { Attack, AttackPart } from "./Attacks";
 import { Game } from "../Game";
+import { EventEmitter } from "pixi.js";
 
 export type AttackAccuracy = "perfect" | "good" | "poor" | "miss" | "error";
 
@@ -10,7 +11,13 @@ export interface AttackInput {
   isReleased: boolean | false;
 }
 
-export class AttackResolver {
+export enum AttackResolverEventType  {
+  COMBO_UPDATED = "comboUpdated",
+  MAX_COMBO_UPDATED = "maxComboUpdated",
+  ACCURACY_RESOLVED = "accuracyUpdated",
+}
+
+export class AttackResolver extends EventEmitter {
   private static readonly PERFECT_OFFSET: number = 50;
   private static readonly GOOD_OFFSET: number = 100;
   private static readonly POOR_OFFSET: number = 200;
@@ -22,6 +29,7 @@ export class AttackResolver {
   private maxCombo: number = 0;
 
   constructor(game: Game) {
+    super();
     this.game = game;
   }
 
@@ -33,6 +41,7 @@ export class AttackResolver {
     // If there is no attack part to judge, add an error
     if (!attackToJudge) {
       attack.addError();
+      this.game.emit(AttackResolverEventType.ACCURACY_RESOLVED, "error");
       return;
     }
 
@@ -49,6 +58,9 @@ export class AttackResolver {
 
     // Update the combo count based on the accuracy
     this.updateCombo(accuracy);
+
+    // Notify listeners about the accuracy result
+    this.game.emit(AttackResolverEventType.ACCURACY_RESOLVED, accuracy);
   }
 
   public handleRoundEnd(attack: Attack): void {
@@ -75,8 +87,10 @@ export class AttackResolver {
     // Only perfect and good inputs contribute to the combo
     if (accuracy === "perfect" || accuracy === "good") {
       this.comboCount++;
+      this.game.emit(AttackResolverEventType.COMBO_UPDATED, this.comboCount);
       if (this.comboCount > this.maxCombo) {
         this.maxCombo = this.comboCount;
+        this.game.emit(AttackResolverEventType.MAX_COMBO_UPDATED, this.maxCombo);
       }
     } else {
       this.comboCount = 0;

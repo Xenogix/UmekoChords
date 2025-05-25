@@ -26,10 +26,16 @@ export class Game extends EventEmitter {
   private waves: Wave[] | undefined;
   private enemyIndex: number = 0;
   private bpm: number = 60;
+  private isGameOverFlag: boolean = false;
 
   public startGame(): void {
     this.resetGame();
     this.nextWave();
+  }
+
+  public stopGame(): void {
+    this.isGameOverFlag = true;
+    this.emit(GameEventType.GAME_OVER, this.score);
   }
 
   public getBpm(): number {
@@ -42,6 +48,10 @@ export class Game extends EventEmitter {
 
   public getEnemy(): Enemy | undefined {
     return this.getWave()?.enemies?.[this.enemyIndex];
+  }
+
+  public getGameOver(): boolean {
+    return this.isGameOverFlag;
   }
 
   public nextWave(): void {
@@ -111,8 +121,7 @@ export class Game extends EventEmitter {
   }
 
   public resetGame(): void {
-    this.wave = 0;
-    this.emit(GameEventType.WAVE_CHANGED, this.wave, undefined);
+    this.isGameOverFlag = false;
 
     this.score = 0;
     this.emit(GameEventType.SCORE_CHANGED, this.score);
@@ -120,6 +129,8 @@ export class Game extends EventEmitter {
     this.hp = this.maxHp;
     this.emit(GameEventType.HP_CHANGED, this.hp);
 
+    this.enemyIndex = 0;
+    this.wave = 0;
     this.waves = undefined;
     this.generateWaves();
   }
@@ -129,6 +140,7 @@ export class Game extends EventEmitter {
   }
 
   private gameOver(): void {
+    this.isGameOverFlag = true;
     this.emit(GameEventType.GAME_OVER, this.score);
   }
 }

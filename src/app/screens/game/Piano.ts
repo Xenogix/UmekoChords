@@ -19,11 +19,11 @@ export class Piano extends Container {
     this.addChild(this.graphics);
 
     // Listen to note events
-    this.gameManager.inputManager.on(
+    this.gameManager.on(
       GameInputEventType.NOTE_PRESSED,
       this.handleNotePressed.bind(this),
     );
-    this.gameManager.inputManager.on(
+    this.gameManager.on(
       GameInputEventType.NOTE_RELEASED,
       this.handleNoteReleased.bind(this),
     );
@@ -100,7 +100,7 @@ export class Piano extends Container {
 
         this.graphics
           .rect(x, 0, whiteKeyWidth, this.internalHeight)
-          .stroke({ width: 1, color: 0x000000, alpha: 1 })
+          .stroke({ width: 3, color: 0xAAAAAA, alpha: 1 })
           .fill(isActive ? 0xaaccff : 0xffffff);
 
         whiteKeyIndex++;
@@ -125,7 +125,7 @@ export class Piano extends Container {
 
             this.graphics
               .rect(x, 0, blackKeyWidth, blackKeyHeight)
-              .stroke({ width: 1, color: 0x000000, alpha: 1 })
+              .stroke({ width: 3, color: 0xAAAAAA, alpha: 1 })
               .fill(isActive ? 0x445566 : 0x000000);
           }
         }
@@ -135,11 +135,11 @@ export class Piano extends Container {
 
   public destroy(): void {
     // Remove note event listeners
-    this.gameManager.inputManager.off(
+    this.gameManager.off(
       GameInputEventType.NOTE_PRESSED,
       this.handleNotePressed.bind(this),
     );
-    this.gameManager.inputManager.off(
+    this.gameManager.off(
       GameInputEventType.NOTE_RELEASED,
       this.handleNoteReleased.bind(this),
     );

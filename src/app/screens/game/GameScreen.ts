@@ -3,8 +3,6 @@ import { Measure } from "./Measure";
 import { Piano } from "./Piano";
 import { WaveBackground } from "../../ui/WaveBackground";
 import { GameManager } from "../../game/GameManager";
-import { KeyboardInput } from "../../game/inputs/KeyboardInput.ts";
-import { GameInput } from "../../game/inputs/GameInput.ts";
 
 export class GameScreen extends Container {
   // Asset bundles
@@ -41,7 +39,6 @@ export class GameScreen extends Container {
 
     // Start a round
     this.gameManager.startGame();
-    this.gameManager.startRound();
   }
 
   public hide(): Promise<void> {
