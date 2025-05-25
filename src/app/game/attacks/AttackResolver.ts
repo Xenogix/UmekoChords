@@ -1,10 +1,10 @@
-import { EnemyAttack, AttackPart } from "./Attacks";
+import { Attack, AttackPart } from "./Attacks";
 import { Game } from "../Game";
 
 export type AttackAccuracy = "perfect" | "good" | "poor" | "miss" | "error";
 
 export interface AttackInput {
-  timestamp: number;
+  beat: number;
   duration: number;
   note: number;
   isReleased: boolean | false;
@@ -25,7 +25,7 @@ export class AttackResolver {
     this.game = game;
   }
 
-  public handleInput(attack: EnemyAttack, input: AttackInput): void {
+  public handleInput(attack: Attack, input: AttackInput): void {
     const attackToJudge = input.isReleased
       ? attack.getNoteToBeReleased(input.note)
       : attack.getNoteToBePressed(input.note);
@@ -51,7 +51,7 @@ export class AttackResolver {
     this.updateCombo(accuracy);
   }
 
-  public handleRoundEnd(attack: EnemyAttack): void {
+  public handleRoundEnd(attack: Attack): void {
     // Calculate the total damage dealt by the player
     const damageDealt = attack.getPlayerDealtDamage();
 
@@ -64,14 +64,15 @@ export class AttackResolver {
   }
 
   private getTimingOffset(input: AttackInput, part: AttackPart): number {
-    // Take in account the duration of the input if it is a release
+    // Convert the beat to milliseconds based on the game's bps
     if (input.isReleased) {
-      return input.timestamp - (part.timestamp + part.duration);
+      return (input.beat - (part.beat + part.duration)) / this.game.getBps() * 1000;
     }
-    return input.timestamp - part.timestamp;
+    return (input.beat - part.beat) / this.game.getBps() * 1000;
   }
 
   private updateCombo(accuracy: AttackAccuracy): void {
+    // Only perfect and good inputs contribute to the combo
     if (accuracy === "perfect" || accuracy === "good") {
       this.comboCount++;
       if (this.comboCount > this.maxCombo) {

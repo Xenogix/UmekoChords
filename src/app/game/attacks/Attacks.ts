@@ -1,7 +1,7 @@
 import { AttackAccuracy } from "./AttackResolver";
 
 export interface AttackPart {
-  timestamp: number;
+  beat: number;
   duration: number;
   notes: number[];
   damage: number;
@@ -10,7 +10,7 @@ export interface AttackPart {
   endAccuracy?: AttackAccuracy; // The accuracy of the key release
 }
 
-export class EnemyAttack {
+export class Attack {
   private _parts: AttackPart[] = [];
 
   private _errorCount: number = 0;
@@ -32,10 +32,10 @@ export class EnemyAttack {
     const candidates = this._parts.filter(
       (part) => part.notes.includes(note) && part.startAccuracy === undefined,
     );
-    // Return the one with the smallest timestamp
+    // Return the one with the smallest beat
     return candidates.reduce(
       (earliest, part) =>
-        !earliest || part.timestamp < earliest.timestamp ? part : earliest,
+        !earliest || part.beat < earliest.beat ? part : earliest,
       undefined as AttackPart | undefined,
     );
   }
@@ -48,10 +48,10 @@ export class EnemyAttack {
         part.startAccuracy !== undefined &&
         part.endAccuracy === undefined,
     );
-    // Return the one with the smallest timestamp
+    // Return the one with the smallest beat
     return candidates.reduce(
       (earliest, part) =>
-        !earliest || part.timestamp < earliest.timestamp ? part : earliest,
+        !earliest || part.beat < earliest.beat ? part : earliest,
       undefined as AttackPart | undefined,
     );
   }

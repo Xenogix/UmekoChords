@@ -1,5 +1,6 @@
 import { EventEmitter } from "pixi.js";
-import { Enemy, Wave } from "./enemies/Enemies";
+import { Enemy } from "./enemies/Enemy";
+import { Wave } from "./enemies/Wave";
 
 export enum GameEventType {
   ENEMY_SPAWNED = "enemySpawned",
@@ -23,10 +24,15 @@ export class Game {
   private _hp: number = 0;
   private _waves: Wave[] | undefined;
   private _enemyIndex: number = 0;
+  private _bps: number = 60;
 
   public startGame(): void {
     this.resetGame();
     this.nextWave();
+  }
+
+  public getBps(): number {
+    return this._bps;
   }
 
   public getWave(): Wave | undefined {

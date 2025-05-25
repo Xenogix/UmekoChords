@@ -2,7 +2,7 @@ import { Container, Ticker } from "pixi.js";
 import { Measure } from "./Measure";
 import { Piano } from "./Piano";
 import { WaveBackground } from "../../ui/WaveBackground";
-import { KeyboardInput } from "../../game/inputs/inputs";
+import { KeyboardInput } from "../../game/inputs/Inputs";
 
 export class GameScreen extends Container {
   // Asset bundles

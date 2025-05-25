@@ -3,7 +3,7 @@ import {
   KeyboardEventType,
   KeyboardInput,
   NoteEvent,
-} from "../../game/inputs/inputs";
+} from "../../game/inputs/Inputs";
 
 export class Piano extends Container {
   private _graphics: Graphics;
