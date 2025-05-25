@@ -1,9 +1,11 @@
 import { AttackResolver } from "./attacks/AttackResolver";
-import { AttackPart } from "./attacks/Attacks";
+import { Attack, AttackPart } from "./attacks/Attacks";
 import { Game } from "./Game";
 import { NoteStopCallback, SoundPlayer } from "./sound/SoundPlayer";
 import { InputManager } from "./inputs/InputManager";
 import { GameInputEventType, NoteEvent } from "./inputs/GameInput";
+import { Enemy } from "./enemies/Enemy";
+import { a, i } from "motion/react-client";
 
 export class GameManager {
   // Singleton instance
@@ -17,6 +19,9 @@ export class GameManager {
 
   // State and configuration
   private playedNotesCallbacks: Map<number, NoteStopCallback> = new Map<number, NoteStopCallback>();
+  private isPlayerTurn: boolean = false;
+  private playerMeasureStartTime: number = 0;
+  private currentEnemyAttack : Attack | undefined;
 
   private constructor() {}
 
@@ -38,30 +43,60 @@ export class GameManager {
     this.game.startGame();
   }
 
-  public startRound(): void {
+  public async startRound(): Promise<void> {
+
     // Check if an enemy is available
-    const attack = this.game.getEnemy()?.getAttack();
-    if (!attack) {
-      console.error("No attack available to start the round.");
-      return;
+    const enemy = this.game.getEnemy();
+    if (!enemy) {
+      throw "No enemy available to start the round.";
     }
 
-    // Play the notes of the attack
-    for (const part of attack.getParts()) {
+    // Do the enemy's attack
+    this.currentEnemyAttack = enemy.getAttack();
+    const attackBeatCount = this.currentEnemyAttack.getDuration();
+    const attackDuration = attackBeatCount * this.game.getBpm() / 60;
+    for (const part of this.currentEnemyAttack.getParts()) {
       this.playAttackPart(part);
     }
+
+    // Wait for the attack duration minus one beat before letting the player start
+    // It is done so the player input are processed even if pressed slightly too early
+    const offset = this.game.getBpm() / 60
+    const waitDuration = attackDuration - offset;
+    await new Promise((resolve) => setTimeout(resolve, waitDuration * 1000));
+
+    // Start the player's turn
+    this.isPlayerTurn = true;
+
+    // Set the player measure start time
+    this.playerMeasureStartTime = performance.now() + offset * 1000; 
+
+    // Wait the duration of the player's turn with a buffer to not miss early / late inputs
+    // The first added beat is the one during the enemy's attack, the second is the one after the player's turn
+    const playerTurnDuration = attackDuration + (2 * this.game.getBpm() / 60);
+    await new Promise((resolve) => setTimeout(resolve, playerTurnDuration * 1000));
+
+    // End the player's turn
+    this.isPlayerTurn = false;
+
+    // Resolve the round
+    this.attackResolver.handleRoundEnd(this.currentEnemyAttack);
+
+    // Wait two beats before allowing the next round to start
+    const nextRoundDelay = 2 * this.game.getBpm() / 60;
+    await new Promise((resolve) => setTimeout(resolve, nextRoundDelay * 1000));
   }
 
   /**
    * Play the sound of an attack part
    */
   private playAttackPart(part: AttackPart): void {
-    // Convert durations to milliseconds
-    const duration = part.duration * this.game.getBps() * 1000;
-    const when = part.beat * this.game.getBps() * 1000;
+    // Convert durations to seconds
+    const time = part.beat / this.game.getBpm() * 60;
+    const duration = part.duration / this.game.getBpm() * 60;
 
     // Play the note using the sound player
-    this.soundPlayer.playNote(part.note, duration, when);
+    this.soundPlayer.playNote(part.note, duration, time);
   }
 
   /**
@@ -79,6 +114,9 @@ export class GameManager {
     if (callback) {
       this.playedNotesCallbacks.set(event.note, callback);
     }
+
+    // Process the player's input
+    this.processPlayerInput(event, false);
   }
 
   /**
@@ -90,6 +128,30 @@ export class GameManager {
     if (noteStopCallback) {
       noteStopCallback();
     }
+
+    // Process the player's input
+    this.processPlayerInput(event, true);
+  }
+
+  private processPlayerInput(event: NoteEvent, isRelease: boolean): void {
+    // Ignore inputs if it's not the player's turn or if there is no current enemy attack
+    if (this.isPlayerTurn && this.currentEnemyAttack) {
+
+      // Create an attack input to judge
+      const attackInput = {
+        note: event.note,
+        beat: this.convertTimeToBeat(event.timestamp),
+        isReleased: isRelease
+      };
+
+      // Judge the input using the attack resolver
+      this.attackResolver.handleInput(this.currentEnemyAttack, attackInput);
+    }
+  }
+
+  private convertTimeToBeat(time: number): number {
+    const offset = time - this.playerMeasureStartTime;
+    return (offset / 1000) * this.game.getBpm() / 60;
   }
 
   /**

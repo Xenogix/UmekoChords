@@ -19,21 +19,12 @@ export class SoundPlayer {
   }
 
   /**
-   * Ensure the audio context is running
-   */
-  public async resumeAudio(): Promise<void> {
-    if (this.audioContext.state === "suspended") {
-      await this.audioContext.resume();
-    }
-  }
-
-  /**
    * Play a note at the current time or at a scheduled time
    */
   public playNote(
     midiNote: number,
     duration?: number,
-    when?: number,
+    time?: number,
   ): NoteStopCallback | undefined {
     // Ensure the player is initialized
     if (!this.isInitialized) {
@@ -42,7 +33,7 @@ export class SoundPlayer {
     }
 
     // Calculate when to play
-    const startTime = when !== undefined ? when : this.audioContext.currentTime;
+    const startTime = time !== undefined ? this.audioContext.currentTime + time : this.audioContext.currentTime;
 
     // Play the note
     return this.instrument.start({
@@ -51,4 +42,14 @@ export class SoundPlayer {
       duration: duration,
     });
   }
+
+   /**
+   * Ensure the audio context is running
+   */
+  private async resumeAudio(): Promise<void> {
+    if (this.audioContext.state === "suspended") {
+      await this.audioContext.resume();
+    }
+  }
+
 }

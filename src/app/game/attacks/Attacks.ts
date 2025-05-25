@@ -31,6 +31,10 @@ export class Attack {
     this.errorCount++;
   }
 
+  /**
+   * Get the next attack part that is supposed to be pressed for a given note
+   * @returns The earliest attack part that matches the note and has not been pressed yet, or undefined if none exists
+   */
   public getNoteToBePressed(note: number): AttackPart | undefined {
     // Filter for unplayed parts containing the note and not yet started
     const candidates = this.parts.filter(
@@ -43,6 +47,10 @@ export class Attack {
     );
   }
 
+  /**
+   * Get the next attack part that is supposed to be released for a given note
+   * @returns The earliest attack part that matches the note and has been release, or undefined if none exists
+   */
   public getNoteToBeReleased(note: number): AttackPart | undefined {
     // Filter for played parts containing the note and not yet released
     const candidates = this.parts.filter(
@@ -80,6 +88,14 @@ export class Attack {
           part.endAccuracy === "error",
       )
       .reduce((total, part) => total + part.damage, 0);
+  }
+
+  /**
+   * Get the total duration of the attack in beats
+   */
+  public getDuration(): number {
+    // Get the maximum beat of all parts and add the duration of the last part
+    return this.parts.reduce((max, part) => Math.max(max, part.beat + part.duration), 0);
   }
 
   private getDamageMultiplier(accuracy: AttackAccuracy): number {

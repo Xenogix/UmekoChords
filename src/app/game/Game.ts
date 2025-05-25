@@ -25,15 +25,15 @@ export class Game extends EventEmitter {
   private hp: number = 0;
   private waves: Wave[] | undefined;
   private enemyIndex: number = 0;
-  private bps: number = 60;
+  private bpm: number = 60;
 
   public startGame(): void {
     this.resetGame();
     this.nextWave();
   }
 
-  public getBps(): number {
-    return this.bps;
+  public getBpm(): number {
+    return this.bpm;
   }
 
   public getWave(): Wave | undefined {
@@ -106,8 +106,8 @@ export class Game extends EventEmitter {
   }
 
   public setBps(bps: number): void {
-    this.bps = bps;
-    this.emit(GameEventType.BPS_CHANGED, this.bps);
+    this.bpm = bps;
+    this.emit(GameEventType.BPS_CHANGED, this.bpm);
   }
 
   public resetGame(): void {

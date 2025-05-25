@@ -21,7 +21,6 @@ export class GameScreen extends Container {
   private background: WaveBackground;
   private measure: Measure;
   private piano: Piano;
-  private keyboardInput: GameInput = new KeyboardInput();
   private gameManager: GameManager = GameManager.getInstance();
 
   constructor() {
@@ -35,19 +34,17 @@ export class GameScreen extends Container {
 
     this.piano = new Piano();
     this.addChild(this.piano);
+  }
+
+  public async show(): Promise<void> {
+    await this.gameManager.initialize();
 
     // Start a round
     this.gameManager.startGame();
     this.gameManager.startRound();
   }
 
-  public async show(): Promise<void> {
-    await this.gameManager.initialize();
-    this.keyboardInput.start();
-  }
-
   public hide(): Promise<void> {
-    this.keyboardInput.stop();
     return Promise.resolve();
   }
 

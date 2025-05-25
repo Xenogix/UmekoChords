@@ -5,7 +5,7 @@ export type AttackAccuracy = "perfect" | "good" | "poor" | "miss" | "error";
 
 export interface AttackInput {
   beat: number;
-  duration: number;
+  duration?: number;
   note: number;
   isReleased: boolean | false;
 }
@@ -64,11 +64,11 @@ export class AttackResolver {
   }
 
   private getTimingOffset(input: AttackInput, part: AttackPart): number {
-    // Convert the beat to milliseconds based on the game's bps
+    // Convert the beat to milliseconds based on the game's bpm
     if (input.isReleased) {
-      return ((input.beat - (part.beat + part.duration)) / this.game.getBps()) * 1000;
+      return ((input.beat - (part.beat + part.duration)) * this.game.getBpm() / 60) * 1000;
     }
-    return ((input.beat - part.beat) / this.game.getBps()) * 1000;
+    return ((input.beat - part.beat) * this.game.getBpm() / 60) * 1000;
   }
 
   private updateCombo(accuracy: AttackAccuracy): void {
