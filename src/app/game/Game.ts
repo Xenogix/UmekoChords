@@ -3,6 +3,7 @@ import { Enemy } from "./enemies/Enemy";
 import { Wave } from "./enemies/Wave";
 
 export enum GameEventType {
+  BPS_CHANGED = "bpsChanged",
   ENEMY_SPAWNED = "enemySpawned",
   ENEMY_DAMAGED = "enemyDamaged",
   ENEMY_DEFEATED = "enemyDefeated",
@@ -102,6 +103,11 @@ export class Game {
       this.eventEmitter.emit(GameEventType.ENEMY_DEFEATED, enemy);
       this.nextEnemy();
     }
+  }
+
+  public setBps(bps: number): void {
+    this._bps = bps;
+    this.eventEmitter.emit(GameEventType.BPS_CHANGED, this._bps);
   }
 
   public resetGame(): void {

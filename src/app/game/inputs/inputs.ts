@@ -13,8 +13,8 @@ export interface NoteEvent {
 
 export class KeyboardInput {
   private readonly eventEmitter: EventEmitter = new EventEmitter();
-  private keyMap: Map<string, number>; // Maps keyboard keys to MIDI notes
-  private activeKeys: Set<string> = new Set(); // Currently pressed keys
+  private readonly activeKeys: Set<string> = new Set(); // Currently pressed keys
+  private readonly keyMap: Map<string, number>; // Maps keyboard keys to MIDI notes
 
   /**
    * Creates a new keyboard input handler
@@ -41,22 +41,8 @@ export class KeyboardInput {
         ["k", 72], // C5
       ]);
 
-    this.setupEventListeners();
-  }
-
-  /**
-   * Start listening for keyboard events
-   */
-  public start(): void {
-    // Nothing to do here as the event listeners are already set up in constructor
-  }
-
-  /**
-   * Stop listening for keyboard events
-   */
-  public stop(): void {
-    document.removeEventListener("keydown", this.handleKeyDown);
-    document.removeEventListener("keyup", this.handleKeyUp);
+    // Register event listeners for input
+    this.registerEventListeners();
   }
 
   /**
@@ -79,13 +65,17 @@ export class KeyboardInput {
     this.eventEmitter.off(event, callback);
   }
 
-  private setupEventListeners(): void {
-    // Use arrow functions to preserve 'this'
+  private registerEventListeners(): void {
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleKeyUp = this.handleKeyUp.bind(this);
 
     document.addEventListener("keydown", this.handleKeyDown);
     document.addEventListener("keyup", this.handleKeyUp);
+  }
+
+  private unregisterEventListeners(): void {
+    document.removeEventListener("keydown", this.handleKeyDown);
+    document.removeEventListener("keyup", this.handleKeyUp);
   }
 
   private handleKeyDown(event: KeyboardEvent): void {
@@ -129,5 +119,10 @@ export class KeyboardInput {
         timestamp,
       });
     }
+  }
+
+  public destroy(): void {
+    this.unregisterEventListeners();
+    this.eventEmitter.removeAllListeners();
   }
 }

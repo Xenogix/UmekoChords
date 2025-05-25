@@ -11,7 +11,7 @@ export class Piano extends Container {
   private _height: number = 0;
   private _keyCount: number = 61;
   private _firstNote: number = 31;
-  private _activeNotes: Set<number> = new Set(); // Store currently pressed notes
+  private _activeNotes: Set<number> = new Set();
   private _keyboardInput?: KeyboardInput;
 
   constructor() {
@@ -123,10 +123,8 @@ export class Piano extends Container {
     const blackKeyWidth = whiteKeyWidth * 0.6;
     const blackKeyHeight = this._height * 0.6;
 
-    // Draw all keys
-    let whiteKeyIndex = 0;
-
     // First pass: Draw white keys
+    let whiteKeyIndex = 0;
     for (let i = 0; i < this._keyCount; i++) {
       const notePosition = (i + this._firstNote) % 12;
       const midiNote = this._firstNote + i;
