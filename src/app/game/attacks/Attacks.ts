@@ -84,8 +84,10 @@ export class Attack {
         (part) =>
           part.startAccuracy === "miss" ||
           part.startAccuracy === "error" ||
+          part.startAccuracy === undefined ||
           part.endAccuracy === "miss" ||
-          part.endAccuracy === "error",
+          part.endAccuracy === "error" ||
+          part.endAccuracy === undefined,
       )
       .reduce((total, part) => total + part.damage, 0);
   }

@@ -69,6 +69,8 @@ export class AttackResolver extends EventEmitter {
 
     // Calculate the total damage taken by the player
     const damageTaken = attack.getPlayerTakenDamage();
+    
+    console.log(`Damage dealt: ${damageDealt}, Damage taken: ${damageTaken}`);
 
     // Update the game state
     this.game.dealDamageToEnemy(damageDealt);
