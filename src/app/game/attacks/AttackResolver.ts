@@ -11,7 +11,7 @@ export interface AttackInput {
   isReleased: boolean | false;
 }
 
-export enum AttackResolverEventType  {
+export enum AttackResolverEventType {
   COMBO_UPDATED = "comboUpdated",
   MAX_COMBO_UPDATED = "maxComboUpdated",
   ACCURACY_RESOLVED = "accuracyUpdated",
@@ -69,8 +69,6 @@ export class AttackResolver extends EventEmitter {
 
     // Calculate the total damage taken by the player
     const damageTaken = attack.getPlayerTakenDamage();
-    
-    console.log(`Damage dealt: ${damageDealt}, Damage taken: ${damageTaken}`);
 
     // Update the game state
     this.game.dealDamageToEnemy(damageDealt);
@@ -80,9 +78,9 @@ export class AttackResolver extends EventEmitter {
   private getTimingOffset(input: AttackInput, part: AttackPart): number {
     // Convert the beat to milliseconds based on the game's bpm
     if (input.isReleased) {
-      return ((input.beat - (part.beat + part.duration)) * this.game.getBpm() / 60) * 1000;
+      return (((input.beat - (part.beat + part.duration)) * this.game.getBpm()) / 60) * 1000;
     }
-    return ((input.beat - part.beat) * this.game.getBpm() / 60) * 1000;
+    return (((input.beat - part.beat) * this.game.getBpm()) / 60) * 1000;
   }
 
   private updateCombo(accuracy: AttackAccuracy): void {

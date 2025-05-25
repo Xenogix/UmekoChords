@@ -33,7 +33,8 @@ export class SoundPlayer {
     }
 
     // Calculate when to play
-    const startTime = time !== undefined ? this.audioContext.currentTime + time : this.audioContext.currentTime;
+    const startTime =
+      time !== undefined ? this.audioContext.currentTime + time : this.audioContext.currentTime;
 
     // Play the note
     return this.instrument.start({
@@ -43,7 +44,7 @@ export class SoundPlayer {
     });
   }
 
-   /**
+  /**
    * Ensure the audio context is running
    */
   private async resumeAudio(): Promise<void> {
@@ -51,5 +52,4 @@ export class SoundPlayer {
       await this.audioContext.resume();
     }
   }
-
 }

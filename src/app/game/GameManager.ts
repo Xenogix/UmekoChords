@@ -31,7 +31,7 @@ export class GameManager extends EventEmitter {
   private playedNotesCallbacks: Map<number, NoteStopCallback> = new Map<number, NoteStopCallback>();
   private isPlayerTurn: boolean = false;
   private playerMeasureStartTime: number = 0;
-  private currentEnemyAttack : Attack | undefined;
+  private currentEnemyAttack: Attack | undefined;
 
   private constructor() {
     super();
@@ -74,71 +74,79 @@ export class GameManager extends EventEmitter {
   }
 
   private async gameLoop(): Promise<void> {
-    while(!this.game.getGameOver()) {
+    while (!this.game.getGameOver()) {
       await this.startRound();
 
       // Wait two beats before allowing the next round to start
-      const nextRoundDelay = 2 * this.game.getBpm() / 60;
+      const nextRoundDelay = (2 * this.game.getBpm()) / 60;
       await new Promise((resolve) => setTimeout(resolve, nextRoundDelay * 1000));
     }
   }
 
   private async startRound(): Promise<void> {
-      // Check if an enemy is available
-      const enemy = this.game.getEnemy();
-      if (!enemy) {
-        throw "No enemy available to start the round.";
-      }
+    // Check if an enemy is available
+    const enemy = this.game.getEnemy();
+    if (!enemy) {
+      throw "No enemy available to start the round.";
+    }
 
-      // Notify the start of the round and the enemy attack
-      this.emit(GameManagerEventType.ROUND_STARTED);
-      this.emit(GameManagerEventType.ENEMY_ATTACK_STARTED, enemy);
+    // Notify the start of the round
+    this.emit(GameManagerEventType.ROUND_STARTED, enemy);
 
-      // Set up the enemy's attack
-      this.currentEnemyAttack = enemy.getAttack();
-      const attackBeatCount = this.currentEnemyAttack.getDuration();
-      const attackDuration = attackBeatCount * this.game.getBpm() / 60;
-      
-      // Play all attack parts
-      for (const part of this.currentEnemyAttack.getParts()) {
-        this.playAttackPart(part);
-      }
+    // Set up the enemy's attack
+    this.currentEnemyAttack = enemy.getAttack();
+    const attackBeatCount = this.currentEnemyAttack.getDuration();
+    const attackDuration = (attackBeatCount * this.game.getBpm()) / 60;
 
-      // Schedule the end of enemy attack notification
-      setTimeout(() => this.emit(GameManagerEventType.ENEMY_ATTACK_ENDED, this.currentEnemyAttack), attackDuration * 1000);
+    // Notify the start of the enemy attack
+    this.emit(GameManagerEventType.ENEMY_ATTACK_STARTED, this.currentEnemyAttack);
 
-      // Wait for the attack duration minus one beat before letting the player start
-      // This allows for processing inputs slightly early
-      const offset = this.game.getBpm() / 60;
-      const waitDuration = attackDuration - offset;
-      await new Promise((resolve) => setTimeout(resolve, waitDuration * 1000));
+    // Play all attack parts
+    for (const part of this.currentEnemyAttack.getParts()) {
+      this.playAttackPart(part);
+    }
 
-      // Calculate when the player's turn officially starts
-      const playerTurnStartTime = performance.now() + offset * 1000;
-      this.playerMeasureStartTime = playerTurnStartTime;
-      
-      // Schedule the player turn start event at the exact moment
-      setTimeout(() => {
-        // Start the player's turn
-        this.isPlayerTurn = true;
-        this.emit(GameManagerEventType.PLAYER_TURN_STARTED, this.currentEnemyAttack);
-      }, offset * 1000);
+    // Schedule the end of enemy attack notification
+    setTimeout(
+      () => this.emit(GameManagerEventType.ENEMY_ATTACK_ENDED, this.currentEnemyAttack),
+      attackDuration * 1000,
+    );
 
-      // Schedule the player turn end event
-      setTimeout(() => {
+    // Wait for the attack duration minus one beat before letting the player start
+    // This allows for processing inputs slightly early
+    const offset = this.game.getBpm() / 60;
+    const waitDuration = attackDuration - offset;
+    await new Promise((resolve) => setTimeout(resolve, waitDuration * 1000));
+
+    // Calculate when the player's turn officially starts
+    const playerTurnStartTime = performance.now() + offset * 1000;
+    this.playerMeasureStartTime = playerTurnStartTime;
+
+    // Schedule the player turn start event at the exact moment
+    setTimeout(() => {
+      // Start the player's turn
+      this.isPlayerTurn = true;
+      this.emit(GameManagerEventType.PLAYER_TURN_STARTED, this.currentEnemyAttack);
+    }, offset * 1000);
+
+    // Schedule the player turn end event
+    setTimeout(
+      () => {
         this.emit(GameManagerEventType.PLAYER_TURN_ENDED, this.currentEnemyAttack);
         this.isPlayerTurn = false;
-      }, (attackDuration + offset) * 1000);
+      },
+      (attackDuration + offset) * 1000,
+    );
 
-      // Wait the duration of the player's turn with a buffer to not miss inputs
-      const playerTurnDuration = attackDuration + (2 * this.game.getBpm() / 60);
-      await new Promise((resolve) => setTimeout(resolve, playerTurnDuration * 1000));
+    // Wait the duration of the player's turn with a buffer to not miss inputs
+    const playerTurnDuration = attackDuration + (2 * this.game.getBpm()) / 60;
+    await new Promise((resolve) => setTimeout(resolve, playerTurnDuration * 1000));
 
-      // Resolve the round
-      this.attackResolver.handleRoundEnd(this.currentEnemyAttack);
-      
-      // Signal the end of the round
-      this.emit(GameManagerEventType.ROUND_ENDED);
+    // Resolve the round
+    this.attackResolver.handleRoundEnd(this.currentEnemyAttack);
+
+    // Signal the end of the round
+    this.emit(GameManagerEventType.ROUND_ENDED);
   }
 
   /**
@@ -146,15 +154,15 @@ export class GameManager extends EventEmitter {
    */
   private playAttackPart(part: AttackPart): void {
     // Convert durations to seconds
-    const time = part.beat / this.game.getBpm() * 60;
-    const duration = part.duration / this.game.getBpm() * 60;
+    const time = (part.beat / this.game.getBpm()) * 60;
+    const duration = (part.duration / this.game.getBpm()) * 60;
 
     // Play the note using the sound player
     this.soundPlayer.playNote(part.note, duration, time);
   }
 
   /**
-   * Handle not pressed events
+   * Handle note pressed events
    */
   public handleNotePressedEvent(event: NoteEvent): void {
     // If the note is already playing, stop it
@@ -174,10 +182,10 @@ export class GameManager extends EventEmitter {
   }
 
   /**
-   * Handle not pressed events
+   * Handle note release events
    */
   public handleNoteReleaseEvent(event: NoteEvent): void {
-    // If the note is already playing, stop it
+    // If the note is playing, stop it
     const noteStopCallback = this.playedNotesCallbacks.get(event.note);
     if (noteStopCallback) {
       noteStopCallback();
@@ -190,12 +198,11 @@ export class GameManager extends EventEmitter {
   private processPlayerInput(event: NoteEvent, isRelease: boolean): void {
     // Ignore inputs if it's not the player's turn or if there is no current enemy attack
     if (this.isPlayerTurn && this.currentEnemyAttack) {
-
       // Create an attack input to judge
       const attackInput = {
         note: event.note,
         beat: this.convertTimeToBeat(event.timestamp),
-        isReleased: isRelease
+        isReleased: isRelease,
       };
 
       // Judge the input using the attack resolver
@@ -205,7 +212,7 @@ export class GameManager extends EventEmitter {
 
   private convertTimeToBeat(time: number): number {
     const offset = time - this.playerMeasureStartTime;
-    return (offset / 1000) * this.game.getBpm() / 60;
+    return ((offset / 1000) * this.game.getBpm()) / 60;
   }
 
   /**
@@ -213,21 +220,21 @@ export class GameManager extends EventEmitter {
    */
   private setupEventForwarding(): void {
     // Forward all Game events
-    Object.values(GameEventType).forEach(eventType => {
+    Object.values(GameEventType).forEach((eventType) => {
       this.game.on(eventType, (...args) => {
         this.emit(eventType, ...args);
       });
     });
-    
+
     // Forward all AttackResolver events
-    Object.values(AttackResolverEventType).forEach(eventType => {
+    Object.values(AttackResolverEventType).forEach((eventType) => {
       this.attackResolver.on(eventType, (...args) => {
         this.emit(eventType, ...args);
       });
     });
 
     // Forward all InputManager events
-    Object.values(GameInputEventType).forEach(eventType => {
+    Object.values(GameInputEventType).forEach((eventType) => {
       this.inputManager.on(eventType, (...args) => {
         this.emit(eventType, ...args);
       });
