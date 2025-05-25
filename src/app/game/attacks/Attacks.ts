@@ -3,9 +3,9 @@ import { AttackAccuracy } from "./AttackResolver";
 export interface AttackPart {
   beat: number;
   duration: number;
-  notes: number[];
+  note: number;
   damage: number;
-  weight: number | 1;
+  weight: number;
   startAccuracy?: AttackAccuracy; // The accuracy of the key press
   endAccuracy?: AttackAccuracy; // The accuracy of the key release
 }
@@ -19,6 +19,10 @@ export class Attack {
     this._parts = parts;
   }
 
+  public getParts(): AttackPart[] {
+    return this._parts;
+  }
+
   public addPart(part: AttackPart): void {
     this._parts.push(part);
   }
@@ -30,7 +34,7 @@ export class Attack {
   public getNoteToBePressed(note: number): AttackPart | undefined {
     // Filter for unplayed parts containing the note and not yet started
     const candidates = this._parts.filter(
-      (part) => part.notes.includes(note) && part.startAccuracy === undefined,
+      (part) => part.note == note && part.startAccuracy === undefined,
     );
     // Return the one with the smallest beat
     return candidates.reduce(
@@ -43,9 +47,7 @@ export class Attack {
     // Filter for played parts containing the note and not yet released
     const candidates = this._parts.filter(
       (part) =>
-        part.notes.includes(note) &&
-        part.startAccuracy !== undefined &&
-        part.endAccuracy === undefined,
+        part.note == note && part.startAccuracy !== undefined && part.endAccuracy === undefined,
     );
     // Return the one with the smallest beat
     return candidates.reduce(

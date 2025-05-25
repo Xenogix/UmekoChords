@@ -11,9 +11,13 @@ export abstract class Enemy {
 
   public abstract getAttack(): Attack;
 
-  public abstract applyDamage(damage: number): void;
+  public applyDamage(damage: number): void {
+    this._hp = Math.max(0, this._hp - damage);
+  }
 
-  public abstract isDefeated(): boolean;
+  public isDefeated(): boolean {
+    return this._hp <= 0;
+  }
 
   public get hp(): number {
     return this._hp;

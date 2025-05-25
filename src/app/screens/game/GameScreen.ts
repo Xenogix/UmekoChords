@@ -3,6 +3,7 @@ import { Measure } from "./Measure";
 import { Piano } from "./Piano";
 import { WaveBackground } from "../../ui/WaveBackground";
 import { KeyboardInput } from "../../game/inputs/Inputs";
+import { GameManager } from "../../game/GameManager";
 
 export class GameScreen extends Container {
   // Asset bundles
@@ -20,6 +21,7 @@ export class GameScreen extends Container {
   private _measure: Measure;
   private _piano: Piano;
   private _keyboardInput: KeyboardInput;
+  private _gameManager: GameManager = GameManager.getInstance();
 
   constructor() {
     super();
@@ -36,10 +38,19 @@ export class GameScreen extends Container {
     // Setup the keyboard input
     this._keyboardInput = new KeyboardInput();
     this._piano.connectKeyboardInput(this._keyboardInput);
+
+    // Start a round
+    this._gameManager.startGame();
+    this._gameManager.startRound();
   }
 
-  public hidden() {
+  public async show(): Promise<void> {
+    await this._gameManager.initialize();
+  }
+
+  public hide(): Promise<void> {
     this._piano.disconnectKeyboardInput();
+    return Promise.resolve();
   }
 
   public update(tick: Ticker) {

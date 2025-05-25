@@ -1,4 +1,4 @@
-import { Enemy } from "./Enemy";
+import { Enemy } from "../enemies/Enemy";
 
 export class Wave {
   private _enemies?: Enemy[] | undefined;

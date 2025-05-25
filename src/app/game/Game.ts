@@ -1,6 +1,7 @@
 import { EventEmitter } from "pixi.js";
 import { Enemy } from "./enemies/Enemy";
-import { Wave } from "./enemies/Wave";
+import { Wave } from "./waves/Wave";
+import { WavesGenerator } from "./waves/WavesGenerator";
 
 export enum GameEventType {
   BPS_CHANGED = "bpsChanged",
@@ -18,6 +19,7 @@ export class Game {
   public readonly maxHp: number = 100;
 
   private readonly eventEmitter: EventEmitter = new EventEmitter();
+  private readonly waveGenerator: WavesGenerator = new WavesGenerator();
 
   // Game state
   private _wave: number = 0;
@@ -125,12 +127,7 @@ export class Game {
   }
 
   private generateWaves(): void {
-    // Placeholder for wave generation logic
-    // This would typically create a series of waves with enemies
-    this._waves = [];
-    for (let i = 0; i < 5; i++) {
-      this._waves.push(new Wave());
-    }
+    this._waves = this.waveGenerator.generateWaves();
   }
 
   private gameOver(): void {
