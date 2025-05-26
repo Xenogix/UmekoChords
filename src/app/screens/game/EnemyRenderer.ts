@@ -1,36 +1,30 @@
-import { AnimatedSprite, Container } from "pixi.js";
-import { AnimatedEnemy, EnemyAnimationState } from "../../game/enemies/AnimatedEnemy";
+import { AnimatedSprite, Assets, Texture } from "pixi.js";
+import { AnimatedEnemy } from "../../game/enemies/AnimatedEnemy";
 
-export class EnemyRenderer extends Container {
+export enum EnemyAnimationState {
+  IDLE = "idle",
+  ATTACK = "attack",
+  DAMAGED = "damaged"
+}
+
+export class EnemyRenderer extends AnimatedSprite {
 
   private enemy?: AnimatedEnemy;
   private state?: EnemyAnimationState;
-  private animation?: AnimatedSprite;
+  private sheet: { animations: Record<EnemyAnimationState, Texture[]> } | undefined;
 
-  private internalWidth: number = 0;
-  private internalHeight: number = 0;
-
-  constructor() {
-    super();
-  }
-
-  public resize(width: number, height: number): void {
-    this.internalWidth = width;
-    this.internalHeight = height;
-    this.updateAnimationSize();
-  }
+  private loopStates = new Set([EnemyAnimationState.IDLE]);
 
   public async setEnemy(enemy: AnimatedEnemy): Promise<void> {
     // If the enemy is the same, do nothing
     if (this.enemy === enemy) return;
     
-    // Load animations for the new enemy
+    // Set the new enemy and sprite sheet
     this.enemy = enemy;
-    this.state = EnemyAnimationState.IDLE; 
-    await this.enemy?.initializeAnimations();
-    console.log("Setting new enemy:", enemy);
+    this.sheet = Assets.get(this.enemy.getSpriteSheetResource());
 
-    // Reset to idle state
+    // Reset the state to idle
+    this.state = EnemyAnimationState.IDLE; 
     this.updateAnimation();
   }
 
@@ -39,15 +33,6 @@ export class EnemyRenderer extends Container {
     if (this.state === state) return;
     this.state = state;
     this.updateAnimation();
-
-    // If the state is a one time animation, fallback to idle state after completion
-    if (!this.shouldLoopAnimation()) {
-      if (this.animation) {
-        this.animation.once("complete", () => {
-          this.setState(EnemyAnimationState.IDLE);
-        });
-      }
-    }
   }
 
   public updateAnimation(): void {
@@ -55,29 +40,35 @@ export class EnemyRenderer extends Container {
     this.removeChildren();
 
     // Do not show animation if no enemy or state is set or if the enemy is not loaded
-    if (!this.enemy || !this.state || !this.enemy.getIsLoaded()) {
+    if (!this.enemy || !this.state) {
       return;
     }
     
     // Add the new animation
-    this.animation = this.enemy.getAnimation(this.state);
-    if (this.animation) {
-      this.updateAnimationSize();
-      this.animation.loop = this.shouldLoopAnimation();
-      this.animation.gotoAndPlay(0);
-      this.addChild(this.animation);
-      this.animation.play();
+    if (!this.sheet) {
+      console.warn(`Sprite sheet not loaded for enemy: ${this.enemy.getSpriteSheetResource()}`);
+      return;
     }
-  }
 
-  private updateAnimationSize(): void {
-    if (this.animation) {
-      this.animation.width = this.internalWidth;
-      this.animation.height = this.internalHeight;
+    const newTextures = this.sheet.animations[this.state];
+    if (!newTextures) {
+      console.warn(`Missing animation for state: ${this.state} in ${this.enemy.getSpriteSheetResource()}`);
+      return;
+    }
+
+    this.textures = newTextures;
+    this.loop = this.shouldLoopAnimation();
+    this.gotoAndPlay(0);
+
+    // If the state is a one time animation, fallback to idle state after completion
+    if (!this.shouldLoopAnimation()) {
+      this.once("complete", () => {
+        this.setState(EnemyAnimationState.IDLE);
+      });
     }
   }
 
   private shouldLoopAnimation(): boolean {
-    return this.state === EnemyAnimationState.IDLE;
+    return this.loopStates.has(this.state!);
   }
 }

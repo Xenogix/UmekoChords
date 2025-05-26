@@ -3,7 +3,7 @@ import { AnimatedEnemy } from "./AnimatedEnemy";
 
 export class TestAnimatedEnemy extends AnimatedEnemy {
 
-  protected override spriteSheetResource: string = "testEnemy.json";
+  protected override spriteSheetResource: string = "testEnemy.aseprite";
 
   constructor(hp: number = 100, score: number = 50) {
     super(hp, score);

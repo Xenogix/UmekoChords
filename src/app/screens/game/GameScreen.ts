@@ -1,4 +1,4 @@
-import { Container, Ticker } from "pixi.js";
+import { Container, Texture, Ticker } from "pixi.js";
 import { Measure } from "./Measure";
 import { Piano } from "./Piano";
 import { WaveBackground } from "../../ui/WaveBackground";
@@ -6,12 +6,11 @@ import { GameManager, GameManagerEventType } from "../../game/GameManager";
 import { HealthBar } from "./HealthBar";
 import { GameInputEventType } from "../../game/inputs/GameInput";
 import { GameEventType } from "../../game/Game";
-import { EnemyRenderer } from "./EnemyRenderer";
-import { EnemyAnimationState } from "../../game/enemies/AnimatedEnemy";
+import { EnemyAnimationState, EnemyRenderer } from "./EnemyRenderer";
 
 export class GameScreen extends Container {
   // Asset bundles
-  public static assetBundles = ["game"];
+  public static assetBundles = ["game", "enemies"];
 
   // Layout constants
   private readonly measureHeight: number = 200;
@@ -54,7 +53,7 @@ export class GameScreen extends Container {
     this.healthBar = new HealthBar();
     this.addChild(this.healthBar);
 
-    this.enemyRenderer = new EnemyRenderer();
+    this.enemyRenderer = new EnemyRenderer([Texture.EMPTY]);
     this.addChild(this.enemyRenderer);
 
     this.setupEventHandlers();
@@ -96,7 +95,8 @@ export class GameScreen extends Container {
     this.healthBar.y = this.healthBarPositionY;
 
     // Resize the enemy renderer
-    this.enemyRenderer.resize(this.enemyWidth, this.enemyHeight);
+    this.enemyRenderer.width = this.enemyWidth;
+    this.enemyRenderer.height = this.enemyHeight;
     this.enemyRenderer.x = (width - this.enemyWidth) / 2;
     this.enemyRenderer.y = this.enemyPositionY;
 
