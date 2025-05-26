@@ -55,17 +55,19 @@ export class EnemyRenderer extends AnimatedSprite {
       console.warn(`Missing animation for state: ${this.state} in ${this.enemy.getSpriteSheetResource()}`);
       return;
     }
-
+    
     this.textures = newTextures;
     this.loop = this.shouldLoopAnimation();
-    this.gotoAndPlay(0);
+    this.animationSpeed = 0.1;
 
     // If the state is a one time animation, fallback to idle state after completion
     if (!this.shouldLoopAnimation()) {
-      this.once("complete", () => {
+      this.onComplete = () => {
         this.setState(EnemyAnimationState.IDLE);
-      });
+      }
     }
+
+    this.gotoAndPlay(0);
   }
 
   private shouldLoopAnimation(): boolean {
