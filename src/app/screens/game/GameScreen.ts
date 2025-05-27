@@ -1,7 +1,6 @@
-import { Container, Texture, Ticker } from "pixi.js";
+import { Container, Texture, Sprite } from "pixi.js";
 import { Measure } from "./Measure";
 import { Piano } from "./Piano";
-import { WaveBackground } from "../../ui/WaveBackground";
 import { GameManager, GameManagerEventType } from "../../game/GameManager";
 import { HealthBar } from "./HealthBar";
 import { GameInputEventType } from "../../game/inputs/GameInput";
@@ -30,7 +29,7 @@ export class GameScreen extends Container {
   private readonly paddingX: number = 100;
 
   // Private properties
-  private background: WaveBackground;
+  private background: Sprite;
   private measure: Measure;
   private piano: Piano;
   private healthBar: HealthBar;
@@ -41,7 +40,7 @@ export class GameScreen extends Container {
   constructor() {
     super();
 
-    this.background = new WaveBackground();
+    this.background = new Sprite(Texture.from('nature.png'));
     this.addChild(this.background);
 
     this.measure = new Measure();
@@ -70,11 +69,6 @@ export class GameScreen extends Container {
     return Promise.resolve();
   }
 
-  public update(tick: Ticker) {
-    // Update the background
-    this.background.update(tick);
-  }
-
   public resize(width: number, height: number) {
     // Resize the measure
     const measureWidth = Math.min(width - this.paddingX, this.maxMeasureWidth);
@@ -101,7 +95,10 @@ export class GameScreen extends Container {
     this.enemyRenderer.y = this.enemyPositionY;
 
     // Resize the background
-    this.background.resize(width, height);
+    this.background.width = width;
+    this.background.height = height;
+    this.background.x = 0;
+    this.background.y = 0;
   }
 
   private setupEventHandlers() {
