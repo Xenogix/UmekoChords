@@ -28,7 +28,6 @@ export class MusicRenderer extends DOMContainer {
     // Clear the previous content
     this.element.innerHTML = "";
     const factory = Factory.newFromElementId(this.element.id, width, height);
-    factory.getContext().scale(1.5, 1.5);
 
     // Configure the factory if a callback is provided
     if (this.factoryCallback) {

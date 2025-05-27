@@ -1,21 +1,23 @@
 import { Container } from "pixi.js";
 import { MusicRenderer } from "./MusicRenderer.ts";
 import { Factory } from "vexflow";
+import { AttackNotationConverter } from "../../game/attacks/AttackToVexflowConverter.ts";
+import { Attack } from "../../game/attacks/Attacks.ts";
 
 /**
  * Measure class that represents a musical measure in the game.
  * It uses VexFlow to render musical notation based on the provided notes and properties.
  */
 export class Measure extends Container {
+
   // Default musical properties
-  public notes: string[] = [];
-  public clef: string = "treble";
-  public timeSignature: string = "4/4";
-  public tempo: number = 80;
+  private attack: Attack | undefined = undefined;
+  private clef: string = "treble";
+  private timeSignature: string = "4/4";
+  private tempo: number = 60;
 
   // Private properties
   private internalWidth: number = 0;
-  private internalHeight: number = 0;
   private musicRenderer: MusicRenderer;
 
   constructor() {
@@ -27,24 +29,21 @@ export class Measure extends Container {
 
   public resize(width: number, height: number) {
     this.internalWidth = width;
-    this.internalHeight = height;
     this.musicRenderer.render(width, height);
   }
 
-  public updateRenderer(): void {
-    this.musicRenderer.render(this.internalWidth, this.internalHeight);
+  public setAttack(attack: Attack) {
+    this.attack = attack;
+    this.musicRenderer.render(this.internalWidth, 200);
   }
-
   /**
    * Callback function to configure the VexFlow factory with the current musical properties.
    */
   private musicRendererCallback = (factory: Factory): void => {
-    // Get voices from the notes
-    const score = factory.EasyScore();
-    const voices = this.notes.map((notes) => {
-      return score.voice(score.notes(notes, { stem: "up" }));
-    });
 
+    // Generate voices based on the attack
+    const voices = this.attack ? [AttackNotationConverter.createNotesFromAttack(factory, this.attack)] : [];
+    console.log("Generated voices:", voices);
     // Configure the factory with the generated voices
     factory
       .System({ width: this.internalWidth, x: 0, y: 0 })

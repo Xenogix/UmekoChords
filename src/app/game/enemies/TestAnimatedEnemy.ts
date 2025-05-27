@@ -11,10 +11,10 @@ export class TestAnimatedEnemy extends AnimatedEnemy {
 
   public override getAttack(): Attack {
     return new Attack([
-      { beat: 1, duration: 1, note: 60, damage: 10, weight: 1 },
-      { beat: 2, duration: 1, note: 62, damage: 10, weight: 1 },
-      { beat: 3, duration: 1, note: 64, damage: 10, weight: 1 },
-      { beat: 4, duration: 1, note: 65, damage: 10, weight: 1 },
+      { beat: 0, duration: 1, note: 60, damage: 10, weight: 1 },
+      { beat: 1, duration: 1, note: 62, damage: 10, weight: 1 },
+      { beat: 2, duration: 1, note: 64, damage: 10, weight: 1 },
+      { beat: 3, duration: 1, note: 65, damage: 10, weight: 1 },
     ]);
   }
 }

@@ -6,12 +6,14 @@ import { HealthBar } from "./HealthBar";
 import { GameInputEventType } from "../../game/inputs/GameInput";
 import { GameEventType } from "../../game/Game";
 import { EnemyAnimationState, EnemyRenderer } from "./EnemyRenderer";
+import { AttackToNotationConverter } from "../../game/attacks/AttackToVexflowConverter";
 
 export class GameScreen extends Container {
   // Asset bundles
   public static assetBundles = ["game", "enemies"];
 
   // Layout constants
+  private readonly measureScale: number = 1.5;
   private readonly measureHeight: number = 200;
   private readonly maxMeasureWidth: number = 800;
 
@@ -74,8 +76,9 @@ export class GameScreen extends Container {
     // Resize the measure
     const measureWidth = Math.min(width - this.paddingX, this.maxMeasureWidth);
     this.measure.resize(measureWidth, this.measureHeight);
-    this.measure.x = (width - measureWidth) / 2;
-    this.measure.y = (height - this.measureHeight) / 2;
+    this.measure.x = (width - measureWidth * this.measureScale) / 2;
+    this.measure.y = (height - this.measureHeight * this.measureScale) / 2;
+    this.measure.scale = this.measureScale;
 
     // Resize the piano
     const pianoWidth = Math.min(width - this.paddingX, this.maxPianoWidth);
@@ -115,6 +118,9 @@ export class GameScreen extends Container {
         .catch(err => console.error("Error initializing enemy animations:", err)); 
     });
     this.gameManager.on(GameEventType.ENEMY_DAMAGED, () => { this.enemyRenderer.setState(EnemyAnimationState.DAMAGED); });
-    this.gameManager.on(GameManagerEventType.ENEMY_ATTACK_STARTED, () => { this.enemyRenderer.setState(EnemyAnimationState.ATTACK); });
+    this.gameManager.on(GameManagerEventType.ENEMY_ATTACK_STARTED, (attack) => { 
+      this.enemyRenderer.setState(EnemyAnimationState.ATTACK);
+      this.measure.setAttack(attack);
+    });
   }
 }
