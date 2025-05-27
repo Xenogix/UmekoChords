@@ -18,6 +18,7 @@ export class Measure extends Container {
 
   // Private properties
   private internalWidth: number = 0;
+  private internalHeight: number = 0;
   private musicRenderer: MusicRenderer;
 
   constructor() {
@@ -29,12 +30,13 @@ export class Measure extends Container {
 
   public resize(width: number, height: number) {
     this.internalWidth = width;
+    this.internalHeight = height;
     this.musicRenderer.render(width, height);
   }
 
   public setAttack(attack: Attack) {
     this.attack = attack;
-    this.musicRenderer.render(this.internalWidth, 200);
+    this.musicRenderer.render(this.internalWidth, this.internalHeight);
   }
   /**
    * Callback function to configure the VexFlow factory with the current musical properties.
@@ -43,8 +45,7 @@ export class Measure extends Container {
 
     // Generate voices based on the attack
     const voices = this.attack ? [AttackNotationConverter.createNotesFromAttack(factory, this.attack)] : [];
-    console.log("Generated voices:", voices);
-    // Configure the factory with the generated voices
+    
     factory
       .System({ width: this.internalWidth, x: 0, y: 0 })
       .addStave({ voices: voices })

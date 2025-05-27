@@ -6,7 +6,6 @@ import { HealthBar } from "./HealthBar";
 import { GameInputEventType } from "../../game/inputs/GameInput";
 import { GameEventType } from "../../game/Game";
 import { EnemyAnimationState, EnemyRenderer } from "./EnemyRenderer";
-import { AttackToNotationConverter } from "../../game/attacks/AttackToVexflowConverter";
 
 export class GameScreen extends Container {
   // Asset bundles
