@@ -1,4 +1,4 @@
-import { ColorMatrixFilter, Container, NineSliceSprite, Sprite, Texture } from "pixi.js";
+import { Container, NineSliceSprite, Sprite, Texture } from "pixi.js";
 
 export class Piano extends Container {
 
@@ -9,13 +9,14 @@ export class Piano extends Container {
   private readonly firstNote = 31;
   private readonly activeNotes: Set<number> = new Set();
 
-  private readonly whiteKeyTexture: NineSliceSprite = this.getSlicedKeyTexture("whiteKey.png");
-  private readonly blackKeyTexture: NineSliceSprite = this.getSlicedKeyTexture("blackKey.png");
-  private readonly whiteKeyActiveTexture: NineSliceSprite = this.getSlicedKeyTexture("whiteKeyActive.png");
-  private readonly blackKeyActiveTexture: NineSliceSprite = this.getSlicedKeyTexture("blackKeyActive.png");
+  // Use textures, not NineSliceSprite instances
+  private readonly whiteKeyTexture = Texture.from("whiteKey.png");
+  private readonly blackKeyTexture = Texture.from("blackKey.png");
+  private readonly whiteKeyActiveTexture = Texture.from("whiteKeyActive.png");
+  private readonly blackKeyActiveTexture = Texture.from("blackKeyActive.png");
 
-  private whiteKeySprites: Map<number, Sprite> = new Map();
-  private blackKeySprites: Map<number, Sprite> = new Map();
+  private whiteKeySprites: Map<number, any> = new Map();
+  private blackKeySprites: Map<number, any> = new Map();
 
   constructor() {
     super();
@@ -29,29 +30,39 @@ export class Piano extends Container {
 
   public pressNote(note: number): void {
     this.activeNotes.add(note);
-    
+    this.updateKeySprite(note);
   }
 
   public releaseNote(note: number): void {
     this.activeNotes.delete(note);
+    this.updateKeySprite(note);
   }
 
-  /**
-   * Creates a NineSliceSprite from a texture name.
-   * This method assumes the textures use the same dimensions and slice widths/heights.
-   */
-  private getSlicedKeyTexture(textureName: string): NineSliceSprite {
-    const texture = Texture.from(textureName);
-    texture.source.scaleMode = 'nearest';
+  private createSlicedSprite(texture: Texture): NineSliceSprite {
     return new NineSliceSprite({
-      texture,
+      texture: texture,     
       width: 32,
       height: 32,
       leftWidth: 15,
       rightWidth: 15,
       topHeight: 15,
-      bottomHeight: 15,
+      bottomHeight: 15
     });
+  }
+
+
+  private updateKeySprite(note: number): void {
+    const isActive = this.activeNotes.has(note);
+
+    const whiteSprite = this.whiteKeySprites.get(note);
+    if (whiteSprite) {
+      whiteSprite.texture = isActive ? this.whiteKeyActiveTexture : this.whiteKeyTexture;
+    }
+
+    const blackSprite = this.blackKeySprites.get(note);
+    if (blackSprite) {
+      blackSprite.texture = isActive ? this.blackKeyActiveTexture : this.blackKeyTexture;
+    }
   }
 
   private drawKeys(): void {
@@ -78,11 +89,12 @@ export class Piano extends Container {
     // Draw white keys
     for (const { index, midiNote } of whiteKeyIndices) {
       const isActive = this.activeNotes.has(midiNote);
-      const sprite = new Sprite(isActive ? this.whiteKeyActiveTexture : this.whiteKeyTexture);
+      const sprite = this.createSlicedSprite(isActive ? this.whiteKeyActiveTexture : this.whiteKeyTexture);
       sprite.x = index * whiteKeyWidth;
       sprite.y = 0;
       sprite.width = whiteKeyWidth;
       sprite.height = this.internalHeight;
+
       this.whiteKeySprites.set(midiNote, sprite);
       this.addChild(sprite);
     }
@@ -95,9 +107,9 @@ export class Piano extends Container {
 
       if (isBlackKey[nextNotePosition] && nextMidiNote < this.firstNote + this.keyCount) {
         const x = (whiteKeyIndices[i].index + 1) * whiteKeyWidth - blackKeyWidth / 2;
+        const isActive = this.activeNotes.has(nextMidiNote);
 
-        const isActive = this.activeNotes.has(currMidiNote);
-        const sprite = new Sprite(isActive ? this.blackKeyActiveTexture : this.blackKeyTexture);
+        const sprite = this.createSlicedSprite(isActive ? this.blackKeyActiveTexture : this.blackKeyTexture);
         sprite.x = x;
         sprite.y = 0;
         sprite.width = blackKeyWidth;
