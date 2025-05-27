@@ -41,6 +41,7 @@ export class GameScreen extends Container {
     super();
 
     this.background = new Sprite(Texture.from('nature.png'));
+    this.background.texture.source.scaleMode = 'nearest';
     this.addChild(this.background);
 
     this.measure = new Measure();
@@ -95,10 +96,11 @@ export class GameScreen extends Container {
     this.enemyRenderer.y = this.enemyPositionY;
 
     // Resize the background
-    this.background.width = width;
-    this.background.height = height;
-    this.background.x = 0;
-    this.background.y = 0;
+    const aspectRatio = this.background.texture.width / this.background.texture.height;
+    this.background.width = Math.max(width, height * aspectRatio);
+    this.background.height = this.background.width / aspectRatio;
+    this.background.x = -(this.background.width - width) / 2; // Horizontally centered
+    this.background.y = height - this.background.height;      // Vertically aligned to the bottom
   }
 
   private setupEventHandlers() {

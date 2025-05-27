@@ -22,7 +22,7 @@ export class MusicRenderer extends DOMContainer {
 
     // Initialize VexFlow
     this.factory = Factory.newFromElementId(this.element.id);
-
+    
     // Set the factory callback
     this.factoryCallback = factoryCallback;
   }

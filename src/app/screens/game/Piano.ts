@@ -1,19 +1,24 @@
-import { Container, Graphics } from "pixi.js";
+import { ColorMatrixFilter, Container, NineSliceSprite, Sprite, Texture } from "pixi.js";
 
 export class Piano extends Container {
 
-  private graphics: Graphics;
-  private internalWidth: number = 0;
-  private internalHeight: number = 0;
-  private keyCount: number = 61;
-  private firstNote: number = 31;
-  private activeNotes: Set<number> = new Set();
+  private internalWidth = 0;
+  private internalHeight = 0;
+
+  private readonly keyCount = 61;
+  private readonly firstNote = 31;
+  private readonly activeNotes: Set<number> = new Set();
+
+  private readonly whiteKeyTexture: NineSliceSprite = this.getSlicedKeyTexture("whiteKey.png");
+  private readonly blackKeyTexture: NineSliceSprite = this.getSlicedKeyTexture("blackKey.png");
+  private readonly whiteKeyActiveTexture: NineSliceSprite = this.getSlicedKeyTexture("whiteKeyActive.png");
+  private readonly blackKeyActiveTexture: NineSliceSprite = this.getSlicedKeyTexture("blackKeyActive.png");
+
+  private whiteKeySprites: Map<number, Sprite> = new Map();
+  private blackKeySprites: Map<number, Sprite> = new Map();
 
   constructor() {
     super();
-
-    this.graphics = new Graphics();
-    this.addChild(this.graphics);
   }
 
   public resize(width: number, height: number) {
@@ -22,100 +27,84 @@ export class Piano extends Container {
     this.drawKeys();
   }
 
-  public getKeyCount(): number {
-    return this.keyCount;
-  }
-
-  public setKeyCount(count: number): void {
-    this.keyCount = count;
-  }
-
   public pressNote(note: number): void {
     this.activeNotes.add(note);
-    this.drawKeys();
+    
   }
 
   public releaseNote(note: number): void {
     this.activeNotes.delete(note);
-    this.drawKeys();
+  }
+
+  /**
+   * Creates a NineSliceSprite from a texture name.
+   * This method assumes the textures use the same dimensions and slice widths/heights.
+   */
+  private getSlicedKeyTexture(textureName: string): NineSliceSprite {
+    const texture = Texture.from(textureName);
+    texture.source.scaleMode = 'nearest';
+    return new NineSliceSprite({
+      texture,
+      width: 32,
+      height: 32,
+      leftWidth: 15,
+      rightWidth: 15,
+      topHeight: 15,
+      bottomHeight: 15,
+    });
   }
 
   private drawKeys(): void {
-    // Clear previous graphics
-    this.graphics.clear();
+    this.removeChildren();
+    this.whiteKeySprites.clear();
+    this.blackKeySprites.clear();
 
-    // Piano key layout pattern (which keys in an octave are white/black)
-    // C, C#, D, D#, E, F, F#, G, G#, A, A#, B
-    const isBlackKey = [
-      false,
-      true,
-      false,
-      true,
-      false,
-      false,
-      true,
-      false,
-      true,
-      false,
-      true,
-      false,
-    ];
+    const isBlackKey = [false, true, false, true, false, false, true, false, true, false, true, false];
 
-    // Calculate the number of white keys in the range
+    const whiteKeyIndices: { index: number; midiNote: number }[] = [];
     let whiteKeyCount = 0;
+
     for (let i = 0; i < this.keyCount; i++) {
-      const notePosition = (i + this.firstNote) % 12;
-      if (!isBlackKey[notePosition]) {
-        whiteKeyCount++;
+      const midiNote = this.firstNote + i;
+      if (!isBlackKey[midiNote % 12]) {
+        whiteKeyIndices.push({ index: whiteKeyCount++, midiNote });
       }
     }
 
-    // Calculate key dimensions based on white key count
     const whiteKeyWidth = this.internalWidth / whiteKeyCount;
     const blackKeyWidth = whiteKeyWidth * 0.6;
     const blackKeyHeight = this.internalHeight * 0.6;
 
-    // First pass: Draw white keys
-    let whiteKeyIndex = 0;
-    for (let i = 0; i < this.keyCount; i++) {
-      const notePosition = (i + this.firstNote) % 12;
-      const midiNote = this.firstNote + i;
-
-      if (!isBlackKey[notePosition]) {
-        const x = whiteKeyIndex * whiteKeyWidth;
-        const isActive = this.activeNotes.has(midiNote);
-
-        this.graphics
-          .rect(x, 0, whiteKeyWidth, this.internalHeight)
-          .stroke({ width: 3, color: 0xaaaaaa, alpha: 1 })
-          .fill(isActive ? 0xaaccff : 0xffffff);
-
-        whiteKeyIndex++;
-      }
+    // Draw white keys
+    for (const { index, midiNote } of whiteKeyIndices) {
+      const isActive = this.activeNotes.has(midiNote);
+      const sprite = new Sprite(isActive ? this.whiteKeyActiveTexture : this.whiteKeyTexture);
+      sprite.x = index * whiteKeyWidth;
+      sprite.y = 0;
+      sprite.width = whiteKeyWidth;
+      sprite.height = this.internalHeight;
+      this.whiteKeySprites.set(midiNote, sprite);
+      this.addChild(sprite);
     }
 
-    // Second pass: Draw black keys on top
-    whiteKeyIndex = 0;
-    for (let i = 0; i < this.keyCount; i++) {
-      const notePosition = (i + this.firstNote) % 12;
+    // Draw black keys
+    for (let i = 0; i < whiteKeyIndices.length - 1; i++) {
+      const currMidiNote = whiteKeyIndices[i].midiNote;
+      const nextMidiNote = currMidiNote + 1;
+      const nextNotePosition = nextMidiNote % 12;
 
-      if (!isBlackKey[notePosition]) {
-        whiteKeyIndex++;
+      if (isBlackKey[nextNotePosition] && nextMidiNote < this.firstNote + this.keyCount) {
+        const x = (whiteKeyIndices[i].index + 1) * whiteKeyWidth - blackKeyWidth / 2;
 
-        // Check if next key is a black key and draw it
-        if (i + 1 < this.keyCount) {
-          const nextNotePosition = (i + 1 + this.firstNote) % 12;
-          if (isBlackKey[nextNotePosition]) {
-            const nextMidiNote = this.firstNote + i + 1;
-            const x = whiteKeyIndex * whiteKeyWidth - blackKeyWidth / 2;
-            const isActive = this.activeNotes.has(nextMidiNote);
+        const isActive = this.activeNotes.has(currMidiNote);
+        const sprite = new Sprite(isActive ? this.blackKeyActiveTexture : this.blackKeyTexture);
+        sprite.x = x;
+        sprite.y = 0;
+        sprite.width = blackKeyWidth;
+        sprite.height = blackKeyHeight;
 
-            this.graphics
-              .rect(x, 0, blackKeyWidth, blackKeyHeight)
-              .stroke({ width: 3, color: 0xaaaaaa, alpha: 1 })
-              .fill(isActive ? 0x445566 : 0x000000);
-          }
-        }
+        this.blackKeySprites.set(nextMidiNote, sprite);
+        this.addChild(sprite);
       }
     }
   }

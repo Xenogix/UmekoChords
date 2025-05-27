@@ -23,6 +23,7 @@ export class HealthBar extends Container {
       topHeight: 15,
       bottomHeight: 15,
     });
+    this.healthBar.texture.source.scaleMode = 'nearest';
     this.addChild(this.healthBar);
 
     // Create the health bar fill
@@ -35,6 +36,7 @@ export class HealthBar extends Container {
       topHeight: 15,
       bottomHeight: 15,
     });
+    this.healthBarFill.texture.source.scaleMode = 'nearest';
     this.addChild(this.healthBarFill);
 
   }

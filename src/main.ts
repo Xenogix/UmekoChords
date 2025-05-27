@@ -1,3 +1,4 @@
+import { TexturePool } from "pixi.js";
 import { setEngine } from "./app/getEngine";
 import { GameScreen } from "./app/screens/game/GameScreen";
 import { LoadScreen } from "./app/screens/LoadScreen";

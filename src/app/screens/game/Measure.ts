@@ -49,7 +49,7 @@ export class Measure extends Container {
     factory
       .System({ width: this.internalWidth, x: 0, y: 0 })
       .addStave({ voices: voices })
-      .setStyle({ fillStyle: "#ffffff", strokeStyle: "#ffffff" })
+      .setStyle({ fillStyle: "#000000", strokeStyle: "#000000" })
       .addClef(this.clef)
       .addTimeSignature(this.timeSignature)
       .setTempo({ bpm: this.tempo }, 0);
