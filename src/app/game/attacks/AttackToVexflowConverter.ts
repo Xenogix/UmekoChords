@@ -102,9 +102,7 @@ export class AttackNotationConverter {
         }
         // For chords (multiple notes at the same beat)
         else {
-          const vexNotes = partsAtBeat.map((part) =>
-            this.midiNoteToVexNote(part.note),
-          );
+          const vexNotes = partsAtBeat.map((part) => this.midiNoteToVexNote(part.note));
           // Use the shortest duration for the chord
           const duration = this.beatDurationToVexDuration(
             Math.min(...partsAtBeat.map((part) => part.duration)),

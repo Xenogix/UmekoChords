@@ -10,9 +10,7 @@ export enum EnemyAnimationState {
 export class EnemyRenderer extends AnimatedSprite {
   private enemy?: AnimatedEnemy;
   private state?: EnemyAnimationState;
-  private sheet:
-    | { animations: Record<EnemyAnimationState, Texture[]> }
-    | undefined;
+  private sheet: { animations: Record<EnemyAnimationState, Texture[]> } | undefined;
 
   private loopStates = new Set([EnemyAnimationState.IDLE]);
 
@@ -47,17 +45,13 @@ export class EnemyRenderer extends AnimatedSprite {
 
     // Add the new animation
     if (!this.sheet) {
-      console.warn(
-        `Sprite sheet not loaded for enemy: ${this.enemy.getSpriteSheetResource()}`,
-      );
+      console.warn(`Sprite sheet not loaded for enemy: ${this.enemy.getSpriteSheetResource()}`);
       return;
     }
 
     const newTextures = this.sheet.animations[this.state];
     if (!newTextures) {
-      console.warn(
-        `Missing animation for state: ${this.state} in ${this.enemy.getSpriteSheetResource()}`,
-      );
+      console.warn(`Missing animation for state: ${this.state} in ${this.enemy.getSpriteSheetResource()}`);
       return;
     }
 

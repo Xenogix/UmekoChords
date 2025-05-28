@@ -7,7 +7,7 @@ import { Game, GameEventType } from "./Game";
 import { NoteStopCallback, SoundPlayer } from "./sound/SoundPlayer";
 import { InputManager } from "./inputs/InputManager";
 import { GameInputEventType, NoteEvent } from "./inputs/GameInput";
-import { EventEmitter } from "pixi.js";
+import { EventEmitter, SchedulerSystem } from "pixi.js";
 
 export class GameManagerEventType {
   public static readonly GAME_STARTED = "gameStarted";
@@ -27,16 +27,11 @@ export class GameManager extends EventEmitter {
   // Managers and components
   private readonly game: Game = new Game();
   private readonly inputManager: InputManager = new InputManager();
-  private readonly attackResolver: AttackResolver = new AttackResolver(
-    this.game,
-  );
+  private readonly attackResolver: AttackResolver = new AttackResolver(this.game);
   private readonly soundPlayer: SoundPlayer = new SoundPlayer();
 
   // State and configuration
-  private playedNotesCallbacks: Map<number, NoteStopCallback> = new Map<
-    number,
-    NoteStopCallback
-  >();
+  private playedNotesCallbacks: Map<number, NoteStopCallback> = new Map<number, NoteStopCallback>();
   private isPlayerTurn: boolean = false;
   private playerMeasureStartTime: number = 0;
   private currentEnemyAttack: Attack | undefined;

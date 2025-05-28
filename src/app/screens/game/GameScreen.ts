@@ -12,15 +12,15 @@ export class GameScreen extends Container {
   public static assetBundles = ["game", "enemies"];
 
   // Layout constants
-  private readonly measureScale: number = 1.5;
+  private readonly measureScale: number = 1;
   private readonly measureHeight: number = 200;
   private readonly maxMeasureWidth: number = 800;
 
   private readonly pianoHeight: number = 150;
   private readonly maxPianoWidth: number = 1200;
 
-  private readonly healthBarHeight: number = 25;
-  private readonly maxHealthBarWidth: number = 800;
+  private readonly healthBarHeight: number = 100;
+  private readonly maxHealthBarWidth: number = 600;
   private readonly healthBarPositionY: number = 50;
 
   private readonly enemyWidth: number = 200;
@@ -75,8 +75,8 @@ export class GameScreen extends Container {
     // Resize the measure
     const measureWidth = Math.min(width - this.paddingX, this.maxMeasureWidth);
     this.measure.resize(measureWidth, this.measureHeight);
-    this.measure.x = (width - measureWidth * this.measureScale) / 2;
-    this.measure.y = (height - this.measureHeight * this.measureScale) / 2;
+    this.measure.x = (width - measureWidth) / 2;
+    this.measure.y = (height - this.measureHeight) / 2;
     this.measure.scale = this.measureScale;
 
     // Resize the piano
@@ -86,10 +86,7 @@ export class GameScreen extends Container {
     this.piano.y = height - this.pianoHeight;
 
     // Resize the health bar
-    const healthBarWidth = Math.min(
-      width - this.paddingX,
-      this.maxHealthBarWidth,
-    );
+    const healthBarWidth = Math.min(width - this.paddingX, this.maxHealthBarWidth);
     this.healthBar.resize(healthBarWidth, this.healthBarHeight);
     this.healthBar.x = (width - healthBarWidth) / 2;
     this.healthBar.y = this.healthBarPositionY;
@@ -101,8 +98,7 @@ export class GameScreen extends Container {
     this.enemyRenderer.y = this.enemyPositionY;
 
     // Resize the background
-    const aspectRatio =
-      this.background.texture.width / this.background.texture.height;
+    const aspectRatio = this.background.texture.width / this.background.texture.height;
     this.background.width = Math.max(width, height * aspectRatio);
     this.background.height = this.background.width / aspectRatio;
     this.background.x = -(this.background.width - width) / 2; // Horizontally centered
@@ -110,22 +106,14 @@ export class GameScreen extends Container {
   }
 
   private setupEventHandlers() {
-    this.gameManager.on(GameInputEventType.NOTE_PRESSED, (event) =>
-      this.piano.pressNote(event.note),
-    );
-    this.gameManager.on(GameInputEventType.NOTE_RELEASED, (event) =>
-      this.piano.releaseNote(event.note),
-    );
+    this.gameManager.on(GameInputEventType.NOTE_PRESSED, (event) => this.piano.pressNote(event.note));
+    this.gameManager.on(GameInputEventType.NOTE_RELEASED, (event) => this.piano.releaseNote(event.note));
     this.gameManager.on(GameEventType.HP_CHANGED, (hp, maxHp) => {
       this.healthBar.setCurrentHealth(hp);
       this.healthBar.setMaxHealth(maxHp);
     });
     this.gameManager.on(GameEventType.ENEMY_SPAWNED, (enemy) => {
-      this.enemyRenderer
-        .setEnemy(enemy)
-        .catch((err) =>
-          console.error("Error initializing enemy animations:", err),
-        );
+      this.enemyRenderer.setEnemy(enemy).catch((err) => console.error("Error initializing enemy animations:", err));
     });
     this.gameManager.on(GameEventType.ENEMY_DAMAGED, () => {
       this.enemyRenderer.setState(EnemyAnimationState.DAMAGED);
