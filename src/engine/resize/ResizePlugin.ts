@@ -148,7 +148,8 @@ export class CreationResizePlugin {
       letterbox: true,
       ...options.resizeOptions,
     };
-    app.resizeTo = options.resizeTo || (null as unknown as Window | HTMLElement);
+    app.resizeTo =
+      options.resizeTo || (null as unknown as Window | HTMLElement);
   }
 
   /**

@@ -50,7 +50,9 @@ export class MainScreen extends Container {
       anchor: 0.5,
       animations: buttonAnimations,
     });
-    this.pauseButton.onPress.connect(() => engine().navigation.presentPopup(PausePopup));
+    this.pauseButton.onPress.connect(() =>
+      engine().navigation.presentPopup(PausePopup),
+    );
     this.addChild(this.pauseButton);
 
     this.settingsButton = new FancyButton({
@@ -58,7 +60,9 @@ export class MainScreen extends Container {
       anchor: 0.5,
       animations: buttonAnimations,
     });
-    this.settingsButton.onPress.connect(() => engine().navigation.presentPopup(SettingsPopup));
+    this.settingsButton.onPress.connect(() =>
+      engine().navigation.presentPopup(SettingsPopup),
+    );
     this.addChild(this.settingsButton);
 
     this.addButton = new Button({

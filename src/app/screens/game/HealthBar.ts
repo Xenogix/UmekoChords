@@ -1,7 +1,6 @@
 import { Container, Graphics, NineSliceSprite, Sprite, Texture } from "pixi.js";
 
 export class HealthBar extends Container {
-
   private healthBar: NineSliceSprite;
   private healthBarFill: NineSliceSprite;
 
@@ -23,7 +22,7 @@ export class HealthBar extends Container {
       topHeight: 15,
       bottomHeight: 15,
     });
-    this.healthBar.texture.source.scaleMode = 'nearest';
+    this.healthBar.texture.source.scaleMode = "nearest";
     this.addChild(this.healthBar);
 
     // Create the health bar fill
@@ -36,9 +35,8 @@ export class HealthBar extends Container {
       topHeight: 15,
       bottomHeight: 15,
     });
-    this.healthBarFill.texture.source.scaleMode = 'nearest';
+    this.healthBarFill.texture.source.scaleMode = "nearest";
     this.addChild(this.healthBarFill);
-
   }
 
   public setMaxHealth(maxHealth: number): void {
@@ -66,7 +64,9 @@ export class HealthBar extends Container {
     this.healthBar.height = this.internalHeight;
 
     // Resize the health bar fill
-    const fillWidth = Math.min(Math.max(this.currentHealth / this.maxHealth, 0), 1) * this.internalWidth;
+    const fillWidth =
+      Math.min(Math.max(this.currentHealth / this.maxHealth, 0), 1) *
+      this.internalWidth;
     this.healthBarFill.width = fillWidth;
     this.healthBarFill.height = this.internalHeight;
   }

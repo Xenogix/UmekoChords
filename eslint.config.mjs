@@ -24,32 +24,33 @@ export default tseslint.config(
           printWidth: 100,
           semi: true,
           singleQuote: false,
-        }
+          endOfLine: "lf",
+        },
       ],
 
       "@typescript-eslint/naming-convention": [
         "error",
         {
-          selector: 'memberLike',
-          modifiers: ['private'],
-          format: ['camelCase'],
+          selector: "memberLike",
+          modifiers: ["private"],
+          format: ["camelCase"],
         },
         {
-          selector: 'property',
-          modifiers: ['readonly'],
-          format: ['camelCase'],
-        },
-          {
-          selector: 'property',
-          modifiers: ['static', 'readonly'],
-          format: ['UPPER_CASE'],
+          selector: "property",
+          modifiers: ["readonly"],
+          format: ["camelCase"],
         },
         {
-          selector: 'variable',
-          modifiers: ['const'],
-          format: ['UPPER_CASE', 'camelCase'],
-        }
-      ]
+          selector: "property",
+          modifiers: ["static", "readonly"],
+          format: ["UPPER_CASE"],
+        },
+        {
+          selector: "variable",
+          modifiers: ["const"],
+          format: ["UPPER_CASE", "camelCase"],
+        },
+      ],
     },
-  }
+  },
 );

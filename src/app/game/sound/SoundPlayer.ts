@@ -4,7 +4,9 @@ export type NoteStopCallback = (time?: number) => void;
 
 export class SoundPlayer {
   private audioContext = new AudioContext();
-  private instrument: SplendidGrandPiano = new SplendidGrandPiano(this.audioContext);
+  private instrument: SplendidGrandPiano = new SplendidGrandPiano(
+    this.audioContext,
+  );
   private isInitialized = false;
 
   /**
@@ -34,7 +36,9 @@ export class SoundPlayer {
 
     // Calculate when to play
     const startTime =
-      time !== undefined ? this.audioContext.currentTime + time : this.audioContext.currentTime;
+      time !== undefined
+        ? this.audioContext.currentTime + time
+        : this.audioContext.currentTime;
 
     // Play the note
     return this.instrument.start({

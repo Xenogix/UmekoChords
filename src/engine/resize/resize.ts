@@ -12,10 +12,18 @@ export function resize(
   if (letterbox) {
     if (minWidth < minHeight) {
       canvasHeight = window.innerHeight;
-      canvasWidth = Math.min(window.innerWidth, minWidth, canvasHeight * aspectRatio);
+      canvasWidth = Math.min(
+        window.innerWidth,
+        minWidth,
+        canvasHeight * aspectRatio,
+      );
     } else {
       canvasWidth = window.innerWidth;
-      canvasHeight = Math.min(window.innerHeight, minHeight, canvasWidth / aspectRatio);
+      canvasHeight = Math.min(
+        window.innerHeight,
+        minHeight,
+        canvasWidth / aspectRatio,
+      );
     }
   }
 

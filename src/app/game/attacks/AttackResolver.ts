@@ -78,7 +78,11 @@ export class AttackResolver extends EventEmitter {
   private getTimingOffset(input: AttackInput, part: AttackPart): number {
     // Convert the beat to milliseconds based on the game's bpm
     if (input.isReleased) {
-      return (((input.beat - (part.beat + part.duration)) * this.game.getBpm()) / 60) * 1000;
+      return (
+        (((input.beat - (part.beat + part.duration)) * this.game.getBpm()) /
+          60) *
+        1000
+      );
     }
     return (((input.beat - part.beat) * this.game.getBpm()) / 60) * 1000;
   }
@@ -90,7 +94,10 @@ export class AttackResolver extends EventEmitter {
       this.game.emit(AttackResolverEventType.COMBO_UPDATED, this.comboCount);
       if (this.comboCount > this.maxCombo) {
         this.maxCombo = this.comboCount;
-        this.game.emit(AttackResolverEventType.MAX_COMBO_UPDATED, this.maxCombo);
+        this.game.emit(
+          AttackResolverEventType.MAX_COMBO_UPDATED,
+          this.maxCombo,
+        );
       }
     } else {
       this.comboCount = 0;

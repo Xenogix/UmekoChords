@@ -6,7 +6,6 @@ import { Factory } from "vexflow";
  * It creates a container for the VexFlow output and provides a method to render the music.
  */
 export class MusicRenderer extends DOMContainer {
-
   private factoryCallback: (factory: Factory) => void;
 
   constructor(factoryCallback: (factory: Factory) => void) {
@@ -24,7 +23,6 @@ export class MusicRenderer extends DOMContainer {
   }
 
   public render(width: number, height: number): void {
-
     // Clear the previous content
     this.element.innerHTML = "";
     const factory = Factory.newFromElementId(this.element.id, width, height);

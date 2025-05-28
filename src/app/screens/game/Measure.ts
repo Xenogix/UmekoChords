@@ -9,7 +9,6 @@ import { Attack } from "../../game/attacks/Attacks.ts";
  * It uses VexFlow to render musical notation based on the provided notes and properties.
  */
 export class Measure extends Container {
-
   // Default musical properties
   private attack: Attack | undefined = undefined;
   private clef: string = "treble";
@@ -42,10 +41,11 @@ export class Measure extends Container {
    * Callback function to configure the VexFlow factory with the current musical properties.
    */
   private musicRendererCallback = (factory: Factory): void => {
-
     // Generate voices based on the attack
-    const voices = this.attack ? [AttackNotationConverter.createNotesFromAttack(factory, this.attack)] : [];
-    
+    const voices = this.attack
+      ? [AttackNotationConverter.createNotesFromAttack(factory, this.attack)]
+      : [];
+
     factory
       .System({ width: this.internalWidth, x: 0, y: 0 })
       .addStave({ voices: voices })

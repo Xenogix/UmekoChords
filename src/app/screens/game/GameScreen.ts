@@ -41,8 +41,8 @@ export class GameScreen extends Container {
   constructor() {
     super();
 
-    this.background = new Sprite(Texture.from('nature.png'));
-    this.background.texture.source.scaleMode = 'nearest';
+    this.background = new Sprite(Texture.from("nature.png"));
+    this.background.texture.source.scaleMode = "nearest";
     this.addChild(this.background);
 
     this.measure = new Measure();
@@ -86,7 +86,10 @@ export class GameScreen extends Container {
     this.piano.y = height - this.pianoHeight;
 
     // Resize the health bar
-    const healthBarWidth = Math.min(width - this.paddingX, this.maxHealthBarWidth);
+    const healthBarWidth = Math.min(
+      width - this.paddingX,
+      this.maxHealthBarWidth,
+    );
     this.healthBar.resize(healthBarWidth, this.healthBarHeight);
     this.healthBar.x = (width - healthBarWidth) / 2;
     this.healthBar.y = this.healthBarPositionY;
@@ -98,26 +101,36 @@ export class GameScreen extends Container {
     this.enemyRenderer.y = this.enemyPositionY;
 
     // Resize the background
-    const aspectRatio = this.background.texture.width / this.background.texture.height;
+    const aspectRatio =
+      this.background.texture.width / this.background.texture.height;
     this.background.width = Math.max(width, height * aspectRatio);
     this.background.height = this.background.width / aspectRatio;
     this.background.x = -(this.background.width - width) / 2; // Horizontally centered
-    this.background.y = height - this.background.height;      // Vertically aligned to the bottom
+    this.background.y = height - this.background.height; // Vertically aligned to the bottom
   }
 
   private setupEventHandlers() {
-    this.gameManager.on(GameInputEventType.NOTE_PRESSED, (event) => this.piano.pressNote(event.note));
-    this.gameManager.on(GameInputEventType.NOTE_RELEASED, (event) => this.piano.releaseNote(event.note));
+    this.gameManager.on(GameInputEventType.NOTE_PRESSED, (event) =>
+      this.piano.pressNote(event.note),
+    );
+    this.gameManager.on(GameInputEventType.NOTE_RELEASED, (event) =>
+      this.piano.releaseNote(event.note),
+    );
     this.gameManager.on(GameEventType.HP_CHANGED, (hp, maxHp) => {
       this.healthBar.setCurrentHealth(hp);
       this.healthBar.setMaxHealth(maxHp);
     });
-    this.gameManager.on(GameEventType.ENEMY_SPAWNED, (enemy) => { 
-      this.enemyRenderer.setEnemy(enemy)
-        .catch(err => console.error("Error initializing enemy animations:", err)); 
+    this.gameManager.on(GameEventType.ENEMY_SPAWNED, (enemy) => {
+      this.enemyRenderer
+        .setEnemy(enemy)
+        .catch((err) =>
+          console.error("Error initializing enemy animations:", err),
+        );
     });
-    this.gameManager.on(GameEventType.ENEMY_DAMAGED, () => { this.enemyRenderer.setState(EnemyAnimationState.DAMAGED); });
-    this.gameManager.on(GameManagerEventType.ENEMY_ATTACK_STARTED, (attack) => { 
+    this.gameManager.on(GameEventType.ENEMY_DAMAGED, () => {
+      this.enemyRenderer.setState(EnemyAnimationState.DAMAGED);
+    });
+    this.gameManager.on(GameManagerEventType.ENEMY_ATTACK_STARTED, (attack) => {
       this.enemyRenderer.setState(EnemyAnimationState.ATTACK);
       this.measure.setAttack(attack);
     });

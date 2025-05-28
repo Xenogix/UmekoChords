@@ -25,7 +25,8 @@ export class CreationNavigationPlugin {
 
     app.navigation = new Navigation();
     app.navigation.init(app);
-    this.onResize = () => app.navigation.resize(app.renderer.width, app.renderer.height);
+    this.onResize = () =>
+      app.navigation.resize(app.renderer.width, app.renderer.height);
     app.renderer.on("resize", this.onResize);
     app.resize();
   }

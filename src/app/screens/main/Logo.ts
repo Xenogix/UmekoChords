@@ -1,6 +1,10 @@
 import { Sprite, Texture } from "pixi.js";
 
-import { randomBool, randomFloat, randomInt } from "../../../engine/utils/random";
+import {
+  randomBool,
+  randomFloat,
+  randomInt,
+} from "../../../engine/utils/random";
 
 export enum DIRECTION {
   NE,

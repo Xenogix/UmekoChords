@@ -1,7 +1,6 @@
 import { Container, NineSliceSprite, Sprite, Texture } from "pixi.js";
 
 export class Piano extends Container {
-
   private internalWidth = 0;
   private internalHeight = 0;
 
@@ -40,28 +39,31 @@ export class Piano extends Container {
 
   private createSlicedSprite(texture: Texture): NineSliceSprite {
     return new NineSliceSprite({
-      texture: texture,     
+      texture: texture,
       width: 32,
       height: 32,
       leftWidth: 15,
       rightWidth: 15,
       topHeight: 15,
-      bottomHeight: 15
+      bottomHeight: 15,
     });
   }
-
 
   private updateKeySprite(note: number): void {
     const isActive = this.activeNotes.has(note);
 
     const whiteSprite = this.whiteKeySprites.get(note);
     if (whiteSprite) {
-      whiteSprite.texture = isActive ? this.whiteKeyActiveTexture : this.whiteKeyTexture;
+      whiteSprite.texture = isActive
+        ? this.whiteKeyActiveTexture
+        : this.whiteKeyTexture;
     }
 
     const blackSprite = this.blackKeySprites.get(note);
     if (blackSprite) {
-      blackSprite.texture = isActive ? this.blackKeyActiveTexture : this.blackKeyTexture;
+      blackSprite.texture = isActive
+        ? this.blackKeyActiveTexture
+        : this.blackKeyTexture;
     }
   }
 
@@ -70,7 +72,20 @@ export class Piano extends Container {
     this.whiteKeySprites.clear();
     this.blackKeySprites.clear();
 
-    const isBlackKey = [false, true, false, true, false, false, true, false, true, false, true, false];
+    const isBlackKey = [
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      true,
+      false,
+    ];
 
     const whiteKeyIndices: { index: number; midiNote: number }[] = [];
     let whiteKeyCount = 0;
@@ -89,7 +104,9 @@ export class Piano extends Container {
     // Draw white keys
     for (const { index, midiNote } of whiteKeyIndices) {
       const isActive = this.activeNotes.has(midiNote);
-      const sprite = this.createSlicedSprite(isActive ? this.whiteKeyActiveTexture : this.whiteKeyTexture);
+      const sprite = this.createSlicedSprite(
+        isActive ? this.whiteKeyActiveTexture : this.whiteKeyTexture,
+      );
       sprite.x = index * whiteKeyWidth;
       sprite.y = 0;
       sprite.width = whiteKeyWidth;
@@ -105,11 +122,17 @@ export class Piano extends Container {
       const nextMidiNote = currMidiNote + 1;
       const nextNotePosition = nextMidiNote % 12;
 
-      if (isBlackKey[nextNotePosition] && nextMidiNote < this.firstNote + this.keyCount) {
-        const x = (whiteKeyIndices[i].index + 1) * whiteKeyWidth - blackKeyWidth / 2;
+      if (
+        isBlackKey[nextNotePosition] &&
+        nextMidiNote < this.firstNote + this.keyCount
+      ) {
+        const x =
+          (whiteKeyIndices[i].index + 1) * whiteKeyWidth - blackKeyWidth / 2;
         const isActive = this.activeNotes.has(nextMidiNote);
 
-        const sprite = this.createSlicedSprite(isActive ? this.blackKeyActiveTexture : this.blackKeyTexture);
+        const sprite = this.createSlicedSprite(
+          isActive ? this.blackKeyActiveTexture : this.blackKeyTexture,
+        );
         sprite.x = x;
         sprite.y = 0;
         sprite.width = blackKeyWidth;

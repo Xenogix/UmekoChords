@@ -42,7 +42,8 @@ export class Attack {
     );
     // Return the one with the smallest beat
     return candidates.reduce(
-      (earliest, part) => (!earliest || part.beat < earliest.beat ? part : earliest),
+      (earliest, part) =>
+        !earliest || part.beat < earliest.beat ? part : earliest,
       undefined as AttackPart | undefined,
     );
   }
@@ -55,11 +56,14 @@ export class Attack {
     // Filter for played parts containing the note and not yet released
     const candidates = this.parts.filter(
       (part) =>
-        part.note == note && part.startAccuracy !== undefined && part.endAccuracy === undefined,
+        part.note == note &&
+        part.startAccuracy !== undefined &&
+        part.endAccuracy === undefined,
     );
     // Return the one with the smallest beat
     return candidates.reduce(
-      (earliest, part) => (!earliest || part.beat < earliest.beat ? part : earliest),
+      (earliest, part) =>
+        !earliest || part.beat < earliest.beat ? part : earliest,
       undefined as AttackPart | undefined,
     );
   }
@@ -97,7 +101,10 @@ export class Attack {
    */
   public getDuration(): number {
     // Get the maximum beat of all parts and add the duration of the last part
-    return this.parts.reduce((max, part) => Math.max(max, part.beat + part.duration), 0);
+    return this.parts.reduce(
+      (max, part) => Math.max(max, part.beat + part.duration),
+      0,
+    );
   }
 
   private getDamageMultiplier(accuracy: AttackAccuracy): number {

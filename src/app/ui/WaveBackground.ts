@@ -45,7 +45,9 @@ export class WaveBackground extends Graphics {
     this.clear();
 
     // Main background - light color
-    this.rect(0, 0, this.internalWidth, this.internalHeight).fill(this.backgroundColor);
+    this.rect(0, 0, this.internalWidth, this.internalHeight).fill(
+      this.backgroundColor,
+    );
 
     // Center point for the waves
     const centerY = this.internalHeight / 2;
@@ -61,7 +63,8 @@ export class WaveBackground extends Graphics {
 
       // The phase offset creates the animation
       const shearingFactor =
-        (this.waveShearing + 1) * (Math.abs(centeredIndex / this.waveCount) + 1);
+        (this.waveShearing + 1) *
+        (Math.abs(centeredIndex / this.waveCount) + 1);
       const waveOffset = this.wavePhase * shearingFactor + w * 0.7;
 
       // Draw the wave
