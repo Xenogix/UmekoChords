@@ -101,10 +101,7 @@ export class Attack {
    */
   public getDuration(): number {
     // Get the maximum beat of all parts and add the duration of the last part
-    return this.parts.reduce(
-      (max, part) => Math.max(max, part.beat + part.duration),
-      0,
-    );
+    return this.parts.reduce((max, part) => Math.max(max, part.beat + part.duration),0,);
   }
 
   private getDamageMultiplier(accuracy: AttackAccuracy): number {

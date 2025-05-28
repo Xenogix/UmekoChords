@@ -1,4 +1,4 @@
-import { Container, Texture, Sprite } from "pixi.js";
+import { Container, Texture, Sprite, Ticker } from "pixi.js";
 import { Measure } from "./Measure";
 import { Piano } from "./Piano";
 import { GameManager, GameManagerEventType } from "../../game/GameManager";
@@ -12,7 +12,7 @@ export class GameScreen extends Container {
   public static assetBundles = ["game", "enemies"];
 
   // Layout constants
-  private readonly measureScale: number = 1;
+  private readonly measureScale: number = 1.5;
   private readonly measureHeight: number = 200;
   private readonly maxMeasureWidth: number = 800;
 
@@ -71,10 +71,15 @@ export class GameScreen extends Container {
     return Promise.resolve();
   }
 
+  public update(ticker : Ticker) {
+    // Update the game manager
+    this.gameManager.update(ticker.deltaMS * 1000);
+  }
+
   public resize(width: number, height: number) {
     // Resize the measure
     const measureWidth = Math.min(width - this.paddingX, this.maxMeasureWidth);
-    this.measure.resize(measureWidth, this.measureHeight);
+    this.measure.resize(measureWidth / this.measureScale, this.measureHeight / this.measureScale);
     this.measure.x = (width - measureWidth) / 2;
     this.measure.y = (height - this.measureHeight) / 2;
     this.measure.scale = this.measureScale;
