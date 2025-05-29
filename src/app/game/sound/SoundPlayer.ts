@@ -17,6 +17,7 @@ export class SoundPlayer {
       return;
     }
     await this.instrument.load;
+    await this.resumeAudio();
     this.isInitialized = true;
   }
 

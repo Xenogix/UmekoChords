@@ -42,16 +42,15 @@ export class Measure extends Container {
    */
   private musicRendererCallback = (factory: Factory): void => {
     // Generate voices based on the attack
-    const voices = this.attack
-      ? [AttackNotationConverter.createNotesFromAttack(factory, this.attack)]
-      : [];
+    var voices = this.attack ? AttackNotationConverter.createNotesFromAttack(factory, this.attack) : [];
 
     factory
-      .System({ width: this.internalWidth, x: 0, y: 0 })
+      .System({ width: this.internalWidth })
       .addStave({ voices: voices })
       .setStyle({ fillStyle: "#000000", strokeStyle: "#000000" })
       .addClef(this.clef)
       .addTimeSignature(this.timeSignature)
-      .setTempo({ bpm: this.tempo }, 0);
+      .setTempo({ bpm: this.tempo }, 0)
+      .format();
   };
 }

@@ -1,8 +1,5 @@
-import {
-  AttackResolver,
-  AttackResolverEventType,
-} from "./attacks/AttackResolver";
-import { Attack, AttackPart } from "./attacks/Attacks";
+import { AttackResolver, AttackResolverEventType } from "./attacks/AttackResolver";
+import { Attack } from "./attacks/Attacks";
 import { Game, GameEventType } from "./Game";
 import { NoteStopCallback, SoundPlayer } from "./sound/SoundPlayer";
 import { InputManager } from "./inputs/InputManager";
@@ -50,7 +47,7 @@ export class GameManager extends EventEmitter {
   }
 
   public async initialize(): Promise<void> {
-    this.soundPlayer.initialize();
+    await this.soundPlayer.initialize();
     this.inputManager.start();
     this.listenToInputEvents();
   }
@@ -82,11 +79,10 @@ export class GameManager extends EventEmitter {
   private async gameLoop(): Promise<void> {
     this.gameScheduler.setBpm(this.game.getBpm());
     let nextRoundStartBeat = this.gameScheduler.getCurrentBeat() + 1;
-
     while (!this.game.getGameOver()) {
       await this.gameScheduler.scheduleTask(nextRoundStartBeat, () => {});
       const endBeat = await this.startRound();
-      nextRoundStartBeat = endBeat - 1;
+      nextRoundStartBeat = endBeat + 3;
     }
   }
 
@@ -103,19 +99,20 @@ export class GameManager extends EventEmitter {
     }
 
     // Get the enemy's attack and beat information
-    this.currentEnemyAttack = enemy.getAttack();
-    const attackBeatCount = this.currentEnemyAttack.getDuration();
+    const roundAttack = enemy.getAttack();
+    const attackBeatCount = roundAttack.getDuration();
 
     // Schedule the round start and the enemy attack
     this.gameScheduler.scheduleTaskIn(startBeat, () => {
+      this.currentEnemyAttack = roundAttack;
       // Notify the start of the game round
       this.emit(GameManagerEventType.ROUND_STARTED, enemy);
       // Notify the start of the enemy attack
-      this.emit(GameManagerEventType.ENEMY_ATTACK_STARTED, this.currentEnemyAttack);
+      this.emit(GameManagerEventType.ENEMY_ATTACK_STARTED, roundAttack);
     });
 
     // Schedule the enemy attack parts
-    for (const part of this.currentEnemyAttack!.getParts()) {
+    for (const part of roundAttack.getParts()) {
       this.gameScheduler.scheduleTask(startBeat + part.beat, () => {
         const duration = (part.duration / this.game.getBpm()) * 60;
         this.soundPlayer.playNote(part.note, duration, 0);
@@ -125,15 +122,15 @@ export class GameManager extends EventEmitter {
     // Schedule the end of the enemy attack and the start of the player's turn
     this.playerTurnStartBeat = attackBeatCount + startBeat;
     this.gameScheduler.scheduleTask(this.playerTurnStartBeat, () => {
-      this.emit(GameManagerEventType.ENEMY_ATTACK_ENDED, this.currentEnemyAttack!);
-      this.emit(GameManagerEventType.PLAYER_TURN_STARTED, this.currentEnemyAttack!);
+      this.emit(GameManagerEventType.ENEMY_ATTACK_ENDED, roundAttack);
+      this.emit(GameManagerEventType.PLAYER_TURN_STARTED, roundAttack);
     });
 
     // Schedule the end of the round
     const endBeat = attackBeatCount * 2 + startBeat;
     this.gameScheduler.scheduleTask(endBeat, () => {
       this.emit(GameManagerEventType.PLAYER_TURN_ENDED);
-      this.attackResolver.handleRoundEnd(this.currentEnemyAttack!);
+      this.attackResolver.handleRoundEnd(roundAttack);
       this.emit(GameManagerEventType.ROUND_ENDED);
     });
 

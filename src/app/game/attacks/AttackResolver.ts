@@ -34,14 +34,15 @@ export class AttackResolver extends EventEmitter {
   }
 
   public handleInput(attack: Attack, input: AttackInput): void {
+
     const attackToJudge = input.isReleased
-      ? attack.getNoteToBeReleased(input.note)
-      : attack.getNoteToBePressed(input.note);
+      ? this.getNoteToBeReleased(attack, input.note)
+      : this.getNoteToBePressed(attack, input.note);
 
     // If there is no attack part to judge, add an error
     if (!attackToJudge) {
       attack.addError();
-      this.game.emit(AttackResolverEventType.ACCURACY_RESOLVED, "error");
+      this.emit(AttackResolverEventType.ACCURACY_RESOLVED, "error", input.isReleased);
       return;
     }
 
@@ -60,16 +61,16 @@ export class AttackResolver extends EventEmitter {
     this.updateCombo(accuracy);
 
     // Notify listeners about the accuracy result
-    this.game.emit(AttackResolverEventType.ACCURACY_RESOLVED, accuracy);
+    this.emit(AttackResolverEventType.ACCURACY_RESOLVED, accuracy, input.isReleased);
   }
 
   public handleRoundEnd(attack: Attack): void {
     // Calculate the total damage dealt by the player
-    const damageDealt = attack.getPlayerDealtDamage();
+    const damageDealt = this.getPlayerDealtDamage(attack);
 
     // Calculate the total damage taken by the player
-    const damageTaken = attack.getPlayerTakenDamage();
-
+    const damageTaken = this.getPlayerTakenDamage(attack);
+    
     // Update the game state
     this.game.dealDamageToEnemy(damageDealt);
     this.game.dealDamageToPlayer(damageTaken);
@@ -91,10 +92,10 @@ export class AttackResolver extends EventEmitter {
     // Only perfect and good inputs contribute to the combo
     if (accuracy === "perfect" || accuracy === "good") {
       this.comboCount++;
-      this.game.emit(AttackResolverEventType.COMBO_UPDATED, this.comboCount);
+      this.emit(AttackResolverEventType.COMBO_UPDATED, this.comboCount);
       if (this.comboCount > this.maxCombo) {
         this.maxCombo = this.comboCount;
-        this.game.emit(
+        this.emit(
           AttackResolverEventType.MAX_COMBO_UPDATED,
           this.maxCombo,
         );
@@ -118,5 +119,84 @@ export class AttackResolver extends EventEmitter {
       // Or when there is no expected note (e.g when more input attack than expected notes)
       return "error";
     }
+  }
+
+  /**
+   * Get the next attack part that is supposed to be pressed for a given note
+   * @returns The earliest attack part that matches the note and has not been pressed yet, or undefined if none exists
+   */
+  private getNoteToBePressed(attack: Attack, note: number): AttackPart | undefined {
+    // Filter for unplayed parts containing the note and not yet started
+    const candidates = attack.getParts().filter(
+      (part) => part.note == note && part.startAccuracy === undefined,
+    );
+    // Return the one with the smallest beat
+    return candidates.reduce(
+      (earliest, part) =>
+        !earliest || part.beat < earliest.beat ? part : earliest,
+      undefined as AttackPart | undefined,
+    );
+  }
+
+  /**
+   * Get the next attack part that is supposed to be released for a given note
+   * @returns The earliest attack part that matches the note and has been release, or undefined if none exists
+   */
+  private getNoteToBeReleased(attack: Attack, note: number): AttackPart | undefined {
+    // Filter for played parts containing the note and not yet released
+    const candidates = attack.getParts().filter(
+      (part) =>
+        part.note == note &&
+        part.startAccuracy !== undefined &&
+        part.endAccuracy === undefined,
+    );
+    // Return the one with the smallest beat
+    return candidates.reduce(
+      (earliest, part) =>
+        !earliest || part.beat < earliest.beat ? part : earliest,
+      undefined as AttackPart | undefined,
+    );
+  }
+
+  private getPlayerDealtDamage(attack: Attack): number {
+    // Attack weights are used to calculate the total damage
+    // So some attacks may have more influence on the total damage than others (e.g. a chord attack)
+    // Also the more accurate the attack, the more damage it deals
+    return attack.getParts().reduce((total, part) => {
+      if (part.startAccuracy && part.endAccuracy) {
+        const multiplier = this.getDamageMultiplier(part.startAccuracy);
+        return total + part.damage * multiplier * part.weight || 1;
+      }
+      return total;
+    }, 0);
+  }
+
+  private getDamageMultiplier(accuracy: AttackAccuracy): number {
+    // Only good or perfect hits deal damage
+    switch (accuracy) {
+      case "perfect":
+        return 1.5;
+      case "good":
+        return 1;
+      case "poor":
+        return 0.5;
+      default:
+        return 0;
+    }
+  }
+
+  private getPlayerTakenDamage(attack : Attack): number {
+    // Each missed attack part deals it's own damage to the player
+    return attack.getParts()
+      .filter(
+        (part) =>
+          part.startAccuracy === "miss" ||
+          part.startAccuracy === "error" ||
+          part.startAccuracy === undefined ||
+          part.endAccuracy === "miss" ||
+          part.endAccuracy === "error" ||
+          part.endAccuracy === undefined,
+      )
+      .reduce((total, part) => total + part.damage, 0);
   }
 }

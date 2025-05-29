@@ -1,4 +1,21 @@
+class ScheduledTask {
+    public readonly beat: number;
+    public readonly promise: Promise<void>;
+    public readonly task: () => void;
+    public resolve: () => void = () => {};
+
+    constructor(beat: number, task: () => void) {
+        this.beat = beat;
+        this.task = task;
+        this.promise = new Promise<void>((resolve) => {
+            this.resolve = resolve;
+        });
+    }
+}
+
 export class GameScheduler {
+
+    private readonly beatSubdivision: number = 16;
 
     private absoluteTime: number = 0;
 
@@ -8,15 +25,14 @@ export class GameScheduler {
 
     private requestedBpm: number | undefined = undefined;
 
-    // Beats per microsecond
     private microsecondsPerBeat: number;
 
     // Represents the scheduled tasks for each beat.
-    private scheduledTasks: Map<number, { promise: Promise<void>, resolve: () => void, task: () => void }> = new Map();
+    private scheduledTasks: Array<ScheduledTask> = new Array();
 
     constructor(bpm?: number) {
-        // Convert BPM to microseconds per beat
-        this.microsecondsPerBeat = this.bpmToMicrosecondsPerBeat(bpm ?? 60);
+        // Convert BPM to microseconds per beat subdivision
+        this.microsecondsPerBeat = this.bpmToMicrosecondsPerBeat(bpm ?? 60) / this.beatSubdivision;
     }
 
     /**
@@ -33,36 +49,36 @@ export class GameScheduler {
 
             if (this.absoluteTime < nextBeatTime) break;
             if (this.requestedBpm !== undefined) {
-                this.microsecondsPerBeat = this.bpmToMicrosecondsPerBeat(this.requestedBpm);
+                this.microsecondsPerBeat = this.bpmToMicrosecondsPerBeat(this.requestedBpm) / this.beatSubdivision;
                 this.lastBpmBeat = this.absoluteTime;
                 this.requestedBpm = undefined;
                 continue;
             }
 
             this.beat++;
-            console.log(this.scheduledTasks);
 
-            const taskEntry  = this.scheduledTasks.get(this.beat);
-            if (taskEntry ) {
+            const tasksForCurrentBeat = this.scheduledTasks.filter(task => task.beat === this.beat);
+            for (const taskEntry of tasksForCurrentBeat) {
                 try {
-                    taskEntry .task();
-                    taskEntry .resolve();
+                    taskEntry.task();
+                    taskEntry.resolve();
                 } catch (e) {
                     console.error('Scheduled task failed at beat', this.beat, e);
                 }
-                this.scheduledTasks.delete(this.beat);
             }
+            this.scheduledTasks = this.scheduledTasks.filter(task => task.beat !== this.beat);
         }
     }
 
     public getCurrentBeat(): number {
-        return this.beat;
+        return Math.floor(this.beat / this.beatSubdivision);
     }
 
     public getFractionalBeat(): number {
         const lastBeatTime = this.lastBpmBeat + (this.beat * this.microsecondsPerBeat);
         const nextBeatTime = lastBeatTime + this.microsecondsPerBeat;
-        return (this.absoluteTime - lastBeatTime) / (nextBeatTime - lastBeatTime);
+        const fractionalBeat = (this.absoluteTime - lastBeatTime) / (nextBeatTime - lastBeatTime);
+        return (this.beat + fractionalBeat) / this.beatSubdivision;
     }
 
     public setBpm(bpm: number): void {
@@ -75,35 +91,35 @@ export class GameScheduler {
      * @param task The task to be executed.
      */
     public scheduleTask(beatNumber: number, task: () => void): Promise<void> {
-        if (beatNumber <= this.beat) {
+        const absoluteBeat = Math.round(beatNumber * this.beatSubdivision);
+        if (absoluteBeat <= this.beat) {
             return Promise.reject(new Error('Cannot schedule a task for a beat that has already passed'));
         }
 
-        let resolveTask!: () => void;
-        const promise = new Promise<void>((resolve) => { resolveTask = resolve; });
-        this.scheduledTasks.set(beatNumber, { promise, resolve: resolveTask, task });
-        return promise;
+        const scheduledTask = new ScheduledTask(absoluteBeat, task);
+        this.scheduledTasks.push(scheduledTask);
+        
+        return scheduledTask.promise;
     }
 
     /**
      * Schedule a task to be executed in a specific number of beats from the current beat.
-     * @param beatNumber The number of beats from the current beat at which the task should be executed.
+     * @param beatCount The number of beats from the current beat at which the task should be executed.
      * @param task The task to be executed.
      */
-    public scheduleTaskIn(beatCount : number, task: () => void): Promise<void> {
-        return this.scheduleTask(this.beat + beatCount, task);
+    public scheduleTaskIn(beatCount: number, task: () => void): Promise<void> {
+        return this.scheduleTask((this.beat / this.beatSubdivision) + beatCount, task);
     }
 
     public reset(bpm?: number): void {
         this.beat = 0;
         this.absoluteTime = 0;
         this.lastBpmBeat = 0;
-        this.scheduledTasks.clear();
+        this.scheduledTasks = [];
 
-        // Reset BPM if provided
-        // This allow for an instant reset of the BPM without waiting for the next beat
         if(bpm) {
-            this.setBpm(bpm);
+            this.microsecondsPerBeat = this.bpmToMicrosecondsPerBeat(bpm) / this.beatSubdivision;
+            this.requestedBpm = undefined;
         }
     }
 

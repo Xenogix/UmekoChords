@@ -6,14 +6,16 @@ import { HealthBar } from "./HealthBar";
 import { GameInputEventType } from "../../game/inputs/GameInput";
 import { GameEventType } from "../../game/Game";
 import { EnemyAnimationState, EnemyRenderer } from "./EnemyRenderer";
+import { HitMessage } from "./HitMessage";
+import { AttackResolverEventType } from "../../game/attacks/AttackResolver";
 
 export class GameScreen extends Container {
   // Asset bundles
   public static assetBundles = ["game", "enemies"];
 
   // Layout constants
-  private readonly measureScale: number = 1.5;
-  private readonly measureHeight: number = 200;
+  private readonly measureScale: number = 1.2;
+  private readonly measureHeight: number = 400;
   private readonly maxMeasureWidth: number = 800;
 
   private readonly pianoHeight: number = 150;
@@ -35,6 +37,7 @@ export class GameScreen extends Container {
   private piano: Piano;
   private healthBar: HealthBar;
   private enemyRenderer: EnemyRenderer;
+  private hitMessage: HitMessage;
 
   private gameManager: GameManager = GameManager.getInstance();
 
@@ -57,11 +60,16 @@ export class GameScreen extends Container {
     this.enemyRenderer = new EnemyRenderer([Texture.EMPTY]);
     this.addChild(this.enemyRenderer);
 
+    this.hitMessage = new HitMessage();
+    this.addChild(this.hitMessage);
+
     this.setupEventHandlers();
   }
 
   public async show(): Promise<void> {
+    console.log("Started game manager init");
     await this.gameManager.initialize();
+    console.log("Ended game manager init");
 
     // Start a round
     this.gameManager.startGame();
@@ -72,8 +80,8 @@ export class GameScreen extends Container {
   }
 
   public update(ticker : Ticker) {
-    // Update the game manager
     this.gameManager.update(ticker.deltaMS * 1000);
+    this.hitMessage.update(ticker);
   }
 
   public resize(width: number, height: number) {
@@ -102,12 +110,16 @@ export class GameScreen extends Container {
     this.enemyRenderer.x = (width - this.enemyWidth) / 2;
     this.enemyRenderer.y = this.enemyPositionY;
 
+    // Resize the hit message
+    this.hitMessage.x = (width - this.hitMessage.width) / 2;
+    this.hitMessage.y = (height - this.measureHeight) / 2 - 50;
+
     // Resize the background
     const aspectRatio = this.background.texture.width / this.background.texture.height;
     this.background.width = Math.max(width, height * aspectRatio);
     this.background.height = this.background.width / aspectRatio;
-    this.background.x = -(this.background.width - width) / 2; // Horizontally centered
-    this.background.y = height - this.background.height; // Vertically aligned to the bottom
+    this.background.x = -(this.background.width - width) / 2;
+    this.background.y = height - this.background.height;
   }
 
   private setupEventHandlers() {
@@ -126,6 +138,11 @@ export class GameScreen extends Container {
     this.gameManager.on(GameManagerEventType.ENEMY_ATTACK_STARTED, (attack) => {
       this.enemyRenderer.setState(EnemyAnimationState.ATTACK);
       this.measure.setAttack(attack);
+    });
+    this.gameManager.on(AttackResolverEventType.ACCURACY_RESOLVED, (accuracy, isReleased) => {
+      if(!isReleased) {
+        this.hitMessage.showMessage(accuracy);
+      }
     });
   }
 }
