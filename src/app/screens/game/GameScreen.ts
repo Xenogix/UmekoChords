@@ -112,7 +112,7 @@ export class GameScreen extends Container {
 
     // Resize the hit message
     this.hitMessage.x = (width - this.hitMessage.width) / 2;
-    this.hitMessage.y = (height - this.measureHeight) / 2 - 50;
+    this.hitMessage.y = (height - this.measureHeight) / 2 - 10;
 
     // Resize the background
     const aspectRatio = this.background.texture.width / this.background.texture.height;

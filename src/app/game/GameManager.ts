@@ -101,10 +101,10 @@ export class GameManager extends EventEmitter {
     // Get the enemy's attack and beat information
     const roundAttack = enemy.getAttack();
     const attackBeatCount = roundAttack.getDuration();
+    this.currentEnemyAttack = roundAttack;
 
     // Schedule the round start and the enemy attack
     this.gameScheduler.scheduleTaskIn(startBeat, () => {
-      this.currentEnemyAttack = roundAttack;
       // Notify the start of the game round
       this.emit(GameManagerEventType.ROUND_STARTED, enemy);
       // Notify the start of the enemy attack

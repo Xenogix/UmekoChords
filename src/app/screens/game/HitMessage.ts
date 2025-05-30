@@ -1,7 +1,7 @@
-import { BitmapText, Ticker } from "pixi.js";
+import { BitmapText, Container, Ticker } from "pixi.js";
 import { AttackAccuracy } from "../../game/attacks/AttackResolver";
 
-export class HitMessage extends BitmapText {
+export class HitMessage extends Container {
 
     private readonly messageDuration: number = 500;
     private readonly fadeInDuration: number = 100;
@@ -10,18 +10,10 @@ export class HitMessage extends BitmapText {
     private messageTimer: number = 0;
     private accuracy: AttackAccuracy | undefined
     private isActive: boolean = false;
-    private targetPosition: {x: number, y: number} = {x: 0, y: 0};
+    private bitmapText: BitmapText = new BitmapText();
 
     public constructor() {
         super();
-
-        this.style = {
-            fontFamily: 'CutePixel',
-            fontSize: 30,
-            align: 'center'
-        }
-        this.alpha = 0;
-        this.anchor.set(0.5, 0.5);
     }
 
     public update(ticker: Ticker): void {
@@ -38,54 +30,55 @@ export class HitMessage extends BitmapText {
             const fadeProgress = (this.messageTimer - this.fadeInDuration - this.holdDuration) / 
                                 (this.messageDuration - this.fadeInDuration - this.holdDuration);
             this.alpha = 1 - fadeProgress;
-            this.y -= ticker.deltaMS * 0.05;
+            this.bitmapText.y -= ticker.deltaMS * 0.05;
         } else {
             this.isActive = false;
             this.alpha = 0;
         }
     }
 
-    public showMessage(accuracy: AttackAccuracy): void {
-        this.accuracy = accuracy;
-        this.messageTimer = 0;
-        this.isActive = true;
-        
-        this.position.set(this.targetPosition.x, this.targetPosition.y);
-        
-        switch(accuracy) {
-            case 'perfect':
-                this.style.fontSize = 36;
-                this.scale.set(0.8);
-                break;
-            case 'good':
-                this.style.fontSize = 30;
-                this.scale.set(0.85);
-                break;
-            default:
-                this.style.fontSize = 28;
-                this.scale.set(0.9);
-                break;
-        }
-        
-        this.updateText();
+  public showMessage(accuracy: AttackAccuracy): void {
+    this.accuracy = accuracy;
+    this.messageTimer = 0;
+    this.isActive = true;
+
+    if (this.bitmapText) {
+        this.removeChild(this.bitmapText);
+        this.bitmapText.destroy();
     }
 
-    private updateText(): void {
-        switch(this.accuracy)
-        {
-            case 'perfect':
-                this.text = "Perfect";
-                this.tint = 0xFFD700;
-                break;
-            case 'good':
-                this.text = "Good";
-                this.tint = 0x00FF00;
-                break;
-            case 'miss':
-            case 'error':
-                this.text = "Miss";
-                this.tint = 0xFF0000;
-                break;
-        }
+    this.bitmapText = new BitmapText();
+    this.alpha = 0;
+    this.bitmapText.style = {
+        fontFamily: 'CutePixel',
+        fontSize: 30,
+        align: 'center',
     }
+    this.bitmapText.anchor.set(0.5, 0.5);
+
+    switch (accuracy) {
+        case 'perfect':
+            this.bitmapText.style.fontSize = 36;
+            this.bitmapText.style.fill = 0xFFD700;
+            this.bitmapText.text = "Perfect";
+            break;
+        case 'good':
+            this.bitmapText.style.fontSize = 34;
+            this.bitmapText.style.fill = 0x00FF00;
+            this.bitmapText.text = "Good";
+            break;
+        case 'poor':
+            this.bitmapText.style.fontSize = 34;
+            this.bitmapText.style.fill = 0xFFAA00;
+            this.bitmapText.text = "Poor";
+            break;
+        case 'error':
+            this.bitmapText.style.fontSize = 28;
+            this.bitmapText.style.fill = 0xFF0000;
+            this.bitmapText.text = "Miss";
+            break;
+    }
+
+    this.addChild(this.bitmapText);
+  }
 }

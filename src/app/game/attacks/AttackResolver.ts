@@ -51,10 +51,13 @@ export class AttackResolver extends EventEmitter {
     const accuracy = this.judgeInputAccuracy(timingOffset);
 
     // Set the accuracy result for the attack part
-    if (input.isReleased) {
-      attackToJudge.endAccuracy = accuracy;
-    } else {
-      attackToJudge.startAccuracy = accuracy;
+    // Except for the error as they are far apart from the expected timing
+    if (accuracy != "error") {
+      if (input.isReleased) {
+        attackToJudge.endAccuracy = accuracy;
+      } else {
+        attackToJudge.startAccuracy = accuracy;
+      }
     }
 
     // Update the combo count based on the accuracy
