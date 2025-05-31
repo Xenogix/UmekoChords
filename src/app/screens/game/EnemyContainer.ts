@@ -9,15 +9,16 @@ export class EnemyContainer extends Container {
   constructor() {
     super();
     this.healthBar = new SmallHealthBar();
-    this.renderer = new EnemyRenderer();
-
+    this.healthBar.scale.set(4,4);
     this.addChild(this.healthBar);
+
+    this.renderer = new EnemyRenderer();
     this.addChild(this.renderer);
   }
 
   public resize(width: number, height: number): void {
     // Resize the health bar to fit the container
-    this.healthBar.resize(width, 20);
+    this.healthBar.resize(width / 4, 10);
     
     // Position the renderer in the center of the container
     const minDimension = Math.min(width, height);

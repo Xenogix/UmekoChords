@@ -2,17 +2,8 @@ import { Container, NineSliceSprite, Texture } from "pixi.js";
 
 export class SmallHealthBar extends Container {
 
-  private readonly healthBarBackground: NineSliceSprite
-
-  private readonly healthBarForeground: NineSliceSprite = new NineSliceSprite({
-    texture: Texture.from("smallHealthBarForeground.png"),
-    leftWidth: 15,
-    rightWidth: 15,
-    topHeight: 15,
-    bottomHeight: 15,
-    width: 32,
-    height: 32,
-  });
+  private readonly healthBarBackground: NineSliceSprite;
+  private readonly healthBarForeground: NineSliceSprite;
 
   private maxHealth: number = 100;
   private currentHealth: number = 100;
@@ -26,24 +17,24 @@ export class SmallHealthBar extends Container {
     healthBarBackgroundTexture.source.scaleMode = "nearest";
     this.healthBarBackground = new NineSliceSprite({
       texture: healthBarBackgroundTexture,
-      leftWidth: 15,
-      rightWidth: 15,
-      topHeight: 15,
-      bottomHeight: 15,
-      width: 32,
-      height: 32,
+      leftWidth: 13,
+      rightWidth: 2,
+      topHeight: 16,
+      bottomHeight: 0,
+      width: 16,
+      height: 16,
     });
 
     const healthBarForegroundTexture = Texture.from("smallHealthBarForeground.png");
     healthBarForegroundTexture.source.scaleMode = "nearest";
     this.healthBarForeground = new NineSliceSprite({
       texture: healthBarForegroundTexture,
-      leftWidth: 15,
-      rightWidth: 15,
-      topHeight: 15,
-      bottomHeight: 15,
-      width: 32,
-      height: 32,
+      leftWidth: 13,
+      rightWidth: 2,
+      topHeight: 16,
+      bottomHeight: 0,
+      width: 16,
+      height: 16,
     });
 
     this.addChild(this.healthBarBackground);
