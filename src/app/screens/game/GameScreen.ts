@@ -138,6 +138,7 @@ export class GameScreen extends Container {
       this.enemyContainer.renderer.setState(EnemyAnimationState.DAMAGED);
     });
     this.gameManager.on(GameManagerEventType.ENEMY_ATTACK_STARTED, (attack) => {
+      console.log("Enemy attack started", attack);
       this.enemyContainer.renderer.setState(EnemyAnimationState.ATTACK);
       this.measure.setAttack(attack);
     });
