@@ -7,6 +7,7 @@ export class Piano extends Container {
   private readonly keyCount = 61;
   private readonly firstNote = 31;
   private readonly activeNotes: Set<number> = new Set();
+  private readonly keyScale = 2;
 
   // Use textures, not NineSliceSprite instances
   private readonly whiteKeyTexture = Texture.from("whiteKey.png");
@@ -41,12 +42,12 @@ export class Piano extends Container {
     texture.source.scaleMode = "nearest";
     return new NineSliceSprite({
       texture: texture,
-      width: 32,
-      height: 32,
-      leftWidth: 15,
-      rightWidth: 15,
-      topHeight: 15,
-      bottomHeight: 15,
+      width: 16,
+      height: 16,
+      leftWidth: 7,
+      rightWidth: 7,
+      topHeight: 7,
+      bottomHeight: 7,
     });
   }
 
@@ -108,8 +109,9 @@ export class Piano extends Container {
       const sprite = this.createSlicedSprite(isActive ? this.whiteKeyActiveTexture : this.whiteKeyTexture);
       sprite.x = index * whiteKeyWidth;
       sprite.y = 0;
-      sprite.width = whiteKeyWidth;
-      sprite.height = this.internalHeight;
+      sprite.width = whiteKeyWidth / this.keyScale;
+      sprite.height = this.internalHeight / this.keyScale;
+      sprite.scale.set(this.keyScale,this.keyScale);
 
       this.whiteKeySprites.set(midiNote, sprite);
       this.addChild(sprite);
@@ -131,8 +133,9 @@ export class Piano extends Container {
         );
         sprite.x = x;
         sprite.y = 0;
-        sprite.width = blackKeyWidth;
-        sprite.height = blackKeyHeight;
+        sprite.width = blackKeyWidth / this.keyScale;
+        sprite.height = blackKeyHeight / this.keyScale;;
+        sprite.scale.set(this.keyScale,this.keyScale);
 
         this.blackKeySprites.set(nextMidiNote, sprite);
         this.addChild(sprite);
