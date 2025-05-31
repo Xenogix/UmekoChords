@@ -109,7 +109,7 @@ export class Game extends EventEmitter {
 
     // Check if the enemy is defeated
     if (enemy.isDefeated()) {
-      this.score += enemy.score;
+      this.score += enemy.getScore();
       this.emit(GameEventType.SCORE_CHANGED, this.score);
       this.emit(GameEventType.ENEMY_DEFEATED, enemy);
       this.nextEnemy();

@@ -73,7 +73,7 @@ export class AttackResolver extends EventEmitter {
 
     // Calculate the total damage taken by the player
     const damageTaken = this.getPlayerTakenDamage(attack);
-    
+
     // Update the game state
     this.game.dealDamageToEnemy(damageDealt);
     this.game.dealDamageToPlayer(damageTaken);
@@ -166,7 +166,7 @@ export class AttackResolver extends EventEmitter {
     // So some attacks may have more influence on the total damage than others (e.g. a chord attack)
     // Also the more accurate the attack, the more damage it deals
     return attack.getParts().reduce((total, part) => {
-      if (part.startAccuracy && part.endAccuracy) {
+      if (part.startAccuracy) {
         const multiplier = this.getDamageMultiplier(part.startAccuracy);
         return total + part.damage * multiplier * part.weight || 1;
       }

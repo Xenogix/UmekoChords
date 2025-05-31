@@ -1,29 +1,35 @@
 import { Attack } from "../attacks/Attacks";
 
 export abstract class Enemy {
-  protected _hp: number;
-  protected _score: number;
+  protected hp: number;
+  protected maxHp: number;
+  protected score: number;
 
-  constructor(hp: number, score: number) {
-    this._hp = hp;
-    this._score = score;
+  constructor(maxHp: number, score: number) {
+    this.maxHp = maxHp;
+    this.hp = maxHp;
+    this.score = score;
   }
 
   public abstract getAttack(): Attack;
 
   public applyDamage(damage: number): void {
-    this._hp = Math.max(0, this._hp - damage);
+    this.hp = Math.max(0, this.hp - damage);
   }
 
   public isDefeated(): boolean {
-    return this._hp <= 0;
+    return this.hp <= 0;
   }
 
-  public get hp(): number {
-    return this._hp;
+  public getHp(): number {
+    return this.hp;
   }
 
-  public get score(): number {
-    return this._score;
+  public getMaxHp(): number {
+    return this.maxHp;
+  }
+
+  public getScore(): number {
+    return this.score;
   }
 }

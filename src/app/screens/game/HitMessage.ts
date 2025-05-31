@@ -8,7 +8,6 @@ export class HitMessage extends Container {
     private readonly holdDuration: number = 300;
 
     private messageTimer: number = 0;
-    private accuracy: AttackAccuracy | undefined
     private isActive: boolean = false;
     private bitmapText: BitmapText = new BitmapText();
 
@@ -38,7 +37,6 @@ export class HitMessage extends Container {
     }
 
   public showMessage(accuracy: AttackAccuracy): void {
-    this.accuracy = accuracy;
     this.messageTimer = 0;
     this.isActive = true;
 
@@ -54,7 +52,6 @@ export class HitMessage extends Container {
         fontSize: 30,
         align: 'center',
     }
-    this.bitmapText.anchor.set(0.5, 0.5);
 
     switch (accuracy) {
         case 'perfect':

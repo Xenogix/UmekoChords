@@ -4,8 +4,8 @@ import { AnimatedEnemy } from "./AnimatedEnemy";
 export class TestAnimatedEnemy extends AnimatedEnemy {
   protected override spriteSheetResource: string = "testEnemy.json";
 
-  constructor(hp: number = 100, score: number = 50) {
-    super(hp, score);
+  constructor(maxHp: number = 5, score: number = 50) {
+    super(maxHp, score);
   }
 
   public override getAttack(): Attack {

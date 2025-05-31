@@ -8,6 +8,7 @@ import { GameEventType } from "../../game/Game";
 import { EnemyAnimationState, EnemyRenderer } from "./EnemyRenderer";
 import { HitMessage } from "./HitMessage";
 import { AttackResolverEventType } from "../../game/attacks/AttackResolver";
+import { SmallHealthBar } from "./SmallHealthBar";
 
 export class GameScreen extends Container {
   // Asset bundles
@@ -29,6 +30,9 @@ export class GameScreen extends Container {
   private readonly enemyHeight: number = 200;
   private readonly enemyPositionY: number = 100;
 
+  private readonly enemyHealthBarHeight: number = 20;
+  private readonly enemyHealthBarOffsetY: number = 20;
+
   private readonly paddingX: number = 100;
 
   // Private properties
@@ -38,6 +42,7 @@ export class GameScreen extends Container {
   private healthBar: HealthBar;
   private enemyRenderer: EnemyRenderer;
   private hitMessage: HitMessage;
+  private enemyHealthBar: SmallHealthBar;
 
   private gameManager: GameManager = GameManager.getInstance();
 
@@ -62,6 +67,9 @@ export class GameScreen extends Container {
 
     this.hitMessage = new HitMessage();
     this.addChild(this.hitMessage);
+
+    this.enemyHealthBar = new SmallHealthBar();
+    this.addChild(this.enemyHealthBar);
 
     this.setupEventHandlers();
   }
@@ -110,6 +118,11 @@ export class GameScreen extends Container {
     this.enemyRenderer.x = (width - this.enemyWidth) / 2;
     this.enemyRenderer.y = this.enemyPositionY;
 
+    // Resize the enemy health bar
+    this.enemyHealthBar.resize(this.enemyWidth, this.enemyHealthBarHeight);
+    this.enemyHealthBar.x = (width - this.enemyWidth) / 2;
+    this.enemyHealthBar.y = this.enemyPositionY + this.enemyHeight + this.enemyHealthBarOffsetY;
+
     // Resize the hit message
     this.hitMessage.x = (width - this.hitMessage.width) / 2;
     this.hitMessage.y = (height - this.measureHeight) / 2 - 10;
@@ -131,6 +144,8 @@ export class GameScreen extends Container {
     });
     this.gameManager.on(GameEventType.ENEMY_SPAWNED, (enemy) => {
       this.enemyRenderer.setEnemy(enemy).catch((err) => console.error("Error initializing enemy animations:", err));
+      this.enemyHealthBar.setMaxHealth(enemy.getMaxHp());
+      this.enemyHealthBar.setCurrentHealth(enemy.getHp());
     });
     this.gameManager.on(GameEventType.ENEMY_DAMAGED, () => {
       this.enemyRenderer.setState(EnemyAnimationState.DAMAGED);
@@ -143,6 +158,9 @@ export class GameScreen extends Container {
       if(!isReleased) {
         this.hitMessage.showMessage(accuracy);
       }
+    });
+    this.gameManager.on(GameEventType.ENEMY_DAMAGED, (enemy) => {
+      this.enemyHealthBar.setCurrentHealth(enemy.getHp());
     });
   }
 }
