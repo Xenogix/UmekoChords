@@ -19,6 +19,9 @@ setEngine(engine);
   await engine.init({
     background: "#1E1E1E",
     resizeOptions: { minWidth: 768, minHeight: 1024, letterbox: false },
+    width: 576,
+    height: 324,
+    antialias: false
   });
 
   // Initialize the user settings

@@ -1,4 +1,4 @@
-import { Container, NineSliceSprite, Sprite, Texture } from "pixi.js";
+import { Container, NineSliceSprite, Texture } from "pixi.js";
 
 export class Piano extends Container {
   private internalWidth = 0;
@@ -38,6 +38,7 @@ export class Piano extends Container {
   }
 
   private createSlicedSprite(texture: Texture): NineSliceSprite {
+    texture.source.scaleMode = "nearest";
     return new NineSliceSprite({
       texture: texture,
       width: 32,
@@ -104,9 +105,7 @@ export class Piano extends Container {
     // Draw white keys
     for (const { index, midiNote } of whiteKeyIndices) {
       const isActive = this.activeNotes.has(midiNote);
-      const sprite = this.createSlicedSprite(
-        isActive ? this.whiteKeyActiveTexture : this.whiteKeyTexture,
-      );
+      const sprite = this.createSlicedSprite(isActive ? this.whiteKeyActiveTexture : this.whiteKeyTexture);
       sprite.x = index * whiteKeyWidth;
       sprite.y = 0;
       sprite.width = whiteKeyWidth;
@@ -122,10 +121,7 @@ export class Piano extends Container {
       const nextMidiNote = currMidiNote + 1;
       const nextNotePosition = nextMidiNote % 12;
 
-      if (
-        isBlackKey[nextNotePosition] &&
-        nextMidiNote < this.firstNote + this.keyCount
-      ) {
+      if (isBlackKey[nextNotePosition] && nextMidiNote < this.firstNote + this.keyCount) {
         const x =
           (whiteKeyIndices[i].index + 1) * whiteKeyWidth - blackKeyWidth / 2;
         const isActive = this.activeNotes.has(nextMidiNote);

@@ -55,23 +55,23 @@ export class HitMessage extends Container {
 
     switch (accuracy) {
         case 'perfect':
-            this.bitmapText.style.fontSize = 36;
+            this.bitmapText.style.fontSize = 42;
             this.bitmapText.style.fill = 0xFFD700;
             this.bitmapText.text = "Perfect";
             break;
         case 'good':
-            this.bitmapText.style.fontSize = 34;
-            this.bitmapText.style.fill = 0x00FF00;
+            this.bitmapText.style.fontSize = 40;
+            this.bitmapText.style.fill = 0x42FF42;
             this.bitmapText.text = "Good";
             break;
         case 'poor':
-            this.bitmapText.style.fontSize = 34;
-            this.bitmapText.style.fill = 0xFFAA00;
-            this.bitmapText.text = "Poor";
+            this.bitmapText.style.fontSize = 38;
+            this.bitmapText.style.fill = 0xEB8034;
+            this.bitmapText.text = "Ok";
             break;
         case 'error':
-            this.bitmapText.style.fontSize = 28;
-            this.bitmapText.style.fill = 0xFF0000;
+            this.bitmapText.style.fontSize = 34;
+            this.bitmapText.style.fill = 0xD62929;
             this.bitmapText.text = "Miss";
             break;
     }

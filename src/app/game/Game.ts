@@ -16,7 +16,7 @@ export enum GameEventType {
 }
 
 export class Game extends EventEmitter {
-  public readonly maxHp: number = 100;
+  public readonly maxHp: number = 10;
   private readonly waveGenerator: WavesGenerator = new WavesGenerator();
 
   // Game state

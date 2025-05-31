@@ -22,8 +22,6 @@ export class GameScreen extends Container {
   private readonly pianoHeight: number = 150;
   private readonly maxPianoWidth: number = 1200;
 
-  private readonly healthBarHeight: number = 100;
-  private readonly maxHealthBarWidth: number = 600;
   private readonly healthBarPositionY: number = 50;
 
   private readonly enemyWidth: number = 200;
@@ -68,11 +66,7 @@ export class GameScreen extends Container {
   }
 
   public async show(): Promise<void> {
-    console.log("Started game manager init");
     await this.gameManager.initialize();
-    console.log("Ended game manager init");
-
-    // Start a round
     this.gameManager.startGame();
   }
 
@@ -100,9 +94,8 @@ export class GameScreen extends Container {
     this.piano.y = height - this.pianoHeight;
 
     // Resize the health bar
-    const healthBarWidth = Math.min(width - this.paddingX, this.maxHealthBarWidth);
-    this.healthBar.resize(healthBarWidth, this.healthBarHeight);
-    this.healthBar.x = (width - healthBarWidth) / 2;
+    this.healthBar.scale.set(4,4);
+    this.healthBar.x = width / 2;
     this.healthBar.y = this.healthBarPositionY;
 
     // Resize the hit message
