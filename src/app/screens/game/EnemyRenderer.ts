@@ -14,6 +14,10 @@ export class EnemyRenderer extends AnimatedSprite {
 
   private loopStates = new Set([EnemyAnimationState.IDLE]);
 
+  public constructor() {
+    super([Texture.EMPTY]);
+  }
+
   public async setEnemy(enemy: AnimatedEnemy): Promise<void> {
     // If the enemy is the same, do nothing
     if (this.enemy === enemy) return;
@@ -34,7 +38,7 @@ export class EnemyRenderer extends AnimatedSprite {
     this.updateAnimation();
   }
 
-  public updateAnimation(): void {
+  private updateAnimation(): void {
     // Clear previous animation
     this.removeChildren();
 

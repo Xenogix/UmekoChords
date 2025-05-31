@@ -5,10 +5,10 @@ import { GameManager, GameManagerEventType } from "../../game/GameManager";
 import { HealthBar } from "./HealthBar";
 import { GameInputEventType } from "../../game/inputs/GameInput";
 import { GameEventType } from "../../game/Game";
-import { EnemyAnimationState, EnemyRenderer } from "./EnemyRenderer";
+import { EnemyAnimationState } from "./EnemyRenderer";
 import { HitMessage } from "./HitMessage";
 import { AttackResolverEventType } from "../../game/attacks/AttackResolver";
-import { SmallHealthBar } from "./SmallHealthBar";
+import { EnemyContainer } from "./EnemyContainer";
 
 export class GameScreen extends Container {
   // Asset bundles
@@ -16,7 +16,7 @@ export class GameScreen extends Container {
 
   // Layout constants
   private readonly measureScale: number = 1.2;
-  private readonly measureHeight: number = 400;
+  private readonly measureHeight: number = 200;
   private readonly maxMeasureWidth: number = 800;
 
   private readonly pianoHeight: number = 150;
@@ -28,10 +28,7 @@ export class GameScreen extends Container {
 
   private readonly enemyWidth: number = 200;
   private readonly enemyHeight: number = 200;
-  private readonly enemyPositionY: number = 100;
-
-  private readonly enemyHealthBarHeight: number = 20;
-  private readonly enemyHealthBarOffsetY: number = 20;
+  private readonly enemyPositionY: number = 150;
 
   private readonly paddingX: number = 100;
 
@@ -40,9 +37,8 @@ export class GameScreen extends Container {
   private measure: Measure;
   private piano: Piano;
   private healthBar: HealthBar;
-  private enemyRenderer: EnemyRenderer;
   private hitMessage: HitMessage;
-  private enemyHealthBar: SmallHealthBar;
+  private enemyContainer: EnemyContainer;
 
   private gameManager: GameManager = GameManager.getInstance();
 
@@ -62,14 +58,11 @@ export class GameScreen extends Container {
     this.healthBar = new HealthBar();
     this.addChild(this.healthBar);
 
-    this.enemyRenderer = new EnemyRenderer([Texture.EMPTY]);
-    this.addChild(this.enemyRenderer);
-
     this.hitMessage = new HitMessage();
     this.addChild(this.hitMessage);
 
-    this.enemyHealthBar = new SmallHealthBar();
-    this.addChild(this.enemyHealthBar);
+    this.enemyContainer = new EnemyContainer();
+    this.addChild(this.enemyContainer);
 
     this.setupEventHandlers();
   }
@@ -112,20 +105,14 @@ export class GameScreen extends Container {
     this.healthBar.x = (width - healthBarWidth) / 2;
     this.healthBar.y = this.healthBarPositionY;
 
-    // Resize the enemy renderer
-    this.enemyRenderer.width = this.enemyWidth;
-    this.enemyRenderer.height = this.enemyHeight;
-    this.enemyRenderer.x = (width - this.enemyWidth) / 2;
-    this.enemyRenderer.y = this.enemyPositionY;
-
-    // Resize the enemy health bar
-    this.enemyHealthBar.resize(this.enemyWidth, this.enemyHealthBarHeight);
-    this.enemyHealthBar.x = (width - this.enemyWidth) / 2;
-    this.enemyHealthBar.y = this.enemyPositionY + this.enemyHeight + this.enemyHealthBarOffsetY;
-
     // Resize the hit message
     this.hitMessage.x = (width - this.hitMessage.width) / 2;
     this.hitMessage.y = (height - this.measureHeight) / 2 - 10;
+
+    // Resize the enemy container
+    this.enemyContainer.resize(this.enemyWidth, this.enemyHeight);
+    this.enemyContainer.x = (width - this.enemyWidth) / 2;
+    this.enemyContainer.y = (height - this.measureHeight) / 2 - this.enemyPositionY;
 
     // Resize the background
     const aspectRatio = this.background.texture.width / this.background.texture.height;
@@ -143,15 +130,15 @@ export class GameScreen extends Container {
       this.healthBar.setMaxHealth(maxHp);
     });
     this.gameManager.on(GameEventType.ENEMY_SPAWNED, (enemy) => {
-      this.enemyRenderer.setEnemy(enemy).catch((err) => console.error("Error initializing enemy animations:", err));
-      this.enemyHealthBar.setMaxHealth(enemy.getMaxHp());
-      this.enemyHealthBar.setCurrentHealth(enemy.getHp());
+      this.enemyContainer.renderer.setEnemy(enemy);
+      this.enemyContainer.healthBar.setMaxHealth(enemy.getMaxHp());
+      this.enemyContainer.healthBar.setCurrentHealth(enemy.getHp());
     });
     this.gameManager.on(GameEventType.ENEMY_DAMAGED, () => {
-      this.enemyRenderer.setState(EnemyAnimationState.DAMAGED);
+      this.enemyContainer.renderer.setState(EnemyAnimationState.DAMAGED);
     });
     this.gameManager.on(GameManagerEventType.ENEMY_ATTACK_STARTED, (attack) => {
-      this.enemyRenderer.setState(EnemyAnimationState.ATTACK);
+      this.enemyContainer.renderer.setState(EnemyAnimationState.ATTACK);
       this.measure.setAttack(attack);
     });
     this.gameManager.on(AttackResolverEventType.ACCURACY_RESOLVED, (accuracy, isReleased) => {
@@ -160,7 +147,7 @@ export class GameScreen extends Container {
       }
     });
     this.gameManager.on(GameEventType.ENEMY_DAMAGED, (enemy) => {
-      this.enemyHealthBar.setCurrentHealth(enemy.getHp());
+      this.enemyContainer.healthBar.setCurrentHealth(enemy.getHp());
     });
   }
 }
