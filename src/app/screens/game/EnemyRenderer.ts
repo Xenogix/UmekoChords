@@ -25,7 +25,7 @@ export class EnemyRenderer extends AnimatedSprite {
     // Set the new enemy and sprite sheet
     this.enemy = enemy;
     this.sheet = Assets.get(this.enemy.getSpriteSheetResource());
-
+  
     // Reset the state to idle
     this.state = EnemyAnimationState.IDLE;
     this.updateAnimation();

@@ -8,7 +8,6 @@ import { CreationEngine } from "./engine/engine";
  * Importing these modules will automatically register there plugins with the engine.
  */
 import "@pixi/sound";
-// import "@esotericsoftware/spine-pixi-v8";
 
 // Create a new creation engine instance
 const engine = new CreationEngine();

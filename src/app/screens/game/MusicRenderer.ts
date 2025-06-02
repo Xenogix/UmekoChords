@@ -16,6 +16,7 @@ export class MusicRenderer extends DOMContainer {
     this.element = document.createElement("div");
     this.element.id = "vexflow-container";
     this.element.style.overflow = 'visible';
+    this.element.style.userSelect = 'none';
     
     // Add the container to the body temporarily to ensure it is in the DOM
     document.body.appendChild(this.element);

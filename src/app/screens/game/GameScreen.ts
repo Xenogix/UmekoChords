@@ -16,11 +16,12 @@ export class GameScreen extends Container {
 
   // Layout constants
   private readonly measureScale: number = 1.2;
+  private readonly measurePositionY: number = 100;
   private readonly measureHeight: number = 200;
   private readonly maxMeasureWidth: number = 800;
 
-  private readonly pianoHeight: number = 150;
-  private readonly maxPianoWidth: number = 1200;
+  private readonly pianoHeight: number = 200;
+  private readonly maxPianoWidth: number = 1400;
 
   private readonly healthBarPositionY: number = 50;
 
@@ -43,7 +44,7 @@ export class GameScreen extends Container {
   constructor() {
     super();
 
-    this.background = new Sprite(Texture.from("nature.png"));
+    this.background = new Sprite(Texture.from("scene.png"));
     this.background.texture.source.scaleMode = "nearest";
     this.addChild(this.background);
 
@@ -84,7 +85,7 @@ export class GameScreen extends Container {
     const measureWidth = Math.min(width - this.paddingX, this.maxMeasureWidth);
     this.measure.resize(measureWidth / this.measureScale, this.measureHeight / this.measureScale);
     this.measure.x = (width - measureWidth) / 2;
-    this.measure.y = (height - this.measureHeight) / 2;
+    this.measure.y = this.measurePositionY;
     this.measure.scale = this.measureScale;
 
     // Resize the piano
