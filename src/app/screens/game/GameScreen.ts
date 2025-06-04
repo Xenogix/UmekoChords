@@ -70,6 +70,7 @@ export class GameScreen extends Container {
   public update(ticker : Ticker) {
     this.gameManager.update(ticker.deltaMS * 1000);
     this.scene.hitMessage.update(ticker);
+    this.scene.player.update(ticker);
   }
 
   public resize(width: number, height: number) {
@@ -87,8 +88,16 @@ export class GameScreen extends Container {
   }
 
   private setupEventHandlers(): void {
-    this.gameManager.on(GameInputEventType.NOTE_PRESSED, (event) => this.piano.pressNote(event.note));
-    this.gameManager.on(GameInputEventType.NOTE_RELEASED, (event) => this.piano.releaseNote(event.note));
+    
+    this.gameManager.on(GameInputEventType.NOTE_PRESSED, (event) => {
+      this.piano.pressNote(event.note);
+      this.scene.player.setNewAnimation();
+    });
+
+    this.gameManager.on(GameInputEventType.NOTE_RELEASED, (event) => {
+      this.piano.releaseNote(event.note)
+    });
+
     this.gameManager.on(GameEventType.HP_CHANGED, (hp, maxHp) => {
       this.playerHealthBar.setCurrentHealth(hp);
       this.playerHealthBar.setMaxHealth(maxHp);
