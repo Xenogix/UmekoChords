@@ -11,6 +11,9 @@ export class Scene extends Container {
   private rightLight: Sprite;
 
   private darkTint: number = 0x666666;
+  private lightTint: number = 0xAAAAAA;
+  private whiteTint: number = 0xFFFFFF;
+  private isMainLightOn: boolean = true;
 
   public player: Player;
   public hitMessage: HitMessage;
@@ -72,27 +75,41 @@ export class Scene extends Container {
 
   public showLeftLight(): void {
     this.leftLight.visible = true;
+    if(!this.isMainLightOn) {
+      this.enemy.tint = this.lightTint;
+    }
   }
 
   public hideLeftLight(): void {
     this.leftLight.visible = false;
+    if(!this.isMainLightOn) {
+      this.enemy.tint = this.darkTint;
+    }
   }
 
   public showRightLight(): void {
     this.rightLight.visible = true;
+    if(!this.isMainLightOn) {
+      this.player.tint = this.lightTint;
+    }
   }
 
   public hideRightLight(): void {
     this.rightLight.visible = false;
+    if(!this.isMainLightOn) {
+      this.player.tint = this.darkTint;
+    }
   }
 
   public showMainLight(): void {
-    this.scene.tint = 0xFFFFFF;
-    this.player.tint = 0xFFFFFF;
-    this.enemy.tint = 0xFFFFFF;
+    this.isMainLightOn = true;
+    this.scene.tint = this.whiteTint;
+    this.player.tint = this.whiteTint;
+    this.enemy.tint = this.whiteTint;
   }
 
   public hideMainLight(): void {
+    this.isMainLightOn = false;
     this.scene.tint = this.darkTint;
     this.player.tint = this.darkTint;
     this.enemy.tint = this.darkTint;

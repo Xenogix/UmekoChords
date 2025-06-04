@@ -1,6 +1,6 @@
 { "frames": [
    {
-    "filename": "scene #Scene.aseprite",
+    "filename": "scene #Idle.aseprite",
     "frame": { "x": 0, "y": 0, "w": 128, "h": 72 },
     "rotated": false,
     "trimmed": false,
@@ -35,7 +35,7 @@
   "size": { "w": 128, "h": 216 },
   "scale": "1",
   "frameTags": [
-   { "name": "Scene", "from": 0, "to": 0, "direction": "forward", "color": "#000000ff" },
+   { "name": "Idle", "from": 0, "to": 0, "direction": "forward", "color": "#000000ff" },
    { "name": "Left", "from": 1, "to": 1, "direction": "forward", "color": "#000000ff" },
    { "name": "Right", "from": 2, "to": 2, "direction": "forward", "color": "#000000ff" }
   ]
