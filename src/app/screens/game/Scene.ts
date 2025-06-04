@@ -10,6 +10,8 @@ export class Scene extends Container {
   private leftLight: Sprite;
   private rightLight: Sprite;
 
+  private darkTint: number = 0x666666;
+
   public player: Player;
   public hitMessage: HitMessage;
   public enemy: EnemyRenderer;
@@ -86,5 +88,17 @@ export class Scene extends Container {
 
   public hideRightLight(): void {
     this.rightLight.visible = false;
+  }
+
+  public showMainLight(): void {
+    this.scene.tint = 0xFFFFFF;
+    this.player.tint = 0xFFFFFF;
+    this.enemy.tint = 0xFFFFFF;
+  }
+
+  public hideMainLight(): void {
+    this.scene.tint = this.darkTint;
+    this.player.tint = this.darkTint;
+    this.enemy.tint = this.darkTint;
   }
 }

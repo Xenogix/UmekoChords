@@ -10,8 +10,8 @@ export class TestAnimatedEnemy extends AnimatedEnemy {
 
   public override getAttack(): Attack {
     return new Attack([
-      { beat: 0, duration: 1.5, note: this.getRandomNoteFromRange(60,74), damage: 1, weight: 0.6 },
-      { beat: 1.5, duration: 1.5, note: this.getRandomNoteFromRange(60,74), damage: 1, weight: 0.6 },
+      { beat: 0, duration: 1, note: this.getRandomNoteFromRange(60,74), damage: 1, weight: 0.6 },
+      { beat: 1, duration: 2, note: this.getRandomNoteFromRange(60,74), damage: 1, weight: 0.6 },
       { beat: 3, duration: 1, note: this.getRandomNoteFromRange(60,74), damage: 1, weight: 0.6 },
     ]);
   }

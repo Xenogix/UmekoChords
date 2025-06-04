@@ -107,6 +107,7 @@ export class GameScreen extends Container {
     this.gameManager.on(GameManagerEventType.ENEMY_ATTACK_STARTED, (attack) => {
       this.scene.enemy.setState(EnemyAnimationState.ATTACK);
       this.measure.setAttack(attack);
+      this.scene.hideMainLight();
       this.scene.showLeftLight();
       this.scene.hideRightLight();
     });
@@ -114,6 +115,11 @@ export class GameScreen extends Container {
     this.gameManager.on(GameManagerEventType.PLAYER_TURN_STARTED, () => {
       this.scene.hideLeftLight();
       this.scene.showRightLight();
+    });
+
+    this.gameManager.on(GameManagerEventType.PLAYER_TURN_ENDED, () => {
+      this.scene.hideRightLight();
+      this.scene.showMainLight();
     });
 
     this.gameManager.on(AttackResolverEventType.ACCURACY_RESOLVED, (accuracy, isReleased) => {
