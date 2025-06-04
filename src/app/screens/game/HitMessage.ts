@@ -3,41 +3,40 @@ import { AttackAccuracy } from "../../game/attacks/AttackResolver";
 
 export class HitMessage extends Container {
 
-    private readonly messageDuration: number = 500;
-    private readonly fadeInDuration: number = 100;
-    private readonly holdDuration: number = 300;
+  private readonly messageDuration: number = 500;
+  private readonly fadeInDuration: number = 100;
+  private readonly holdDuration: number = 300;  
+  private messageTimer: number = 0;
+  private isActive: boolean = false;
+  private bitmapText: BitmapText = new BitmapText();  
 
-    private messageTimer: number = 0;
-    private isActive: boolean = false;
-    private bitmapText: BitmapText = new BitmapText();
+  public constructor() {
+      super();
+  }
 
-    public constructor() {
-        super();
-    }
-
-    public update(ticker: Ticker): void {
-        if (!this.isActive) return;
-
-        this.messageTimer += ticker.deltaMS;
-        
-        if (this.messageTimer <= this.fadeInDuration) {
-            this.alpha = this.messageTimer / this.fadeInDuration;
-            this.bitmapText.scale.set(0.8 + (0.2 * this.alpha));
-        } else if (this.messageTimer <= this.fadeInDuration + this.holdDuration) {
-            this.alpha = 1;
-        } else if (this.messageTimer <= this.messageDuration) {
-            const fadeProgress = (this.messageTimer - this.fadeInDuration - this.holdDuration) / 
-                                (this.messageDuration - this.fadeInDuration - this.holdDuration);
-            this.alpha = 1 - fadeProgress;
-            this.bitmapText.y -= ticker.deltaMS * 0.05;
-        } else {
-            this.isActive = false;
-            this.alpha = 0;
-            if (this.bitmapText) {
-                this.bitmapText.y = 0;
-            }
-        }
-    }
+  public update(ticker: Ticker): void {
+      if (!this.isActive) return;
+  
+      this.messageTimer += ticker.deltaMS;
+      
+      if (this.messageTimer <= this.fadeInDuration) {
+          this.alpha = this.messageTimer / this.fadeInDuration;
+          this.bitmapText.scale.set(0.8 + (0.2 * this.alpha));
+      } else if (this.messageTimer <= this.fadeInDuration + this.holdDuration) {
+          this.alpha = 1;
+      } else if (this.messageTimer <= this.messageDuration) {
+          const fadeProgress = (this.messageTimer - this.fadeInDuration - this.holdDuration) / 
+                              (this.messageDuration - this.fadeInDuration - this.holdDuration);
+          this.alpha = 1 - fadeProgress;
+          this.bitmapText.y -= ticker.deltaMS * 0.05;
+      } else {
+          this.isActive = false;
+          this.alpha = 0;
+          if (this.bitmapText) {
+              this.bitmapText.y = 0;
+          }
+      }
+  }
 
   public showMessage(accuracy: AttackAccuracy): void {
     this.messageTimer = 0;

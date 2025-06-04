@@ -44,9 +44,9 @@ export class GameScreen extends Container {
     this.container.addChild(this.background);
 
     this.measure = new Measure();
-    this.measure.resize(15, 20);
-    this.measure.x = GameScreen.PIXEL_WIDTH / 2 - this.measure.width / 2;
-    this.measure.y = GameScreen.PIXEL_HEIGHT / 2 - this.measure.height / 2;
+    this.measure.scale.set(0.1);
+    this.measure.x = GameScreen.PIXEL_WIDTH / 2;
+    this.measure.y = 6;
     this.container.addChild(this.measure);
 
     this.piano = new Piano();
@@ -67,14 +67,15 @@ export class GameScreen extends Container {
     this.container.addChild(this.playerHealthBar);
 
     this.enemy = new EnemyRenderer();
-    this.enemy.x = 60;
-    this.enemy.y = 18;
+    this.enemy.height = 32;
+    this.enemy.x = 42;
+    this.enemy.y = 16;
     this.container.addChild(this.enemy);
 
     this.enemyHealthBar = new SmallHealthBar();
     this.enemyHealthBar.resize(15, 3);
     this.enemyHealthBar.x = this.enemy.x + this.enemy.width / 2 - this.enemyHealthBar.width / 2;
-    this.enemyHealthBar.y = this.enemy.y - this.enemyHealthBar.height - 2;
+    this.enemyHealthBar.y = this.enemy.y + this.enemy.height;
     this.container.addChild(this.enemyHealthBar);
 
     this.hitMessage = new HitMessage();

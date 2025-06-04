@@ -23,7 +23,7 @@ export class Piano extends Container {
     super();
   }
 
-  public resize(width: number, height: number) {
+  public resize(width: number, height: number): void {
     this.internalWidth = width;
     this.internalHeight = height;
     this.drawKeys();

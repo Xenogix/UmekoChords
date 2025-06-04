@@ -8,6 +8,7 @@ import { Factory } from "vexflow";
 export class MusicRenderer extends DOMContainer {
 
   private factoryCallback: (factory: Factory) => void;
+  private _width: number = 500; // Default width
 
   constructor(factoryCallback: (factory: Factory) => void) {
     super();
@@ -25,10 +26,14 @@ export class MusicRenderer extends DOMContainer {
     this.factoryCallback = factoryCallback;
   }
 
-  public render(width: number, height: number): void {
+  public render(): void {
     // Clear the previous content
     this.element.innerHTML = "";
-    const factory = Factory.newFromElementId(this.element.id, width, height);
+    const factory = Factory.newFromElementId(this.element.id);
+    
+    // Set width for the renderer
+    factory.getContext().resize(this._width, 150); // 150 is a reasonable height for staff
+
     // Configure the factory if a callback is provided
     if (this.factoryCallback) {
       this.factoryCallback(factory);

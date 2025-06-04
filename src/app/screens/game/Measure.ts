@@ -15,28 +15,22 @@ export class Measure extends Container {
   private timeSignature: string = "4/4";
   private tempo: number = 60;
 
-  // Private properties
-  private internalWidth: number = 0;
-  private internalHeight: number = 0;
   private musicRenderer: MusicRenderer;
+  private _width: number = 500;
 
   constructor() {
     super();
 
     this.musicRenderer = new MusicRenderer(this.musicRendererCallback);
     this.addChild(this.musicRenderer);
-  }
-
-  public resize(width: number, height: number) {
-    this.internalWidth = width;
-    this.internalHeight = height;
-    this.musicRenderer.render(width, height);
+    this.pivot.x = this._width * 0.5;
   }
 
   public setAttack(attack: Attack) {
     this.attack = attack;
-    this.musicRenderer.render(this.internalWidth, this.internalHeight);
+    this.musicRenderer.render();
   }
+
   /**
    * Callback function to configure the VexFlow factory with the current musical properties.
    */
@@ -45,8 +39,10 @@ export class Measure extends Container {
     var voices = this.attack ? AttackNotationConverter.createNotesFromAttack(factory, this.attack) : [];
 
     factory
-      .System({ width: this.internalWidth })
-      .addStave({ voices: voices })
+      .System({ width: this._width }) // Pass width to system
+      .addStave({ 
+        voices: voices,
+      })
       .setStyle({ fillStyle: "#FFFFFF", strokeStyle: "#FFFFFF" }) 
       .addClef(this.clef)
       .addTimeSignature(this.timeSignature)
