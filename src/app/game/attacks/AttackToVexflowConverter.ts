@@ -1,5 +1,5 @@
 import { Attack, AttackPart } from "../../game/attacks/Attacks";
-import { Beam, Factory, System, Voice } from "vexflow";
+import { Factory, Voice } from "vexflow";
 
 export class AttackNotationConverter {
   private static readonly noteNames: string[] = [
@@ -79,15 +79,30 @@ export class AttackNotationConverter {
 
     if (currentGroup.length > 0) beamGroups.push(currentGroup);
 
-    // Create beamed and standalone groups
+    // Create beamed and standalone groups with defined styles
     const voiceNotes = beamGroups.flatMap(group => {
+      let notes;
       if (group.length > 1) {
-        return score.beam(score.notes(group.join(", ")), { autoStem: true });
+        notes = score.beam(score.notes(group.join(", ")), { autoStem: true });
       } else {
-        return score.notes(group[0]);
+        notes = score.notes(group[0]);
       }
+
+      // Set notehead and stem color to white
+      (Array.isArray(notes) ? notes : [notes]).forEach(note => {
+        if (note.setStyle) {
+          note.setStyle({ fillStyle: "#FFFFFF", strokeStyle: "#FFFFFF" });
+        }
+        const beam = note.getBeam();
+        if (beam) {
+          beam.setStyle({ fillStyle: "#FFFFFF", strokeStyle: "#FFFFFF" });
+        }
+      });
+
+      return notes;
     });
 
+    
     return [score.voice(voiceNotes)];
   }
 }

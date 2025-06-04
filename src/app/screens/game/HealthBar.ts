@@ -7,6 +7,7 @@ export class HealthBar extends Container {
 
   private icon: Sprite = new Sprite(Texture.from("lifeIcon.png"));
   private healthBars: Sprite[] = [];
+  private _width: number = 0;
 
   private maxHealth: number = 100;
   private currentHealth: number = 100;
@@ -14,6 +15,7 @@ export class HealthBar extends Container {
   constructor() {
     super();
     this.addChild(this.icon);
+    this.draw();
   }
 
   public setMaxHealth(maxHealth: number): void {
@@ -24,6 +26,11 @@ export class HealthBar extends Container {
   public setCurrentHealth(currentHealth: number): void {
     this.currentHealth = Math.max(0, Math.min(currentHealth, this.maxHealth));
     this.draw();
+  }
+
+  // Override the width getter
+  public get width(): number {
+    return this._width;
   }
 
   private draw() {
@@ -64,7 +71,7 @@ export class HealthBar extends Container {
       }
     }
 
-    const totalWidth = startX + (this.barCount - 1) * this.spacing + barWidth;
-    this.pivot.x = totalWidth / 2;
+    // Calculate and store the total width
+    this._width = startX + (this.barCount - 1) * this.spacing + barWidth;
   }
 }

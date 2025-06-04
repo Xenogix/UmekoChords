@@ -63,7 +63,7 @@ export class GameScreen extends Container {
     this.playerHealthBar = new HealthBar();
     this.playerHealthBar.scale.set(0.3);
     this.playerHealthBar.y = 2;
-    this.playerHealthBar.x = (GameScreen.PIXEL_WIDTH - this.playerHealthBar.width) / 2;
+    this.playerHealthBar.x = (GameScreen.PIXEL_WIDTH - this.playerHealthBar.width * this.playerHealthBar.scale.x) / 2;
     this.container.addChild(this.playerHealthBar);
 
     this.enemy = new EnemyRenderer();
