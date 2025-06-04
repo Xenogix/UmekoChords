@@ -1,3 +1,4 @@
+import { TextureStyle } from "pixi.js";
 import { setEngine } from "./app/getEngine";
 import { GameScreen } from "./app/screens/game/GameScreen";
 import { LoadScreen } from "./app/screens/LoadScreen";
@@ -16,12 +17,14 @@ setEngine(engine);
 (async () => {
   // Initialize the creation engine instance
   await engine.init({
-    background: "#1E1E1E",
-    resizeOptions: { minWidth: 768, minHeight: 1024, letterbox: false },
-    width: 576,
-    height: 324,
-    antialias: false
+    background: "#000000",
+    resizeOptions: { minWidth: 1280, minHeight: 720, letterbox: false },
+    antialias: false,
+    autoDensity: false,
   });
+
+  // Set texture style for pixel art
+  TextureStyle.defaultOptions.scaleMode = 'nearest';
 
   // Initialize the user settings
   userSettings.init();

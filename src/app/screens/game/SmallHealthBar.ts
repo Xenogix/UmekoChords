@@ -14,7 +14,6 @@ export class SmallHealthBar extends Container {
   constructor() {
     super();
     const healthBarBackgroundTexture = Texture.from("smallHealthBarBackground.png");
-    healthBarBackgroundTexture.source.scaleMode = "nearest";
     this.healthBarBackground = new NineSliceSprite({
       texture: healthBarBackgroundTexture,
       leftWidth: 13,
@@ -26,7 +25,6 @@ export class SmallHealthBar extends Container {
     });
 
     const healthBarForegroundTexture = Texture.from("smallHealthBarForeground.png");
-    healthBarForegroundTexture.source.scaleMode = "nearest";
     this.healthBarForeground = new NineSliceSprite({
       texture: healthBarForegroundTexture,
       leftWidth: 13,

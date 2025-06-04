@@ -2,7 +2,7 @@ import { Attack } from "../attacks/Attacks";
 import { AnimatedEnemy } from "./AnimatedEnemy";
 
 export class TestAnimatedEnemy extends AnimatedEnemy {
-  protected override spriteSheetResource: string = "testEnemy.json";
+  protected override spriteSheetResource: string = "testEnemy.png";
 
   constructor(maxHp: number = 5, score: number = 50) {
     super(maxHp, score);

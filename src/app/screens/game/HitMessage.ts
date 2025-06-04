@@ -22,7 +22,7 @@ export class HitMessage extends Container {
         
         if (this.messageTimer <= this.fadeInDuration) {
             this.alpha = this.messageTimer / this.fadeInDuration;
-            this.scale.set(0.8 + (0.2 * this.alpha));
+            this.bitmapText.scale.set(0.8 + (0.2 * this.alpha));
         } else if (this.messageTimer <= this.fadeInDuration + this.holdDuration) {
             this.alpha = 1;
         } else if (this.messageTimer <= this.messageDuration) {
@@ -33,6 +33,9 @@ export class HitMessage extends Container {
         } else {
             this.isActive = false;
             this.alpha = 0;
+            if (this.bitmapText) {
+                this.bitmapText.y = 0;
+            }
         }
     }
 
@@ -77,5 +80,10 @@ export class HitMessage extends Container {
     }
 
     this.addChild(this.bitmapText);
+    
+    // Center the text by setting the anchor and position
+    this.bitmapText.anchor.set(0.5, 0.5);
+    this.bitmapText.x = 0;
+    this.bitmapText.y = 0;
   }
 }

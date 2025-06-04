@@ -13,7 +13,6 @@ export class HealthBar extends Container {
 
   constructor() {
     super();
-    this.icon.texture.source.scaleMode = "nearest";
     this.addChild(this.icon);
   }
 
@@ -50,7 +49,6 @@ export class HealthBar extends Container {
     for (let i = 0; i < this.barCount; i++) {
       const isFilled = i < filledBarsCount;
       const texture = isFilled ? barTextureFull : barTextureEmpty;
-      texture.source.scaleMode = "nearest";
 
       const bar = new Sprite(texture);
       bar.width = barWidth;
