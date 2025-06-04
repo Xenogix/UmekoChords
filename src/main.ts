@@ -20,11 +20,11 @@ setEngine(engine);
     background: "#000000",
     resizeOptions: { minWidth: 128, minHeight: 72, letterbox: false },
     antialias: false,
-    autoDensity: false,
   });
 
-  // Set texture style for pixel art
+  // Settings for pixel art rendering
   TextureStyle.defaultOptions.scaleMode = 'nearest';
+  engine.renderer.canvas.style.imageRendering = "pixelated";
 
   // Initialize the user settings
   userSettings.init();

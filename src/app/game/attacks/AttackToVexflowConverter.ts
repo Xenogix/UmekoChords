@@ -17,13 +17,13 @@ export class AttackNotationConverter {
       4: "w",
       3: "hd",
       2: "h",
-      1.5: "qd",
+      1.5: "q.",
       1: "q",
-      0.75: "8d",
+      0.75: "8.",
       0.5: "8",
-      0.375: "16d",
+      0.375: "16.",
       0.25: "16",
-      0.1875: "32d",
+      0.1875: "32.",
       0.125: "32",
     };
 
@@ -102,7 +102,6 @@ export class AttackNotationConverter {
       return notes;
     });
 
-    
     return [score.voice(voiceNotes)];
   }
 }
