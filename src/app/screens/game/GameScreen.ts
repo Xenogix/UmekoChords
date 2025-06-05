@@ -5,7 +5,6 @@ import { GameManager, GameManagerEventType } from "../../game/GameManager";
 import { HealthBar } from "./HealthBar";
 import { GameInputEventType } from "../../game/inputs/GameInput";
 import { GameEventType } from "../../game/Game";
-import { EnemyAnimationState } from "./EnemyRenderer";
 import { AttackResolverEventType } from "../../game/attacks/AttackResolver";
 import { Scene } from "./Scene";
 
@@ -105,28 +104,41 @@ export class GameScreen extends Container {
 
     this.gameManager.on(GameEventType.ENEMY_SPAWNED, (enemy) => {
       this.scene.enemy.setEnemy(enemy);
+      this.scene.enemy.gotoAndStop(0);
       this.scene.enemyHealthBar.setMaxHealth(enemy.getMaxHp());
       this.scene.enemyHealthBar.setCurrentHealth(enemy.getHp());
     });
 
     this.gameManager.on(GameEventType.ENEMY_DAMAGED, () => {
-      this.scene.enemy.setState(EnemyAnimationState.DAMAGED);
     });
 
     this.gameManager.on(GameManagerEventType.ENEMY_ATTACK_STARTED, (attack) => {
-      this.scene.enemy.setState(EnemyAnimationState.ATTACK);
+      this.scene.enemy.gotoAndPlay(0);
       this.measure.setAttack(attack);
       this.scene.hideMainLight();
       this.scene.showLeftLight();
       this.scene.hideRightLight();
+
+      // Set animation speed to match attack duration
+      const bpm = this.gameManager['game'].getBpm();
+      const attackDurationBeats = attack.getDuration();
+      const attackSeconds = attackDurationBeats * 60 / bpm;
+      const frameCount = this.scene.enemy.textures.length;
+      this.scene.enemy.animationSpeed = frameCount / (attackSeconds * 60);
+    });
+  
+    this.gameManager.on(GameManagerEventType.ENEMY_ATTACK_ENDED, () => {
+      this.scene.enemy.gotoAndStop(0);
     });
 
     this.gameManager.on(GameManagerEventType.PLAYER_TURN_STARTED, () => {
+      this.scene.enemy.gotoAndPlay(0);
       this.scene.hideLeftLight();
       this.scene.showRightLight();
     });
 
     this.gameManager.on(GameManagerEventType.PLAYER_TURN_ENDED, () => {
+      this.scene.enemy.gotoAndStop(0);
       this.scene.hideRightLight();
       this.scene.showMainLight();
     });

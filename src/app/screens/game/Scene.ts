@@ -43,13 +43,13 @@ export class Scene extends Container {
 
     this.enemy = new EnemyRenderer();
     this.enemy.height = 32;
-    this.enemy.x = 40;
-    this.enemy.y = 16;
+    this.enemy.x = 26;
+    this.enemy.y = 18;
 
     this.enemyHealthBar = new SmallHealthBar();
     this.enemyHealthBar.resize(15, 3);
-    this.enemyHealthBar.x = this.enemy.x + this.enemy.width / 2 - this.enemyHealthBar.width / 2;
-    this.enemyHealthBar.y = this.enemy.y + this.enemy.height;
+    this.enemyHealthBar.x = this.enemy.x + this.enemyHealthBar.width / 2 - this.enemy.width / 2;
+    this.enemyHealthBar.y = this.enemy.y - 1;
 
     this.addChild(this.scene);
     this.addChild(this.player);

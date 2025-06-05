@@ -66,9 +66,7 @@ export class HealthBar extends Container {
       bar.position.set(x, y);
 
       this.addChild(bar);
-      if (isFilled) {
-        this.healthBars.push(bar);
-      }
+      this.healthBars.push(bar);
     }
 
     // Calculate and store the total width

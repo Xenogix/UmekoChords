@@ -2,7 +2,7 @@ import { Attack } from "../attacks/Attacks";
 import { AnimatedEnemy } from "./AnimatedEnemy";
 
 export class TestAnimatedEnemy extends AnimatedEnemy {
-  protected override spriteSheetResource: string = "testEnemy.png";
+  protected override spriteSheetResource: string = "conductor.json";
 
   constructor(maxHp: number = 5, score: number = 50) {
     super(maxHp, score);
@@ -11,7 +11,8 @@ export class TestAnimatedEnemy extends AnimatedEnemy {
   public override getAttack(): Attack {
     return new Attack([
       { beat: 0, duration: 1, note: this.getRandomNoteFromRange(60,74), damage: 1, weight: 0.6 },
-      { beat: 1, duration: 2, note: this.getRandomNoteFromRange(60,74), damage: 1, weight: 0.6 },
+      { beat: 1, duration: 1, note: this.getRandomNoteFromRange(60,74), damage: 1, weight: 0.6 },
+      { beat: 2, duration: 1, note: this.getRandomNoteFromRange(60,74), damage: 1, weight: 0.6 },
       { beat: 3, duration: 1, note: this.getRandomNoteFromRange(60,74), damage: 1, weight: 0.6 },
     ]);
   }
