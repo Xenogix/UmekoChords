@@ -1,38 +1,38 @@
+import { userSettings } from "../../utils/userSettings";
 import { GameInput, GameInputEventType } from "./GameInput";
+
+export type KeyNoteMap = Map<string, number>;
+
+export class KeyBoardInputLayout {
+  public readonly keyMap: Map<string, number>;
+
+  constructor(layout: Map<string, number>) {
+    this.keyMap = layout;
+  }
+
+  public static readonly QWERTZ: KeyBoardInputLayout = new KeyBoardInputLayout(
+    new Map([
+      ["a", 60], ["w", 61], ["s", 62], ["e", 63], ["d", 64],
+      ["f", 65], ["t", 66], ["g", 67], ["z", 68], ["h", 69],
+      ["u", 70], ["j", 71], ["k", 72],
+    ])
+  );
+
+  public static readonly AZERTY: KeyBoardInputLayout = new KeyBoardInputLayout(
+    new Map([
+      ["q", 60], ["w", 61], ["s", 62], ["e", 63], ["d", 64],
+      ["f", 65], ["t", 66], ["g", 67], ["y", 68], ["h", 69],
+      ["u", 70], ["j", 71], ["k", 72],
+    ])
+  );
+}
 
 export class KeyboardInput extends GameInput {
   private readonly activeKeys: Set<string> = new Set(); // Currently pressed keys
-  private readonly keyMap: Map<string, number>; // Maps keyboard keys to MIDI notes
-
-  /**
-   * Creates a new keyboard input handler
-   * @param keyMap Optional custom key mapping. Default provides a simple piano layout on QWERTY
-   */
-  constructor(keyMap?: Map<string, number>) {
-    super();
-
-    // Default mapping: Simple one octave piano layout on QWERTY keyboard
-    // a=C, w=C#, s=D, e=D#, d=F, etc.
-    this.keyMap =
-      keyMap ||
-      new Map([
-        ["a", 60], // C4 (middle C)
-        ["w", 61], // C#4
-        ["s", 62], // D4
-        ["e", 63], // D#4
-        ["d", 64], // E4
-        ["f", 65], // F4
-        ["t", 66], // F#4
-        ["g", 67], // G4
-        ["z", 68], // G#4
-        ["h", 69], // A4
-        ["u", 70], // A#4
-        ["j", 71], // B4
-        ["k", 72], // C5
-      ]);
-  }
+  private layout: KeyBoardInputLayout | undefined; // Maps keyboard keys to MIDI notes
 
   public start(): void {
+    this.layout = userSettings.getKeyboardLayout();
     this.registerEventListeners();
   }
 
@@ -54,14 +54,19 @@ export class KeyboardInput extends GameInput {
   }
 
   private handleKeyDown(event: KeyboardEvent): void {
+    // Ensure layout is initialized
+    if(!this.layout) {
+      return;
+    }
+
     // Ignore if it's an auto-repeat event or modifier key
     if (event.repeat || event.ctrlKey || event.altKey || event.metaKey) return;
 
     const key = event.key.toLowerCase();
 
     // Check if this key is mapped to a note
-    if (this.keyMap.has(key) && !this.activeKeys.has(key)) {
-      const note = this.keyMap.get(key)!;
+    if (this.layout.keyMap.has(key) && !this.activeKeys.has(key)) {
+      const note = this.layout.keyMap.get(key)!;
       const timestamp = performance.now();
       const velocity = 100;
 
@@ -80,8 +85,8 @@ export class KeyboardInput extends GameInput {
     const key = event.key.toLowerCase();
 
     // Check if this key is mapped to a note
-    if (this.keyMap.has(key) && this.activeKeys.has(key)) {
-      const note = this.keyMap.get(key)!;
+    if (this.layout?.keyMap.has(key) && this.activeKeys.has(key)) {
+      const note = this.layout.keyMap.get(key)!;
       const timestamp = performance.now();
       const velocity = 0;
 

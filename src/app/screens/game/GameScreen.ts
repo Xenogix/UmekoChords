@@ -68,7 +68,6 @@ export class GameScreen extends Container {
 
   public update(ticker : Ticker) {
     this.gameManager.update(ticker.deltaMS * 1000);
-    this.scene.hitMessage.update(ticker);
     this.scene.player.update(ticker);
   }
 
