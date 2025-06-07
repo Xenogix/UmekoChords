@@ -14,7 +14,6 @@ export class GameOverPopup extends Popup {
 
     const restartButton = new PixelButton({ text: "Restart" });
     restartButton.onPress.connect(() => {
-      engine().navigation.dismissPopup();
       engine().navigation.showScreen(GameScreen)
     });
     this.layout.addChild(restartButton);

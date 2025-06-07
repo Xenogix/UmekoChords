@@ -38,7 +38,7 @@ export class Measure extends Container {
     // Generate voices based on the attack
     const timeSignature = this.attack ? this.attack.getTimeSignatureNumerator() + "/" + this.attack.getTimeSignatureDenominator() : "4/4";
     const voices = this.attack ? AttackNotationConverter.createNotesFromAttack(factory, this.attack) : [];
-
+    
     factory
       .System({ width: this._width }) // Pass width to system
       .addStave({ 

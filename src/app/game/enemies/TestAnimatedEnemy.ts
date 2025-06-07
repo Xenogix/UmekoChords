@@ -5,6 +5,8 @@ export class TestAnimatedEnemy extends AnimatedEnemy {
 
   protected override spriteSheetResource: string = "conductor.json";
 
+  private currentAttackIndex: number = 0;
+
   private attacks: Attack[] = [
     new Attack([
       {beat: 0, duration: 1, note: 60, damage: 1, weight: 1},
@@ -17,6 +19,14 @@ export class TestAnimatedEnemy extends AnimatedEnemy {
       {beat: 1, duration: 1, note: 69, damage: 1, weight: 1},
       {beat: 2, duration: 1, note: 71, damage: 1, weight: 1},
     ], 120, 3, 4),
+    new Attack([
+      {beat: 0, duration: 1, note: 60, damage: 1, weight: 1},
+      {beat: 0, duration: 1, note: 64, damage: 1, weight: 1},
+      {beat: 0, duration: 1, note: 67, damage: 1, weight: 1},
+      {beat: 1, duration: 2, note: 60, damage: 1, weight: 1},
+      {beat: 1, duration: 2, note: 64, damage: 1, weight: 1},
+      {beat: 1, duration: 2, note: 67, damage: 1, weight: 1},
+    ], 120, 3, 4),
   ]
 
   constructor(maxHp: number = 20, score: number = 50) {
@@ -24,8 +34,7 @@ export class TestAnimatedEnemy extends AnimatedEnemy {
   }
 
   public override getAttack(): Attack {
-    // Return a random attack from the predefined list
-    const randomIndex = Math.floor(Math.random() * this.attacks.length);
-    return this.attacks[randomIndex].clone();
+    this.currentAttackIndex = (this.currentAttackIndex + 1) % this.attacks.length;
+    return this.attacks[this.currentAttackIndex];
   }
 }

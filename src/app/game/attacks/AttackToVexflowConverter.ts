@@ -38,64 +38,33 @@ export class AttackNotationConverter {
     const score = factory.EasyScore();
     const parts = attack.getParts();
 
+    // Group AttackParts by beat only
     const beatGroups = new Map<number, AttackPart[]>();
     parts.forEach((part) => {
       if (!beatGroups.has(part.beat)) beatGroups.set(part.beat, []);
       beatGroups.get(part.beat)!.push(part);
     });
 
-    const noteStrings: string[] = [];
+    const noteObjects: { keys: string[]; duration: string }[] = [];
 
     Array.from(beatGroups.entries())
-      .sort((a, b) => a[0] - b[0])
-      .forEach(([_, partsAtBeat]) => {
-        const duration = this.beatDurationToVexDuration(
-          Math.min(...partsAtBeat.map((p) => p.duration)),
-        );
-        const keys = partsAtBeat.map((p) => this.midiNoteToVexNote(p.note));
-        noteStrings.push(`${keys.join()}/${duration}`);
+      .sort(([a], [b]) => a - b)
+      .forEach(([beat, group]) => {
+        const keys = group.map(p => this.midiNoteToVexNote(p.note));
+        const shortestDuration = Math.min(...group.map(p => p.duration));
+        const duration = this.beatDurationToVexDuration(shortestDuration);
+        noteObjects.push({ keys, duration });
       });
 
-    // Group notes for beaming automatically
-    const beamGroups: string[][] = [];
-    let currentGroup: string[] = [];
+    const voiceNotes = noteObjects.flatMap(note => {
+      // Use parentheses for chords in EasyScore
+      const keysString = note.keys.length > 1 ? `(${note.keys.join(' ')})` : note.keys[0];
+      const noteString = keysString + '/' + note.duration;
+      const notes = score.notes(noteString, { stem: "up" });
 
-    for (const note of noteStrings) {
-      // Beam only 8th notes or shorter
-      if (note.includes("/8") || note.includes("/16") || note.includes("/32")) {
-        currentGroup.push(note);
-        if (currentGroup.length === 2) {
-          beamGroups.push(currentGroup);
-          currentGroup = [];
-        }
-      } else {
-        if (currentGroup.length > 0) {
-          beamGroups.push(currentGroup);
-          currentGroup = [];
-        }
-        beamGroups.push([note]);
-      }
-    }
-
-    if (currentGroup.length > 0) beamGroups.push(currentGroup);
-
-    // Create beamed and standalone groups with defined styles
-    const voiceNotes = beamGroups.flatMap(group => {
-      let notes;
-      if (group.length > 1) {
-        notes = score.beam(score.notes(group.join(", ")), { autoStem: true });
-      } else {
-        notes = score.notes(group[0]);
-      }
-
-      // Set notes and stem color to white
-      (Array.isArray(notes) ? notes : [notes]).forEach(note => {
-        if (note.setStyle) {
-          note.setStyle({ fillStyle: "#FFFFFF", strokeStyle: "#FFFFFF" });
-        }
-        const beam = note.getBeam();
-        if (beam) {
-          beam.setStyle({ fillStyle: "#FFFFFF", strokeStyle: "#FFFFFF" });
+      (Array.isArray(notes) ? notes : [notes]).forEach(n => {
+        if (n.setStyle) {
+          n.setStyle({ fillStyle: "#FFFFFF", strokeStyle: "#FFFFFF" });
         }
       });
 
