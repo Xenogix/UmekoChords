@@ -1,37 +1,16 @@
 export function resize(
-  w: number,
-  h: number,
-  minWidth: number,
-  minHeight: number,
-  letterbox: boolean,
+  width: number,
+  height: number,
+  pixelWidth: number,
+  pixelHeight: number,
 ) {
-  const aspectRatio = minWidth / minHeight;
-  let canvasWidth = w;
-  let canvasHeight = h;
 
-  if (letterbox) {
-    if (minWidth < minHeight) {
-      canvasHeight = window.innerHeight;
-      canvasWidth = Math.min(
-        window.innerWidth,
-        minWidth,
-        canvasHeight * aspectRatio,
-      );
-    } else {
-      canvasWidth = window.innerWidth;
-      canvasHeight = Math.min(
-        window.innerHeight,
-        minHeight,
-        canvasWidth / aspectRatio,
-      );
-    }
-  }
+  // Maintain aspect ratio and pixel scale
+  const scaleX = width / pixelWidth;
+  const scaleY = height / pixelHeight;
+  const scale = Math.min(scaleX, scaleY);
+  const x = (width - pixelWidth * scale) / 2;
+  const y = (height - pixelHeight * scale) / 2;
 
-  const scaleX = canvasWidth < minWidth ? minWidth / canvasWidth : 1;
-  const scaleY = canvasHeight < minHeight ? minHeight / canvasHeight : 1;
-  const scale = scaleX > scaleY ? scaleX : scaleY;
-  const width = Math.floor(canvasWidth * scale);
-  const height = Math.floor(canvasHeight * scale);
-
-  return { width, height };
+  return { width, height, x, y, scale };
 }

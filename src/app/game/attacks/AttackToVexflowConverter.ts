@@ -88,7 +88,7 @@ export class AttackNotationConverter {
         notes = score.notes(group[0]);
       }
 
-      // Set notehead and stem color to white
+      // Set notes and stem color to white
       (Array.isArray(notes) ? notes : [notes]).forEach(note => {
         if (note.setStyle) {
           note.setStyle({ fillStyle: "#FFFFFF", strokeStyle: "#FFFFFF" });

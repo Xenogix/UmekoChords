@@ -1,4 +1,5 @@
 import { SplendidGrandPiano } from "smplr";
+import { userSettings } from "../../utils/userSettings";
 
 export type NoteStopCallback = (time?: number) => void;
 
@@ -35,6 +36,9 @@ export class SoundPlayer {
       return undefined;
     }
 
+    // Update the volume of the instrument
+    this.instrument.output.setVolume(userSettings.getSfxVolume() * userSettings.getMasterVolume() * 100);
+    
     // Calculate when to play
     const startTime =
       time !== undefined

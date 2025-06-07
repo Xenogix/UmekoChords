@@ -7,21 +7,20 @@ import { GameInputEventType } from "../../game/inputs/GameInput";
 import { GameEventType } from "../../game/Game";
 import { AttackResolverEventType } from "../../game/attacks/AttackResolver";
 import { Scene } from "./Scene";
+import { PixelButton } from "../../ui/PixelButton";
+import { SettingsPopup } from "../../popups/SettingsPopup";
+import { engine } from "../../getEngine";
 
 export class GameScreen extends Container {
   // Asset bundles
-  public static assetBundles = ["game", "enemies"];
-
-  // Grid configuration
-  public static PIXEL_WIDTH: number = 128;
-  public static PIXEL_HEIGHT: number = 72;
-
+  public static assetBundles = ["game", "enemies", "ui"];
   // Private properties
   private container: Container;
   private scene: Scene;
   private measure: Measure;
   private piano: Piano;
   private playerHealthBar: HealthBar;
+  private settingsButton: PixelButton;
 
 
   private gameManager: GameManager = GameManager.getInstance();
@@ -33,26 +32,32 @@ export class GameScreen extends Container {
     this.addChild(this.container);
 
     this.scene = new Scene();
-    this.scene.resize(GameScreen.PIXEL_WIDTH, GameScreen.PIXEL_HEIGHT);
+    this.scene.resize(engine().resizeOptions.pixelWidth, engine().resizeOptions.pixelHeight);
     this.container.addChild(this.scene);
 
     this.measure = new Measure();
     this.measure.scale.set(0.1);
-    this.measure.x = GameScreen.PIXEL_WIDTH / 2;
+    this.measure.x = engine().resizeOptions.pixelWidth / 2;
     this.measure.y = 6;
     this.container.addChild(this.measure);
 
     this.piano = new Piano();
-    this.piano.resize(GameScreen.PIXEL_WIDTH - 10, 15);
-    this.piano.x = GameScreen.PIXEL_WIDTH / 2 - this.piano.width / 2;
-    this.piano.y = GameScreen.PIXEL_HEIGHT - this.piano.height;
+    this.piano.resize(engine().resizeOptions.pixelWidth - 10, 15);
+    this.piano.x = engine().resizeOptions.pixelWidth / 2 - this.piano.width / 2;
+    this.piano.y = engine().resizeOptions.pixelHeight - this.piano.height;
     this.container.addChild(this.piano);
 
     this.playerHealthBar = new HealthBar();
     this.playerHealthBar.scale.set(0.3);
     this.playerHealthBar.y = 2;
-    this.playerHealthBar.x = (GameScreen.PIXEL_WIDTH - this.playerHealthBar.width * this.playerHealthBar.scale.x) / 2;
+    this.playerHealthBar.x = (engine().resizeOptions.pixelWidth - this.playerHealthBar.width * this.playerHealthBar.scale.x) / 2;
     this.container.addChild(this.playerHealthBar);
+
+    this.settingsButton = new PixelButton({icon: "gear.png", width: 5, height: 5});
+    this.settingsButton.x = engine().resizeOptions.pixelWidth - this.settingsButton.width - 5;
+    this.settingsButton.y = 5;
+    this.settingsButton.onPress.connect(() => engine().navigation.presentPopup(SettingsPopup));
+    this.container.addChild(this.settingsButton);
 
     this.setupEventHandlers();
   }
@@ -69,20 +74,6 @@ export class GameScreen extends Container {
   public update(ticker : Ticker) {
     this.gameManager.update(ticker.deltaMS * 1000);
     this.scene.player.update(ticker);
-  }
-
-  public resize(width: number, height: number) {
-
-    const screenWidth = window.innerWidth;
-    const screenHeight = window.innerHeight;
-
-    // Maintain aspect ratio and pixel scale
-    const scaleX = screenWidth / GameScreen.PIXEL_WIDTH;
-    const scaleY = screenHeight / GameScreen.PIXEL_HEIGHT;
-    const scale = Math.min(scaleX, scaleY);
-    this.container.scale.set(scale);
-    this.container.x = (screenWidth - GameScreen.PIXEL_WIDTH * scale) / 2;
-    this.container.y = (screenHeight - GameScreen.PIXEL_HEIGHT * scale) / 2;
   }
 
   private setupEventHandlers(): void {

@@ -2,22 +2,31 @@ import { Attack } from "../attacks/Attacks";
 import { AnimatedEnemy } from "./AnimatedEnemy";
 
 export class TestAnimatedEnemy extends AnimatedEnemy {
+
   protected override spriteSheetResource: string = "conductor.json";
 
-  constructor(maxHp: number = 5, score: number = 50) {
+  private attacks: Attack[] = [
+    new Attack([
+      {beat: 0, duration: 1, note: 60, damage: 1, weight: 1},
+      {beat: 1, duration: 1, note: 62, damage: 1, weight: 1},
+      {beat: 2, duration: 1, note: 64, damage: 1, weight: 1},
+      {beat: 3, duration: 1, note: 65, damage: 1, weight: 1},
+    ]),
+    new Attack([
+      {beat: 0, duration: 1, note: 67, damage: 1, weight: 1},
+      {beat: 1, duration: 1, note: 69, damage: 1, weight: 1},
+      {beat: 2, duration: 1, note: 71, damage: 1, weight: 1},
+      {beat: 3, duration: 1, note: 72, damage: 1, weight: 1},
+    ]),
+  ]
+
+  constructor(maxHp: number = 20, score: number = 50) {
     super(maxHp, score);
   }
 
   public override getAttack(): Attack {
-    return new Attack([
-      { beat: 0, duration: 1, note: this.getRandomNoteFromRange(60,74), damage: 1, weight: 0.6 },
-      { beat: 1, duration: 1, note: this.getRandomNoteFromRange(60,74), damage: 1, weight: 0.6 },
-      { beat: 2, duration: 1, note: this.getRandomNoteFromRange(60,74), damage: 1, weight: 0.6 },
-      { beat: 3, duration: 1, note: this.getRandomNoteFromRange(60,74), damage: 1, weight: 0.6 },
-    ]);
-  }
-
-  private getRandomNoteFromRange(min: number, max: number): number {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+    // Return a random attack from the predefined list
+    const randomIndex = Math.floor(Math.random() * this.attacks.length);
+    return this.attacks[randomIndex];
   }
 }

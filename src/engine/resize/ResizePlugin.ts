@@ -19,12 +19,8 @@ export type DeepRequired<T> = Required<{
 export interface CreationResizePluginOptions extends ResizePluginOptions {
   /** Options for controlling the resizing of the application */
   resizeOptions?: {
-    /** Minimum width of the application */
-    minWidth?: number;
-    /** Minimum height of the application */
-    minHeight?: number;
-    /** Whether to letterbox the application when resizing */
-    letterbox?: boolean;
+    pixelWidth?: number;
+    pixelHeight?: number;
   };
 }
 
@@ -119,17 +115,20 @@ export class CreationResizePlugin {
         canvasHeight = clientHeight;
       }
 
-      const { width, height } = resize(
+      const { width, height, x, y, scale } = resize(
         canvasWidth,
         canvasHeight,
-        app.resizeOptions.minWidth,
-        app.resizeOptions.minHeight,
-        app.resizeOptions.letterbox,
+        app.resizeOptions.pixelWidth,
+        app.resizeOptions.pixelHeight,
       );
 
       app.renderer.canvas.style.width = `${canvasWidth}px`;
       app.renderer.canvas.style.height = `${canvasHeight}px`;
       window.scrollTo(0, 0);
+
+      // Apply global scale and position to the stage or root container
+      app.stage.scale.set(scale);
+      app.stage.position.set(x, y);
 
       app.renderer.resize(width, height);
     };
@@ -143,10 +142,8 @@ export class CreationResizePlugin {
     this.resizeId = null;
     this.resizeTo = null;
     app.resizeOptions = {
-      minWidth: 768,
-      minHeight: 1024,
-      letterbox: true,
-      ...options.resizeOptions,
+      pixelHeight: 72,
+      pixelWidth: 128,
     };
     app.resizeTo =
       options.resizeTo || (null as unknown as Window | HTMLElement);
