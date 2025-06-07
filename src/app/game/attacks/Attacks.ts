@@ -46,6 +46,12 @@ export class Attack {
     this.errorCount++;
   }
 
+  public clone(): Attack {
+    // Create a new Attack instance with the same properties
+    const clonedParts = this.parts.map(part => ({ ...part }));
+    return new Attack(clonedParts, this.bpm, this.timeSignatureNumerator, this.timeSignatureDenominator);
+  }
+
   /**
    * Get the total duration of the attack in beats
    */

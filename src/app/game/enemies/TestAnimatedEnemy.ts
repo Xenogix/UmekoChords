@@ -26,6 +26,6 @@ export class TestAnimatedEnemy extends AnimatedEnemy {
   public override getAttack(): Attack {
     // Return a random attack from the predefined list
     const randomIndex = Math.floor(Math.random() * this.attacks.length);
-    return this.attacks[randomIndex];
+    return this.attacks[randomIndex].clone();
   }
 }

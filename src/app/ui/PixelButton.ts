@@ -5,7 +5,7 @@ import { BitmapText } from "pixi.js";
 interface ButtonOptions {
   text: string;
   icon: string;
-  fontSize: number;
+  fontSize?: number;
   width?: number;
   height?: number;
 }
@@ -22,9 +22,11 @@ export class PixelButton extends FancyButton {
         text: options.text,
         style: {
           fontFamily: "CutePixel",
-          fontSize: options.fontSize,
+          fontSize: options.fontSize || 5,
+          fill: 0x0,
         },
       }),
+      textOffset: { x: 0, y: -0.2 },
       defaultTextAnchor: 0.5,
       scale: 0.9,
       animations: {
@@ -43,8 +45,8 @@ export class PixelButton extends FancyButton {
       },
     });
 
-    this.width = options.width || 10;
-    this.height = options.height || 10;
+    this.width = options.width || 25;
+    this.height = options.height || 8;
 
     this.onDown.connect(this.handleDown.bind(this));
     this.onHover.connect(this.handleHover.bind(this));

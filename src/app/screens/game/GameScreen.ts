@@ -10,6 +10,7 @@ import { Scene } from "./Scene";
 import { PixelButton } from "../../ui/PixelButton";
 import { SettingsPopup } from "../../popups/SettingsPopup";
 import { engine } from "../../getEngine";
+import { GameOverPopup } from "../../popups/GameOverPopup";
 
 export class GameScreen extends Container {
 
@@ -84,16 +85,17 @@ export class GameScreen extends Container {
     this.scene.player.update(ticker);
   }
 
-  public pause(): void {
+  public async pause(): Promise<void> {
     this.gameManager.pauseGame();
     this.isPaused = true;
     this.scene.enemy.animationSpeed = 0;
+    this.measure.visible = false;
   }
 
-  public resume(): void {
+  public async resume(): Promise<void> {
     this.gameManager.resumeGame();
     this.isPaused = false;
-
+    this.measure.visible = true;
   }
 
   private setupEventHandlers(): void {
@@ -155,6 +157,10 @@ export class GameScreen extends Container {
 
     this.gameManager.on(GameEventType.ENEMY_DAMAGED, (enemy) => {
       this.scene.enemyHealthBar.setCurrentHealth(enemy.getHp());
+    });
+
+    this.gameManager.on(GameEventType.GAME_OVER, () => {
+      engine().navigation.presentPopup(GameOverPopup);
     });
   }
 }

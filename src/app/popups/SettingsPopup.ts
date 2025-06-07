@@ -14,11 +14,15 @@ export class SettingsPopup extends Popup {
   private sfxSlider: PixelSlider;
   protected returnButton: PixelButton;
 
+  protected getTitle(): string {
+    return "Settings";
+  }
+
   constructor() {
     super();
 
-    this.layout = new List({ type: "vertical", elementsMargin: 4 });
-    this.layout.y = this.title.y + this.title.height + 4;
+    this.layout = new List({ type: "vertical", elementsMargin: 5 });
+    this.layout.y = this.title.y + this.title.height + 8;
     this.content.addChild(this.layout);
 
     this.masterSlider = new PixelSlider("Master Volume");
@@ -42,7 +46,7 @@ export class SettingsPopup extends Popup {
     this.sfxSlider.pivot.x = this.sfxSlider.width / 2;
     this.layout.addChild(this.sfxSlider);
 
-    this.returnButton = new PixelButton({ text: "Ok", width: 25, height: 8, fontSize: 12 });
+    this.returnButton = new PixelButton({ text: "Ok" });
     this.returnButton.onPress.connect(() => engine().navigation.dismissPopup());
     this.layout.addChild(this.returnButton);
   }

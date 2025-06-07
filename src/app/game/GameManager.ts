@@ -62,9 +62,11 @@ export class GameManager extends EventEmitter {
       console.error("Game loop error:", error);
       this.stopGame();
     });
+
+    this.stopGame();
   }
 
-  public pauseGame(): void {
+  public async pauseGame(): Promise<void> {
     this.paused = true;
     this.inputManager.stop();
   }
@@ -99,7 +101,7 @@ export class GameManager extends EventEmitter {
     while (!this.game.getGameOver()) {
       await this.gameScheduler.scheduleTask(nextRoundStartBeat, () => {});
       const endBeat = await this.startRound();
-      nextRoundStartBeat = endBeat + 3;
+      nextRoundStartBeat = endBeat - 1;
     }
   }
 
@@ -118,7 +120,6 @@ export class GameManager extends EventEmitter {
     // Get the enemy's attack and beat information
     const roundAttack = enemy.getAttack();
     const attackBeatCount = roundAttack.getDuration();
-    this.currentEnemyAttack = roundAttack;
 
     // Schedule the round start and the enemy attack
     this.gameScheduler.scheduleTask(startBeat, () => {
@@ -127,12 +128,13 @@ export class GameManager extends EventEmitter {
       // Notify the start of the game round
       this.emit(GameManagerEventType.ROUND_STARTED, enemy);
       // Notify the start of the enemy attack
+      console.log("Starting enemy attack:", roundAttack);
+      this.currentEnemyAttack = roundAttack;
       this.emit(GameManagerEventType.ENEMY_ATTACK_STARTED, roundAttack);
     });
 
     // Schedule the enemy attack parts
     for (const part of roundAttack.getParts()) {
-      console.log(`Scheduling attack part: ${part.note} at beat ${part.beat}`);
       this.gameScheduler.scheduleTask(startBeat + part.beat, () => {
         const duration = (part.duration / roundAttack.getBpm()) * 60;
         this.soundPlayer.playNote(part.note, duration, 0);
@@ -140,8 +142,13 @@ export class GameManager extends EventEmitter {
     }
 
     // Schedule the end of the enemy attack and the start of the player's turn
-    this.playerTurnStartBeat = attackBeatCount + startBeat;
-    this.gameScheduler.scheduleTask(this.playerTurnStartBeat, () => {
+    const playerTurnStartBeat = attackBeatCount + startBeat;
+    this.gameScheduler.scheduleTask(playerTurnStartBeat - 1, () => {
+      // Setting this variable will change which attack inputs are judged
+      // It is set one beat before the player's turn starts to allow for early inputs on the first beat
+      this.playerTurnStartBeat = playerTurnStartBeat;
+    });
+    this.gameScheduler.scheduleTask(playerTurnStartBeat, () => {
       this.emit(GameManagerEventType.ENEMY_ATTACK_ENDED, roundAttack);
       this.emit(GameManagerEventType.PLAYER_TURN_STARTED, roundAttack);
     });

@@ -109,6 +109,7 @@ export class AttackResolver extends EventEmitter {
   }
 
   private judgeInputAccuracy(timingOffset: number): AttackAccuracy {
+    console.log(timingOffset);
     if (Math.abs(timingOffset) <= AttackResolver.PERFECT_OFFSET) {
       return "perfect";
     } else if (Math.abs(timingOffset) <= AttackResolver.GOOD_OFFSET) {
@@ -195,10 +196,7 @@ export class AttackResolver extends EventEmitter {
         (part) =>
           part.startAccuracy === "miss" ||
           part.startAccuracy === "error" ||
-          part.startAccuracy === undefined ||
-          part.endAccuracy === "miss" ||
-          part.endAccuracy === "error" ||
-          part.endAccuracy === undefined,
+          part.startAccuracy === undefined
       )
       .reduce((total, part) => total + part.damage, 0);
   }
