@@ -7,24 +7,39 @@ export interface AttackPart {
   damage: number;
   weight: number | 1;
   startAccuracy?: AttackAccuracy; // The accuracy of the key press
-  endAccuracy?: AttackAccuracy; // The accuracy of the key release
+  endAccuracy?: AttackAccuracy;   // The accuracy of the key release
 }
 
 export class Attack {
-  private parts: AttackPart[] = [];
+
+  private readonly parts: AttackPart[] = [];
+  private readonly bpm: number;
+  private readonly timeSignatureNumerator: number;
+  private readonly timeSignatureDenominator: number;
 
   private errorCount: number = 0;
 
-  constructor(parts: AttackPart[]) {
+  constructor(parts: AttackPart[], bpm: number = 60, timeSignatureNumerator: number = 4, timeSignatureDenominator: number = 4) {
     this.parts = parts;
+    this.bpm = bpm;
+    this.timeSignatureNumerator = timeSignatureNumerator;
+    this.timeSignatureDenominator = timeSignatureDenominator;
+  }
+
+  public getBpm(): number {
+    return this.bpm;
+  }
+
+  public getTimeSignatureNumerator(): number {
+    return this.timeSignatureNumerator;
+  }
+
+  public getTimeSignatureDenominator(): number {
+    return this.timeSignatureDenominator;
   }
 
   public getParts(): AttackPart[] {
     return this.parts;
-  }
-
-  public addPart(part: AttackPart): void {
-    this.parts.push(part);
   }
 
   public addError(): void {

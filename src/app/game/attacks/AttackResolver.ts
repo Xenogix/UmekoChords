@@ -47,7 +47,7 @@ export class AttackResolver extends EventEmitter {
     }
 
     // Calculate the accuracy of the input
-    const timingOffset = this.getTimingOffset(input, attackToJudge);
+    const timingOffset = this.getTimingOffset(input, attackToJudge, attack.getBpm());
     const accuracy = this.judgeInputAccuracy(timingOffset);
 
     // Set the accuracy result for the attack part
@@ -79,16 +79,16 @@ export class AttackResolver extends EventEmitter {
     this.game.dealDamageToPlayer(damageTaken);
   }
 
-  private getTimingOffset(input: AttackInput, part: AttackPart): number {
+  private getTimingOffset(input: AttackInput, part: AttackPart, bpm: number): number {
     // Convert the beat to milliseconds based on the game's bpm
     if (input.isReleased) {
       return (
-        (((input.beat - (part.beat + part.duration)) * this.game.getBpm()) /
+        (((input.beat - (part.beat + part.duration)) * bpm) /
           60) *
         1000
       );
     }
-    return (((input.beat - part.beat) * this.game.getBpm()) / 60) * 1000;
+    return (((input.beat - part.beat) * bpm) / 60) * 1000;
   }
 
   private updateCombo(accuracy: AttackAccuracy): void {

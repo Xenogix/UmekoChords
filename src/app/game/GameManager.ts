@@ -33,6 +33,7 @@ export class GameManager extends EventEmitter {
   private playedNotesCallbacks: Map<number, NoteStopCallback> = new Map<number, NoteStopCallback>();
   private currentEnemyAttack: Attack | undefined;
   private playerTurnStartBeat: number = 0;
+  private paused: boolean = false;
 
   private constructor() {
     super();
@@ -56,13 +57,25 @@ export class GameManager extends EventEmitter {
     this.game.startGame();
     this.emit(GameManagerEventType.GAME_STARTED);
 
+    this.gameScheduler.reset();
     await this.gameLoop().catch((error) => {
       console.error("Game loop error:", error);
       this.stopGame();
     });
   }
 
+  public pauseGame(): void {
+    this.paused = true;
+    this.inputManager.stop();
+  }
+
+  public resumeGame(): void {
+    this.paused = false;
+    this.inputManager.start();
+  }
+
   public stopGame(): void {
+    this.gameScheduler.reset();
     this.game.stopGame();
     this.playedNotesCallbacks.forEach((callback) => callback());
     this.playedNotesCallbacks.clear();
@@ -72,12 +85,16 @@ export class GameManager extends EventEmitter {
   }
 
   public update(delta: number): void {
+    // If the game is paused, skip updates
+    if (this.paused) {
+      return;
+    }
     // Update the game scheduler with the delta time
     this.gameScheduler.update(delta);
   }
 
   private async gameLoop(): Promise<void> {
-    this.gameScheduler.setBpm(this.game.getBpm());
+    this.gameScheduler.setBpm(60);
     let nextRoundStartBeat = this.gameScheduler.getCurrentBeat() + 1;
     while (!this.game.getGameOver()) {
       await this.gameScheduler.scheduleTask(nextRoundStartBeat, () => {});
@@ -105,6 +122,8 @@ export class GameManager extends EventEmitter {
 
     // Schedule the round start and the enemy attack
     this.gameScheduler.scheduleTask(startBeat, () => {
+      // Set the BPM for the round
+      this.gameScheduler.setBpm(roundAttack.getBpm());
       // Notify the start of the game round
       this.emit(GameManagerEventType.ROUND_STARTED, enemy);
       // Notify the start of the enemy attack
@@ -113,8 +132,9 @@ export class GameManager extends EventEmitter {
 
     // Schedule the enemy attack parts
     for (const part of roundAttack.getParts()) {
+      console.log(`Scheduling attack part: ${part.note} at beat ${part.beat}`);
       this.gameScheduler.scheduleTask(startBeat + part.beat, () => {
-        const duration = (part.duration / this.game.getBpm()) * 60;
+        const duration = (part.duration / roundAttack.getBpm()) * 60;
         this.soundPlayer.playNote(part.note, duration, 0);
       });
     }

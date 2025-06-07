@@ -12,9 +12,11 @@ import { SettingsPopup } from "../../popups/SettingsPopup";
 import { engine } from "../../getEngine";
 
 export class GameScreen extends Container {
+
   // Asset bundles
   public static assetBundles = ["game", "enemies", "ui"];
-  // Private properties
+
+  // Components
   private container: Container;
   private scene: Scene;
   private measure: Measure;
@@ -22,8 +24,9 @@ export class GameScreen extends Container {
   private playerHealthBar: HealthBar;
   private settingsButton: PixelButton;
 
-
+  // State
   private gameManager: GameManager = GameManager.getInstance();
+  private isPaused: boolean = false;
 
   constructor() {
     super();
@@ -72,8 +75,25 @@ export class GameScreen extends Container {
   }
 
   public update(ticker : Ticker) {
+    // If the game is paused, skip updates
+    if(this.isPaused) {
+      return;
+    }
+
     this.gameManager.update(ticker.deltaMS * 1000);
     this.scene.player.update(ticker);
+  }
+
+  public pause(): void {
+    this.gameManager.pauseGame();
+    this.isPaused = true;
+    this.scene.enemy.animationSpeed = 0;
+  }
+
+  public resume(): void {
+    this.gameManager.resumeGame();
+    this.isPaused = false;
+
   }
 
   private setupEventHandlers(): void {
@@ -108,13 +128,7 @@ export class GameScreen extends Container {
       this.scene.hideMainLight();
       this.scene.showLeftLight();
       this.scene.hideRightLight();
-
-      // Set animation speed to match attack duration
-      const bpm = this.gameManager['game'].getBpm();
-      const attackDurationBeats = attack.getDuration();
-      const attackSeconds = attackDurationBeats * 60 / bpm;
-      const frameCount = this.scene.enemy.textures.length;
-      this.scene.enemy.animationSpeed = frameCount / (attackSeconds * 60);
+      this.scene.enemy.setAttack(attack);
     });
   
     this.gameManager.on(GameManagerEventType.ENEMY_ATTACK_ENDED, () => {

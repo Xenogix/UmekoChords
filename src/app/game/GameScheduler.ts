@@ -19,7 +19,9 @@ export class GameScheduler {
 
     private absoluteTime: number = 0;
 
-    private lastBpmBeat: number = 0;
+    private bpmChangeAbsoluteTime: number = 0;
+
+    private bpmChangeBeat: number = 0;
 
     private beat: number = 0;
 
@@ -44,13 +46,14 @@ export class GameScheduler {
         this.absoluteTime += delta;
 
         while (true) {
-            const lastBeatTime = this.lastBpmBeat + (this.beat * this.microsecondsPerBeat);
+            const lastBeatTime = this.bpmChangeAbsoluteTime + ((this.beat - this.bpmChangeBeat) * this.microsecondsPerBeat);
             const nextBeatTime = lastBeatTime + this.microsecondsPerBeat;
 
             if (this.absoluteTime < nextBeatTime) break;
             if (this.requestedBpm !== undefined) {
                 this.microsecondsPerBeat = this.bpmToMicrosecondsPerBeat(this.requestedBpm) / this.beatSubdivision;
-                this.lastBpmBeat = this.absoluteTime;
+                this.bpmChangeAbsoluteTime = this.absoluteTime;
+                this.bpmChangeBeat = this.beat;
                 this.requestedBpm = undefined;
                 continue;
             }
@@ -75,7 +78,7 @@ export class GameScheduler {
     }
 
     public getFractionalBeat(): number {
-        const lastBeatTime = this.lastBpmBeat + (this.beat * this.microsecondsPerBeat);
+        const lastBeatTime = this.bpmChangeAbsoluteTime + ((this.beat - this.bpmChangeBeat) * this.microsecondsPerBeat);
         const nextBeatTime = lastBeatTime + this.microsecondsPerBeat;
         const fractionalBeat = (this.absoluteTime - lastBeatTime) / (nextBeatTime - lastBeatTime);
         return (this.beat + fractionalBeat) / this.beatSubdivision;
@@ -114,7 +117,7 @@ export class GameScheduler {
     public reset(bpm?: number): void {
         this.beat = 0;
         this.absoluteTime = 0;
-        this.lastBpmBeat = 0;
+        this.bpmChangeAbsoluteTime = 0;
         this.scheduledTasks = [];
 
         if(bpm) {

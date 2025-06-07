@@ -4,7 +4,6 @@ import { Wave } from "./waves/Wave";
 import { WavesGenerator } from "./waves/WavesGenerator";
 
 export enum GameEventType {
-  BPS_CHANGED = "bpsChanged",
   ENEMY_SPAWNED = "enemySpawned",
   ENEMY_DAMAGED = "enemyDamaged",
   ENEMY_DEFEATED = "enemyDefeated",
@@ -25,7 +24,6 @@ export class Game extends EventEmitter {
   private hp: number = 0;
   private waves: Wave[] | undefined;
   private enemyIndex: number = 0;
-  private bpm: number = 60;
   private isGameOverFlag: boolean = false;
 
   public startGame(): void {
@@ -36,10 +34,6 @@ export class Game extends EventEmitter {
   public stopGame(): void {
     this.isGameOverFlag = true;
     this.emit(GameEventType.GAME_OVER, this.score);
-  }
-
-  public getBpm(): number {
-    return this.bpm;
   }
 
   public getWave(): Wave | undefined {
@@ -114,11 +108,6 @@ export class Game extends EventEmitter {
       this.emit(GameEventType.ENEMY_DEFEATED, enemy);
       this.nextEnemy();
     }
-  }
-
-  public setBps(bps: number): void {
-    this.bpm = bps;
-    this.emit(GameEventType.BPS_CHANGED, this.bpm);
   }
 
   public resetGame(): void {

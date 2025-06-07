@@ -102,6 +102,7 @@ export class AttackNotationConverter {
       return notes;
     });
 
-    return [score.voice(voiceNotes)];
+    const timeSignature = attack.getTimeSignatureNumerator() + "/" + attack.getTimeSignatureDenominator();
+    return [score.voice(voiceNotes, { time: timeSignature })];
   }
 }
