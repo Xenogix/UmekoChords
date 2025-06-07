@@ -80,15 +80,11 @@ export class AttackResolver extends EventEmitter {
   }
 
   private getTimingOffset(input: AttackInput, part: AttackPart, bpm: number): number {
-    // Convert the beat to milliseconds based on the game's bpm
-    if (input.isReleased) {
-      return (
-        (((input.beat - (part.beat + part.duration)) * bpm) /
-          60) *
-        1000
-      );
-    }
-    return (((input.beat - part.beat) * bpm) / 60) * 1000;
+      // Convert the beat to milliseconds based on the game's bpm
+      if (input.isReleased) {
+        return ((input.beat - (part.beat + part.duration)) * 60000) / bpm;
+      }
+      return ((input.beat - part.beat) * 60000) / bpm;
   }
 
   private updateCombo(accuracy: AttackAccuracy): void {
@@ -109,7 +105,6 @@ export class AttackResolver extends EventEmitter {
   }
 
   private judgeInputAccuracy(timingOffset: number): AttackAccuracy {
-    console.log(timingOffset);
     if (Math.abs(timingOffset) <= AttackResolver.PERFECT_OFFSET) {
       return "perfect";
     } else if (Math.abs(timingOffset) <= AttackResolver.GOOD_OFFSET) {

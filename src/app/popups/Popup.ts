@@ -1,11 +1,13 @@
 import { BitmapText, BlurFilter, Container, Sprite, Texture } from "pixi.js";
 import { engine } from "../getEngine";
 import { animate } from "motion";
+import { List } from "@pixi/ui";
 
 export abstract class Popup extends Container {
 
   protected background: Sprite;
   protected content: Container;
+  protected layout: List;
   protected title: BitmapText;
 
   protected abstract getTitle(): string;
@@ -23,7 +25,7 @@ export abstract class Popup extends Container {
     this.content = new Container();
     this.content.x = engine().resizeOptions.pixelWidth / 2;
     this.addChild(this.content);
-
+    
     this.title = new BitmapText({ text: this.getTitle(), style: { 
       fontFamily: "CutePixel",
       fill: 0xffffff,
@@ -31,8 +33,11 @@ export abstract class Popup extends Container {
       align: "center",
     }});
     this.title.anchor.set(0.5, 0);
-    this.title.y = 4;
     this.content.addChild(this.title);
+    
+    this.layout = new List({type: "vertical", elementsMargin: 2});
+    this.layout.y = this.title.height + this.title.y + 8;
+    this.content.addChild(this.layout);
   }
 
   /** Apply a blur filter to the current screen */

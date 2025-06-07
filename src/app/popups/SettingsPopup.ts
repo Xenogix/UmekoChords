@@ -8,7 +8,6 @@ import { PixelSlider } from "../ui/PixelSlider";
 /** Popup for volume */
 export class SettingsPopup extends Popup {
 
-  private layout: List;
   private masterSlider: PixelSlider;
   private bgmSlider: PixelSlider;
   private sfxSlider: PixelSlider;
@@ -20,10 +19,6 @@ export class SettingsPopup extends Popup {
 
   constructor() {
     super();
-
-    this.layout = new List({ type: "vertical", elementsMargin: 5 });
-    this.layout.y = this.title.y + this.title.height + 8;
-    this.content.addChild(this.layout);
 
     this.masterSlider = new PixelSlider("Master Volume");
     this.masterSlider.onUpdate.connect((v) => {
