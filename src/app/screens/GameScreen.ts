@@ -15,7 +15,7 @@ import { Scene } from "../ui/Scene";
 export class GameScreen extends Container {
 
   // Asset bundles
-  public static assetBundles = ["game", "enemies", "ui"];
+  public static assetBundles = ["game", "sfx", "enemies", "ui"];
 
   // Components
   private container: Container;

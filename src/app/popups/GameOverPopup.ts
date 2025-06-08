@@ -2,6 +2,7 @@ import { Popup } from "./Popup";
 import { PixelButton } from "../ui/PixelButton";
 import { engine } from "../getEngine";
 import { GameScreen } from "../screens/GameScreen";
+import { MainMenuScreen } from "../screens/MainMenuScreen";
 
 export class GameOverPopup extends Popup {
 
@@ -24,6 +25,7 @@ export class GameOverPopup extends Popup {
     const exitButton = new PixelButton({ text: "Exit" });
     exitButton.onPress.connect(() => {
       engine().navigation.dismissPopup();
+      engine().navigation.showScreen(MainMenuScreen);
     });
     this.layout.addChild(exitButton);
   }

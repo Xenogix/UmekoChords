@@ -1,11 +1,13 @@
 class ScheduledTask {
     public readonly beat: number;
+    public readonly priority: number;
     public readonly promise: Promise<void>;
     public readonly task: () => void;
     public resolve: () => void = () => {};
 
-    constructor(beat: number, task: () => void) {
+    constructor(beat: number, priority: number, task: () => void) {
         this.beat = beat;
+        this.priority = priority;
         this.task = task;
         this.promise = new Promise<void>((resolve) => {
             this.resolve = resolve;
@@ -60,7 +62,10 @@ export class GameScheduler {
 
             this.beat++;
 
-            const tasksForCurrentBeat = this.scheduledTasks.filter(task => task.beat === this.beat);
+            const tasksForCurrentBeat = this.scheduledTasks
+                .filter(task => task.beat === this.beat)
+                .sort((a, b) => a.priority - b.priority);
+
             for (const taskEntry of tasksForCurrentBeat) {
                 try {
                     taskEntry.task();
@@ -92,16 +97,29 @@ export class GameScheduler {
      * Schedule a task to be executed at a specific beat.
      * @param beatNumber The beat number at which the task should be executed.
      * @param task The task to be executed.
+     * @param priority The priority of the task. Lower numbers are executed first.
+     * @param directPlay If true, the task will be executed immediately if the beat has already passed.
      */
-    public scheduleTask(beatNumber: number, task: () => void): Promise<void> {
+    public async scheduleTask(beatNumber: number, task: () => void, priority: number = 0, directPlay: boolean = false): Promise<void> {
         const absoluteBeat = Math.round(beatNumber * this.beatSubdivision);
+
+        // If the scheduled beat is in the past or now
         if (absoluteBeat <= this.beat) {
-            return Promise.reject(new Error('Cannot schedule a task for a beat that has already passed'));
+            if (!directPlay) {
+                return Promise.reject(new Error('Cannot schedule a task for a beat that has already passed'));
+            }
+            // Execute immediately if allowed
+            try {
+                task();
+            } catch (e) {
+                console.error('Directly executed task failed at beat', this.beat, e);
+            }
+            return Promise.resolve();
         }
 
-        const scheduledTask = new ScheduledTask(absoluteBeat, task);
+        // Otherwise, schedule for the future
+        const scheduledTask = new ScheduledTask(absoluteBeat, priority, task);
         this.scheduledTasks.push(scheduledTask);
-        
         return scheduledTask.promise;
     }
 
@@ -109,9 +127,11 @@ export class GameScheduler {
      * Schedule a task to be executed in a specific number of beats from the current beat.
      * @param beatCount The number of beats from the current beat at which the task should be executed.
      * @param task The task to be executed.
+     * @param priority The priority of the task. Lower numbers are executed first.
+     * @param directPlay If true, the task will be executed immediately if the beat has already passed.
      */
-    public scheduleTaskIn(beatCount: number, task: () => void): Promise<void> {
-        return this.scheduleTask((this.beat / this.beatSubdivision) + beatCount, task);
+    public scheduleTaskIn(beatCount: number, task: () => void, priority: number = 0, directPlay: boolean = false): Promise<void> {
+        return this.scheduleTask((this.beat / this.beatSubdivision) + beatCount, task, priority, directPlay);
     }
 
     public reset(bpm?: number): void {

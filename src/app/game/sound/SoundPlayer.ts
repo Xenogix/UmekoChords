@@ -1,5 +1,8 @@
 import { SplendidGrandPiano } from "smplr";
 import { userSettings } from "../../utils/userSettings";
+import { engine } from "../../getEngine";
+import { Assets } from "pixi.js";
+import { sound } from "@pixi/sound";
 
 export type NoteStopCallback = (time?: number) => void;
 
@@ -19,6 +22,8 @@ export class SoundPlayer {
     }
     await this.instrument.load;
     await this.resumeAudio();
+    sound.add("tick", Assets.get("tick.wav"));
+    sound.add("tick-strong", Assets.get("tick-strong.wav"));
     this.isInitialized = true;
   }
 
@@ -51,6 +56,23 @@ export class SoundPlayer {
       time: startTime,
       duration: duration,
     });
+  }
+
+  /**
+   * Play a metronome tick sound
+   */
+  public playTick(strong: boolean): void {
+    // Ensure the player is initialized
+    if (!this.isInitialized) {
+      console.warn("SoundPlayer not initialized");
+      return;
+    }
+
+    if(!strong) {
+      engine().audio.sfx.play("tick");
+    } else {
+      engine().audio.sfx.play("tick-strong");
+    }
   }
 
   /**

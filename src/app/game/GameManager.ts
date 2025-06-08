@@ -105,7 +105,7 @@ export class GameManager extends EventEmitter {
     while (!this.game.getGameOver()) {
       await this.gameScheduler.scheduleTask(nextRoundStartBeat, () => {});
       const endBeat = await this.startRound();
-      nextRoundStartBeat = endBeat - 1;
+      nextRoundStartBeat = endBeat;
     }
   }
 
@@ -114,7 +114,7 @@ export class GameManager extends EventEmitter {
    * This method will handle the enemy attack and player turn.
    * @returns The beat at which the round ends.
    */
-  private startRound(startBeat: number = this.gameScheduler.getCurrentBeat() + 1): number {
+  private startRound(startBeat: number = this.gameScheduler.getCurrentBeat()): number {
     // Check if an enemy is available
     const enemy = this.game.getEnemy();
     if (!enemy) {
@@ -125,7 +125,6 @@ export class GameManager extends EventEmitter {
     const roundAttack = enemy.getAttack().clone();
     const attackBeatCount = roundAttack.getDuration();
 
-    // Schedule the round start and the enemy attack
     this.gameScheduler.scheduleTask(startBeat, () => {
       // Set the BPM for the round
       this.gameScheduler.setBpm(roundAttack.getBpm());
@@ -134,14 +133,23 @@ export class GameManager extends EventEmitter {
       // Notify the start of the enemy attack
       this.currentEnemyAttack = roundAttack;
       this.emit(GameManagerEventType.ENEMY_ATTACK_STARTED, roundAttack);
-    });
+    }, 0, true);
 
     // Schedule the enemy attack parts
     for (const part of roundAttack.getParts()) {
       this.gameScheduler.scheduleTask(startBeat + part.beat, () => {
         const duration = (part.duration / roundAttack.getBpm()) * 60;
         this.soundPlayer.playNote(part.note, duration, 0);
-      });
+      }, 0, true);
+    }
+
+    // Schedule ticks of a metronome sound for the attack and player turn
+    const timeSignatureNumerator = roundAttack.getTimeSignatureNumerator();
+    for (let i = 0; i < attackBeatCount * 2; i++) {
+      this.gameScheduler.scheduleTask(startBeat + i, () => {
+        const isStrongTick = (i % timeSignatureNumerator) === 0;
+        this.soundPlayer.playTick(isStrongTick);
+      }, 0, true);
     }
 
     // Schedule the end of the enemy attack and the start of the player's turn
