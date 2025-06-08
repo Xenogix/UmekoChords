@@ -1,10 +1,5 @@
 import { ExtensionType } from "pixi.js";
-import type {
-  Application,
-  ApplicationOptions,
-  ExtensionMetadata,
-  ResizePluginOptions,
-} from "pixi.js";
+import type { Application, ApplicationOptions, ExtensionMetadata, ResizePluginOptions } from "pixi.js";
 
 import { resize } from "./resize";
 
@@ -115,12 +110,7 @@ export class CreationResizePlugin {
         canvasHeight = clientHeight;
       }
 
-      const { width, height, x, y, scale } = resize(
-        canvasWidth,
-        canvasHeight,
-        app.resizeOptions.pixelWidth,
-        app.resizeOptions.pixelHeight,
-      );
+      const { width, height, x, y, scale } = resize(canvasWidth, canvasHeight, app.resizeOptions.pixelWidth, app.resizeOptions.pixelHeight);
 
       app.renderer.canvas.style.width = `${canvasWidth}px`;
       app.renderer.canvas.style.height = `${canvasHeight}px`;
@@ -145,8 +135,7 @@ export class CreationResizePlugin {
       pixelHeight: 72,
       pixelWidth: 128,
     };
-    app.resizeTo =
-      options.resizeTo || (null as unknown as Window | HTMLElement);
+    app.resizeTo = options.resizeTo || (null as unknown as Window | HTMLElement);
   }
 
   /**

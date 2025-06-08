@@ -24,7 +24,6 @@ export default tseslint.config(
           printWidth: 200,
           semi: true,
           singleQuote: false,
-          endOfLine: "disable",
         },
       ],
 

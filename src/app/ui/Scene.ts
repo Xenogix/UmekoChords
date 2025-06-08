@@ -5,14 +5,13 @@ import { SmallHealthBar } from "./SmallHealthBar";
 import { HitMessage } from "./HitMessage";
 
 export class Scene extends Container {
-
   private scene: Sprite;
   private leftLight: Sprite;
   private rightLight: Sprite;
 
   private darkTint: number = 0x666666;
-  private lightTint: number = 0xAAAAAA;
-  private whiteTint: number = 0xFFFFFF;
+  private lightTint: number = 0xaaaaaa;
+  private whiteTint: number = 0xffffff;
   private isMainLightOn: boolean = true;
 
   public player: Player;
@@ -76,28 +75,28 @@ export class Scene extends Container {
 
   public showLeftLight(): void {
     this.leftLight.visible = true;
-    if(!this.isMainLightOn) {
+    if (!this.isMainLightOn) {
       this.enemy.tint = this.lightTint;
     }
   }
 
   public hideLeftLight(): void {
     this.leftLight.visible = false;
-    if(!this.isMainLightOn) {
+    if (!this.isMainLightOn) {
       this.enemy.tint = this.darkTint;
     }
   }
 
   public showRightLight(): void {
     this.rightLight.visible = true;
-    if(!this.isMainLightOn) {
+    if (!this.isMainLightOn) {
       this.player.tint = this.lightTint;
     }
   }
 
   public hideRightLight(): void {
     this.rightLight.visible = false;
-    if(!this.isMainLightOn) {
+    if (!this.isMainLightOn) {
       this.player.tint = this.darkTint;
     }
   }

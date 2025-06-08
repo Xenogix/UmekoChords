@@ -2,11 +2,9 @@ import { Slider } from "@pixi/ui";
 import { Assets, BitmapText, NineSliceSprite, Sprite } from "pixi.js";
 
 export class PixelSlider extends Slider {
-
   private bitmapText: BitmapText;
 
   constructor(text: string, min = 0, max = 100, value = 100, width = 40, height = 5) {
-
     const background = new NineSliceSprite({
       texture: Assets.get("slider_background.png"),
       leftWidth: 7,
@@ -27,19 +25,20 @@ export class PixelSlider extends Slider {
     fill.height = height;
     fill.width = width;
 
-    const handle =  new Sprite(Assets.get("slider_handle.png"));
+    const handle = new Sprite(Assets.get("slider_handle.png"));
     handle.width = height;
     handle.height = height;
 
-    super({bg: background, fill: fill, slider: handle, min, max, value });
+    super({ bg: background, fill: fill, slider: handle, min, max, value });
 
-    this.bitmapText = new BitmapText({ 
-      text: text, 
+    this.bitmapText = new BitmapText({
+      text: text,
       style: {
-      fontFamily: "CutePixel",
-      fontSize: 4,
-      align: "center",
-    }});
+        fontFamily: "CutePixel",
+        fontSize: 4,
+        align: "center",
+      },
+    });
     this.bitmapText.anchor.set(0.5);
     this.bitmapText.x = width / 2;
     this.bitmapText.y = -1;

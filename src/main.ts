@@ -23,7 +23,7 @@ setEngine(engine);
   });
 
   // Settings for pixel art rendering
-  TextureStyle.defaultOptions.scaleMode = 'nearest';
+  TextureStyle.defaultOptions.scaleMode = "nearest";
   engine.renderer.canvas.style.imageRendering = "pixelated";
 
   // Initialize the user settings

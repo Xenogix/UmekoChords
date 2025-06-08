@@ -15,14 +15,14 @@ export class Measure extends Container {
   private tempo: number = 60;
 
   private musicRenderer: MusicRenderer;
-  private _width: number = 500;
+  private internalWidth: number = 500;
 
   constructor() {
     super();
 
     this.musicRenderer = new MusicRenderer(this.musicRendererCallback);
     this.addChild(this.musicRenderer);
-    this.pivot.x = this._width * 0.5;
+    this.pivot.x = this.internalWidth * 0.5;
   }
 
   public setAttack(attack: Attack) {
@@ -34,18 +34,17 @@ export class Measure extends Container {
    * Callback function to configure the VexFlow factory with the current musical properties.
    */
   private musicRendererCallback = (factory: Factory): void => {
-
     // Generate voices based on the attack
     const timeSignature = this.attack ? this.attack.getTimeSignatureNumerator() + "/" + this.attack.getTimeSignatureDenominator() : "4/4";
     const voices = this.attack ? AttackNotationConverter.createNotesFromAttack(factory, this.attack) : [];
-    
+
     factory
-      .System({ width: this._width }) // Pass width to system
-      .addStave({ 
+      .System({ width: this.internalWidth }) // Pass width to system
+      .addStave({
         voices: voices,
       })
       .setTimeSignature(timeSignature)
-      .setStyle({ fillStyle: "#FFFFFF", strokeStyle: "#FFFFFF" }) 
+      .setStyle({ fillStyle: "#FFFFFF", strokeStyle: "#FFFFFF" })
       .addClef(this.clef)
       .setTempo({ bpm: this.tempo }, 0)
       .format();

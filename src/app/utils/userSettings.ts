@@ -54,10 +54,10 @@ class UserSettings {
   /** Get keyboard layout */
   public getKeyboardLayout(): KeyBoardInputLayout {
     const layout = storage.getObject(KEY_KEYBOARD_LAYOUT) as KeyNoteMap | undefined;
-    if(layout) {
+    if (layout) {
       return new KeyBoardInputLayout(layout);
     } else {
-      return KeyBoardInputLayout.QWERTZ
+      return KeyBoardInputLayout.QWERTZ;
     }
   }
 

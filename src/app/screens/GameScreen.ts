@@ -13,7 +13,6 @@ import { HealthBar } from "../ui/HealthBar";
 import { Scene } from "../ui/Scene";
 
 export class GameScreen extends Container {
-
   // Asset bundles
   public static assetBundles = ["game", "sfx", "enemies", "ui"];
 
@@ -57,7 +56,7 @@ export class GameScreen extends Container {
     this.playerHealthBar.x = (engine().resizeOptions.pixelWidth - this.playerHealthBar.width * this.playerHealthBar.scale.x) / 2;
     this.container.addChild(this.playerHealthBar);
 
-    this.settingsButton = new PixelButton({icon: "gear.png", width: 5, height: 5});
+    this.settingsButton = new PixelButton({ icon: "gear.png", width: 5, height: 5 });
     this.settingsButton.x = engine().resizeOptions.pixelWidth - this.settingsButton.width - 5;
     this.settingsButton.y = 5;
     this.settingsButton.onPress.connect(() => engine().navigation.presentPopup(SettingsPopup));
@@ -74,9 +73,9 @@ export class GameScreen extends Container {
     return Promise.resolve();
   }
 
-  public update(ticker : Ticker) {
+  public update(ticker: Ticker) {
     // If the game is paused, skip updates
-    if(this.isPaused) {
+    if (this.isPaused) {
       return;
     }
 
@@ -98,14 +97,13 @@ export class GameScreen extends Container {
   }
 
   private setupEventHandlers(): void {
-    
     this.gameManager.on(GameInputEventType.NOTE_PRESSED, (event) => {
       this.piano.pressNote(event.note);
       this.scene.player.setNewAnimation();
     });
 
     this.gameManager.on(GameInputEventType.NOTE_RELEASED, (event) => {
-      this.piano.releaseNote(event.note)
+      this.piano.releaseNote(event.note);
     });
 
     this.gameManager.on(GameEventType.HP_CHANGED, (hp, maxHp) => {
@@ -133,7 +131,7 @@ export class GameScreen extends Container {
       this.scene.hideRightLight();
       this.scene.enemy.setAttack(attack);
     });
-  
+
     this.gameManager.on(GameManagerEventType.ENEMY_ATTACK_ENDED, () => {
       this.scene.enemy.stopAnimation();
     });
@@ -151,7 +149,7 @@ export class GameScreen extends Container {
     });
 
     this.gameManager.on(AttackResolverEventType.ACCURACY_RESOLVED, (accuracy, isReleased) => {
-      if(!isReleased) {
+      if (!isReleased) {
         this.scene.hitMessage.showMessage(accuracy);
       }
     });

@@ -1,4 +1,3 @@
-import { List } from "@pixi/ui";
 import { userSettings } from "../utils/userSettings";
 import { Popup } from "./Popup";
 import { engine } from "../getEngine";
@@ -7,7 +6,6 @@ import { PixelSlider } from "../ui/PixelSlider";
 
 /** Popup for volume */
 export class SettingsPopup extends Popup {
-
   private masterSlider: PixelSlider;
   private bgmSlider: PixelSlider;
   private sfxSlider: PixelSlider;

@@ -16,8 +16,8 @@ export class Piano extends Container {
   private readonly whiteKeyActiveTexture = Texture.from("whiteKeyActive.png");
   private readonly blackKeyActiveTexture = Texture.from("blackKeyActive.png");
 
-  private whiteKeySprites: Map<number, any> = new Map();
-  private blackKeySprites: Map<number, any> = new Map();
+  private whiteKeySprites: Map<number, NineSliceSprite> = new Map();
+  private blackKeySprites: Map<number, NineSliceSprite> = new Map();
 
   constructor() {
     super();
@@ -70,16 +70,12 @@ export class Piano extends Container {
 
     const whiteSprite = this.whiteKeySprites.get(note);
     if (whiteSprite) {
-      whiteSprite.texture = isActive
-        ? this.whiteKeyActiveTexture
-        : this.whiteKeyTexture;
+      whiteSprite.texture = isActive ? this.whiteKeyActiveTexture : this.whiteKeyTexture;
     }
 
     const blackSprite = this.blackKeySprites.get(note);
     if (blackSprite) {
-      blackSprite.texture = isActive
-        ? this.blackKeyActiveTexture
-        : this.blackKeyTexture;
+      blackSprite.texture = isActive ? this.blackKeyActiveTexture : this.blackKeyTexture;
     }
   }
 
@@ -88,20 +84,7 @@ export class Piano extends Container {
     this.whiteKeySprites.clear();
     this.blackKeySprites.clear();
 
-    const isBlackKey = [
-      false,
-      true,
-      false,
-      true,
-      false,
-      false,
-      true,
-      false,
-      true,
-      false,
-      true,
-      false,
-    ];
+    const isBlackKey = [false, true, false, true, false, false, true, false, true, false, true, false];
 
     const whiteKeyIndices: { index: number; midiNote: number }[] = [];
     let whiteKeyCount = 0;
@@ -123,7 +106,7 @@ export class Piano extends Container {
       sprite.y = 0;
       sprite.width = keyWidth / this.keyScale;
       sprite.height = this.internalHeight / this.keyScale;
-      sprite.scale.set(this.keyScale,this.keyScale);
+      sprite.scale.set(this.keyScale, this.keyScale);
 
       this.whiteKeySprites.set(midiNote, sprite);
       this.addChild(sprite);
@@ -138,11 +121,11 @@ export class Piano extends Container {
       if (isBlackKey[nextNotePosition] && nextMidiNote < this.firstNote + this.keyCount) {
         const isActive = this.activeNotes.has(nextMidiNote);
         const sprite = this.createBlackKeySlicedSprite(isActive ? this.blackKeyActiveTexture : this.blackKeyTexture);
-        sprite.x = (whiteKeyIndices[i].index + 1) * keyWidth - keyWidth * this.blackKeyRelativeHeight / 2;
+        sprite.x = (whiteKeyIndices[i].index + 1) * keyWidth - (keyWidth * this.blackKeyRelativeHeight) / 2;
         sprite.y = 0;
-        sprite.width = keyWidth * this.blackKeyRelativeHeight / this.keyScale;
-        sprite.height = this.internalHeight * this.blackKeyRelativeHeight / this.keyScale;
-        sprite.scale.set(this.keyScale,this.keyScale);
+        sprite.width = (keyWidth * this.blackKeyRelativeHeight) / this.keyScale;
+        sprite.height = (this.internalHeight * this.blackKeyRelativeHeight) / this.keyScale;
+        sprite.scale.set(this.keyScale, this.keyScale);
 
         this.blackKeySprites.set(nextMidiNote, sprite);
         this.addChild(sprite);

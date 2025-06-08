@@ -34,10 +34,7 @@ export class AttackResolver extends EventEmitter {
   }
 
   public handleInput(attack: Attack, input: AttackInput): void {
-
-    const attackToJudge = input.isReleased
-      ? this.getNoteToBeReleased(attack, input.note)
-      : this.getNoteToBePressed(attack, input.note);
+    const attackToJudge = input.isReleased ? this.getNoteToBeReleased(attack, input.note) : this.getNoteToBePressed(attack, input.note);
 
     // If there is no attack part to judge, add an error
     if (!attackToJudge) {
@@ -80,11 +77,11 @@ export class AttackResolver extends EventEmitter {
   }
 
   private getTimingOffset(input: AttackInput, part: AttackPart, bpm: number): number {
-      // Convert the beat to milliseconds based on the game's bpm
-      if (input.isReleased) {
-        return ((input.beat - (part.beat + part.duration)) * 60000) / bpm;
-      }
-      return ((input.beat - part.beat) * 60000) / bpm;
+    // Convert the beat to milliseconds based on the game's bpm
+    if (input.isReleased) {
+      return ((input.beat - (part.beat + part.duration)) * 60000) / bpm;
+    }
+    return ((input.beat - part.beat) * 60000) / bpm;
   }
 
   private updateCombo(accuracy: AttackAccuracy): void {
@@ -94,10 +91,7 @@ export class AttackResolver extends EventEmitter {
       this.emit(AttackResolverEventType.COMBO_UPDATED, this.comboCount);
       if (this.comboCount > this.maxCombo) {
         this.maxCombo = this.comboCount;
-        this.emit(
-          AttackResolverEventType.MAX_COMBO_UPDATED,
-          this.maxCombo,
-        );
+        this.emit(AttackResolverEventType.MAX_COMBO_UPDATED, this.maxCombo);
       }
     } else {
       this.comboCount = 0;
@@ -126,15 +120,9 @@ export class AttackResolver extends EventEmitter {
    */
   private getNoteToBePressed(attack: Attack, note: number): AttackPart | undefined {
     // Filter for unplayed parts containing the note and not yet started
-    const candidates = attack.getParts().filter(
-      (part) => part.note == note && part.startAccuracy === undefined,
-    );
+    const candidates = attack.getParts().filter((part) => part.note == note && part.startAccuracy === undefined);
     // Return the one with the smallest beat
-    return candidates.reduce(
-      (earliest, part) =>
-        !earliest || part.beat < earliest.beat ? part : earliest,
-      undefined as AttackPart | undefined,
-    );
+    return candidates.reduce((earliest, part) => (!earliest || part.beat < earliest.beat ? part : earliest), undefined as AttackPart | undefined);
   }
 
   /**
@@ -143,18 +131,9 @@ export class AttackResolver extends EventEmitter {
    */
   private getNoteToBeReleased(attack: Attack, note: number): AttackPart | undefined {
     // Filter for played parts containing the note and not yet released
-    const candidates = attack.getParts().filter(
-      (part) =>
-        part.note == note &&
-        part.startAccuracy !== undefined &&
-        part.endAccuracy === undefined,
-    );
+    const candidates = attack.getParts().filter((part) => part.note == note && part.startAccuracy !== undefined && part.endAccuracy === undefined);
     // Return the one with the smallest beat
-    return candidates.reduce(
-      (earliest, part) =>
-        !earliest || part.beat < earliest.beat ? part : earliest,
-      undefined as AttackPart | undefined,
-    );
+    return candidates.reduce((earliest, part) => (!earliest || part.beat < earliest.beat ? part : earliest), undefined as AttackPart | undefined);
   }
 
   private getPlayerDealtDamage(attack: Attack): number {
@@ -184,15 +163,11 @@ export class AttackResolver extends EventEmitter {
     }
   }
 
-  private getPlayerTakenDamage(attack : Attack): number {
+  private getPlayerTakenDamage(attack: Attack): number {
     // Each missed attack part deals it's own damage to the player
-    return attack.getParts()
-      .filter(
-        (part) =>
-          part.startAccuracy === "miss" ||
-          part.startAccuracy === "error" ||
-          part.startAccuracy === undefined
-      )
+    return attack
+      .getParts()
+      .filter((part) => part.startAccuracy === "miss" || part.startAccuracy === "error" || part.startAccuracy === undefined)
       .reduce((total, part) => total + part.damage, 0);
   }
 }

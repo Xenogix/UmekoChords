@@ -1,7 +1,6 @@
 import { ProgressBar } from "@pixi/ui";
 
 export class SmallHealthBar extends ProgressBar {
-
   private maxHealth: number = 100;
 
   constructor() {
@@ -16,7 +15,7 @@ export class SmallHealthBar extends ProgressBar {
   }
 
   public setHealth(health: number): void {
-    this.progress = health / this.maxHealth * 100;
+    this.progress = (health / this.maxHealth) * 100;
   }
 
   public setMaxHealth(maxHealth: number): void {

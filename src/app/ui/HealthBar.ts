@@ -7,7 +7,7 @@ export class HealthBar extends Container {
 
   private icon: Sprite = new Sprite(Texture.from("lifeIcon.png"));
   private healthBars: Sprite[] = [];
-  private _width: number = 0;
+  private internalWidth: number = 0;
 
   private maxHealth: number = 100;
   private currentHealth: number = 100;
@@ -30,7 +30,7 @@ export class HealthBar extends Container {
 
   // Override the width getter
   public get width(): number {
-    return this._width;
+    return this.internalWidth;
   }
 
   private draw() {
@@ -70,6 +70,6 @@ export class HealthBar extends Container {
     }
 
     // Calculate and store the total width
-    this._width = startX + (this.barCount - 1) * this.spacing + barWidth;
+    this.internalWidth = startX + (this.barCount - 1) * this.spacing + barWidth;
   }
 }

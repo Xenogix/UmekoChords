@@ -5,7 +5,6 @@ import { GameScreen } from "../screens/GameScreen";
 import { MainMenuScreen } from "../screens/MainMenuScreen";
 
 export class GameOverPopup extends Popup {
-
   protected getTitle(): string {
     return "Game Over";
   }
@@ -18,7 +17,7 @@ export class GameOverPopup extends Popup {
     const restartButton = new PixelButton({ text: "Restart" });
     restartButton.onPress.connect(() => {
       engine().navigation.dismissPopup();
-      engine().navigation.showScreen(GameScreen)
+      engine().navigation.showScreen(GameScreen);
     });
     this.layout.addChild(restartButton);
 

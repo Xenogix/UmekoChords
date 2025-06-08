@@ -8,9 +8,7 @@ export type NoteStopCallback = (time?: number) => void;
 
 export class SoundPlayer {
   private audioContext = new AudioContext();
-  private instrument: SplendidGrandPiano = new SplendidGrandPiano(
-    this.audioContext,
-  );
+  private instrument: SplendidGrandPiano = new SplendidGrandPiano(this.audioContext);
   private isInitialized = false;
 
   /**
@@ -30,11 +28,7 @@ export class SoundPlayer {
   /**
    * Play a note at the current time or at a scheduled time
    */
-  public playNote(
-    midiNote: number,
-    duration?: number,
-    time?: number,
-  ): NoteStopCallback | undefined {
+  public playNote(midiNote: number, duration?: number, time?: number): NoteStopCallback | undefined {
     // Ensure the player is initialized
     if (!this.isInitialized) {
       console.warn("SoundPlayer not initialized");
@@ -43,12 +37,9 @@ export class SoundPlayer {
 
     // Update the volume of the instrument
     this.instrument.output.setVolume(userSettings.getSfxVolume() * userSettings.getMasterVolume() * 100);
-    
+
     // Calculate when to play
-    const startTime =
-      time !== undefined
-        ? this.audioContext.currentTime + time
-        : this.audioContext.currentTime;
+    const startTime = time !== undefined ? this.audioContext.currentTime + time : this.audioContext.currentTime;
 
     // Play the note
     return this.instrument.start({
@@ -68,7 +59,7 @@ export class SoundPlayer {
       return;
     }
 
-    if(!strong) {
+    if (!strong) {
       engine().audio.sfx.play("tick");
     } else {
       engine().audio.sfx.play("tick-strong");

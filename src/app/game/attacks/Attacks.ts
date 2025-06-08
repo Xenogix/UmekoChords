@@ -7,11 +7,10 @@ export interface AttackPart {
   damage: number;
   weight: number | 1;
   startAccuracy?: AttackAccuracy; // The accuracy of the key press
-  endAccuracy?: AttackAccuracy;   // The accuracy of the key release
+  endAccuracy?: AttackAccuracy; // The accuracy of the key release
 }
 
 export class Attack {
-
   private readonly parts: AttackPart[] = [];
   private readonly bpm: number;
   private readonly timeSignatureNumerator: number;
@@ -48,7 +47,7 @@ export class Attack {
 
   public clone(): Attack {
     // Create a new Attack instance with the same properties
-    const clonedParts = this.parts.map(part => ({ ...part }));
+    const clonedParts = this.parts.map((part) => ({ ...part }));
     return new Attack(clonedParts, this.bpm, this.timeSignatureNumerator, this.timeSignatureDenominator);
   }
 
@@ -57,6 +56,6 @@ export class Attack {
    */
   public getDuration(): number {
     // Get the maximum beat of all parts and add the duration of the last part
-    return this.parts.reduce((max, part) => Math.max(max, part.beat + part.duration),0,);
+    return this.parts.reduce((max, part) => Math.max(max, part.beat + part.duration), 0);
   }
 }

@@ -12,18 +12,38 @@ export class KeyBoardInputLayout {
 
   public static readonly QWERTZ: KeyBoardInputLayout = new KeyBoardInputLayout(
     new Map([
-      ["a", 60], ["w", 61], ["s", 62], ["e", 63], ["d", 64],
-      ["f", 65], ["t", 66], ["g", 67], ["z", 68], ["h", 69],
-      ["u", 70], ["j", 71], ["k", 72],
-    ])
+      ["a", 60],
+      ["w", 61],
+      ["s", 62],
+      ["e", 63],
+      ["d", 64],
+      ["f", 65],
+      ["t", 66],
+      ["g", 67],
+      ["z", 68],
+      ["h", 69],
+      ["u", 70],
+      ["j", 71],
+      ["k", 72],
+    ]),
   );
 
   public static readonly AZERTY: KeyBoardInputLayout = new KeyBoardInputLayout(
     new Map([
-      ["q", 60], ["w", 61], ["s", 62], ["e", 63], ["d", 64],
-      ["f", 65], ["t", 66], ["g", 67], ["y", 68], ["h", 69],
-      ["u", 70], ["j", 71], ["k", 72],
-    ])
+      ["q", 60],
+      ["w", 61],
+      ["s", 62],
+      ["e", 63],
+      ["d", 64],
+      ["f", 65],
+      ["t", 66],
+      ["g", 67],
+      ["y", 68],
+      ["h", 69],
+      ["u", 70],
+      ["j", 71],
+      ["k", 72],
+    ]),
   );
 }
 
@@ -55,7 +75,7 @@ export class KeyboardInput extends GameInput {
 
   private handleKeyDown(event: KeyboardEvent): void {
     // Ensure layout is initialized
-    if(!this.layout) {
+    if (!this.layout) {
       return;
     }
 

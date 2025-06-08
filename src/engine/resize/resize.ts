@@ -1,10 +1,4 @@
-export function resize(
-  width: number,
-  height: number,
-  pixelWidth: number,
-  pixelHeight: number,
-) {
-
+export function resize(width: number, height: number, pixelWidth: number, pixelHeight: number) {
   // Maintain aspect ratio and pixel scale
   const scaleX = width / pixelWidth;
   const scaleY = height / pixelHeight;

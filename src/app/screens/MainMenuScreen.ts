@@ -7,7 +7,6 @@ import { engine } from "../getEngine";
 import { GameScreen } from "./GameScreen";
 
 export class MainMenuScreen extends Container {
-
   // Asset bundles
   public static assetBundles = ["game", "ui"];
 
@@ -27,7 +26,7 @@ export class MainMenuScreen extends Container {
     this.scene.showRightLight();
     this.addChild(this.scene);
 
-    this.layout = new List({type: "vertical", elementsMargin: 5});
+    this.layout = new List({ type: "vertical", elementsMargin: 5 });
     this.layout.x = engine().resizeOptions.pixelWidth / 2;
     this.layout.y = 25;
     this.addChild(this.layout);

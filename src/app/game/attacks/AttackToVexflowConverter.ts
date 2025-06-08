@@ -2,14 +2,12 @@ import { Attack, AttackPart } from "../../game/attacks/Attacks";
 import { Factory, Voice } from "vexflow";
 
 export class AttackNotationConverter {
-  private static readonly noteNames: string[] = [
-    "c", "c#", "d", "d#", "e", "f", "f#", "g", "g#", "a", "a#", "b",
-  ];
+  private static readonly NOTE_NAMES: string[] = ["c", "c#", "d", "d#", "e", "f", "f#", "g", "g#", "a", "a#", "b"];
 
   private static midiNoteToVexNote(midiNote: number): string {
     const octave = Math.floor(midiNote / 12) - 1;
     const noteIndex = midiNote % 12;
-    return `${this.noteNames[noteIndex]}${octave}`;
+    return `${this.NOTE_NAMES[noteIndex]}${octave}`;
   }
 
   private static beatDurationToVexDuration(duration: number): string {
@@ -27,7 +25,9 @@ export class AttackNotationConverter {
       0.125: "32",
     };
 
-    const keys = Object.keys(map).map(parseFloat).sort((a, b) => b - a);
+    const keys = Object.keys(map)
+      .map(parseFloat)
+      .sort((a, b) => b - a);
     for (const key of keys) {
       if (duration >= key) return map[key];
     }
@@ -49,20 +49,20 @@ export class AttackNotationConverter {
 
     Array.from(beatGroups.entries())
       .sort(([a], [b]) => a - b)
-      .forEach(([beat, group]) => {
-        const keys = group.map(p => this.midiNoteToVexNote(p.note));
-        const shortestDuration = Math.min(...group.map(p => p.duration));
+      .forEach(([, group]) => {
+        const keys = group.map((p) => this.midiNoteToVexNote(p.note));
+        const shortestDuration = Math.min(...group.map((p) => p.duration));
         const duration = this.beatDurationToVexDuration(shortestDuration);
         noteObjects.push({ keys, duration });
       });
 
-    const voiceNotes = noteObjects.flatMap(note => {
+    const voiceNotes = noteObjects.flatMap((note) => {
       // Use parentheses for chords in EasyScore
-      const keysString = note.keys.length > 1 ? `(${note.keys.join(' ')})` : note.keys[0];
-      const noteString = keysString + '/' + note.duration;
+      const keysString = note.keys.length > 1 ? `(${note.keys.join(" ")})` : note.keys[0];
+      const noteString = keysString + "/" + note.duration;
       const notes = score.notes(noteString, { stem: "up" });
 
-      (Array.isArray(notes) ? notes : [notes]).forEach(n => {
+      (Array.isArray(notes) ? notes : [notes]).forEach((n) => {
         if (n.setStyle) {
           n.setStyle({ fillStyle: "#FFFFFF", strokeStyle: "#FFFFFF" });
         }

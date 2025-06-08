@@ -1,7 +1,6 @@
 import { Assets, Sprite, Texture, Ticker } from "pixi.js";
 
 export class Player extends Sprite {
-
   // Limit the number of animations to avoid performance issues
   private readonly animationSwitchDelayMs: number = 100;
   private animationWaitMs: number = 0;
@@ -18,18 +17,18 @@ export class Player extends Sprite {
   }
 
   public update(ticker: Ticker): void {
-    if(this.animationWaitMs > 0) {
+    if (this.animationWaitMs > 0) {
       this.animationWaitMs -= ticker.deltaMS;
     }
   }
 
   public setNewAnimation(): void {
-    if(this.animationWaitMs > 0) {
+    if (this.animationWaitMs > 0) {
       return;
     }
     // Get a random texture from the player sprite sheet
     this.animationWaitMs = this.animationSwitchDelayMs;
-    var randomIndex = Math.floor(Math.random() * (this.textures.length - 1));
+    let randomIndex = Math.floor(Math.random() * (this.textures.length - 1));
 
     // Ensure the new texture is different from the current one
     if (randomIndex === this.currentIndex) {
