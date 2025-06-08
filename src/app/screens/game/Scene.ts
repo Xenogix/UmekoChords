@@ -47,7 +47,8 @@ export class Scene extends Container {
     this.enemy.y = 18;
 
     this.enemyHealthBar = new SmallHealthBar();
-    this.enemyHealthBar.resize(15, 3);
+    this.enemyHealthBar.width = 16;
+    this.enemyHealthBar.height = 3;
     this.enemyHealthBar.x = this.enemy.x + this.enemyHealthBar.width / 2 - this.enemy.width / 2;
     this.enemyHealthBar.y = this.enemy.y - 1;
 

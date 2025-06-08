@@ -110,7 +110,7 @@ export class GameScreen extends Container {
     });
 
     this.gameManager.on(GameEventType.HP_CHANGED, (hp, maxHp) => {
-      this.playerHealthBar.setCurrentHealth(hp);
+      this.playerHealthBar.setHealth(hp);
       this.playerHealthBar.setMaxHealth(maxHp);
     });
 
@@ -118,7 +118,7 @@ export class GameScreen extends Container {
       this.scene.enemy.setEnemy(enemy);
       this.scene.enemy.gotoAndStop(0);
       this.scene.enemyHealthBar.setMaxHealth(enemy.getMaxHp());
-      this.scene.enemyHealthBar.setCurrentHealth(enemy.getHp());
+      this.scene.enemyHealthBar.setHealth(enemy.getHp());
     });
 
     this.gameManager.on(GameEventType.ENEMY_DAMAGED, () => {
@@ -156,7 +156,7 @@ export class GameScreen extends Container {
     });
 
     this.gameManager.on(GameEventType.ENEMY_DAMAGED, (enemy) => {
-      this.scene.enemyHealthBar.setCurrentHealth(enemy.getHp());
+      this.scene.enemyHealthBar.setHealth(enemy.getHp());
     });
 
     this.gameManager.on(GameEventType.GAME_OVER, () => {

@@ -58,12 +58,14 @@ export class GameManager extends EventEmitter {
     this.emit(GameManagerEventType.GAME_STARTED);
 
     this.gameScheduler.reset();
-    await this.gameLoop().catch((error) => {
+    await this.gameLoop()
+    .then(() => {
+      this.stopGame();
+    })
+    .catch((error) => {
       console.error("Game loop error:", error);
       this.stopGame();
-    });
-
-    this.stopGame();
+    })
   }
 
   public async pauseGame(): Promise<void> {
@@ -128,7 +130,6 @@ export class GameManager extends EventEmitter {
       // Notify the start of the game round
       this.emit(GameManagerEventType.ROUND_STARTED, enemy);
       // Notify the start of the enemy attack
-      console.log("Starting enemy attack:", roundAttack);
       this.currentEnemyAttack = roundAttack;
       this.emit(GameManagerEventType.ENEMY_ATTACK_STARTED, roundAttack);
     });

@@ -23,7 +23,7 @@ export class HealthBar extends Container {
     this.draw();
   }
 
-  public setCurrentHealth(currentHealth: number): void {
+  public setHealth(currentHealth: number): void {
     this.currentHealth = Math.max(0, Math.min(currentHealth, this.maxHealth));
     this.draw();
   }
