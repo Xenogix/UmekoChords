@@ -1,8 +1,8 @@
 import { Container } from "pixi.js";
 import { MusicRenderer } from "./MusicRenderer.ts";
-import VexFlow, { Factory } from "vexflow";
-import { AttackNotationConverter } from "../../game/attacks/AttackToVexflowConverter.ts";
-import { Attack } from "../../game/attacks/Attacks.ts";
+import { Factory } from "vexflow";
+import { Attack } from "../game/attacks/Attacks.ts";
+import { AttackNotationConverter } from "../game/attacks/AttackToVexflowConverter.ts";
 
 /**
  * Measure class that represents a musical measure in the game.

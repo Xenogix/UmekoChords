@@ -46,7 +46,7 @@ export class PixelButton extends FancyButton {
     });
 
     this.width = options.width || 25;
-    this.height = options.height || 8;
+    this.height = options.height || 10;
 
     this.onDown.connect(this.handleDown.bind(this));
     this.onHover.connect(this.handleHover.bind(this));

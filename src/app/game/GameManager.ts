@@ -38,6 +38,7 @@ export class GameManager extends EventEmitter {
   private constructor() {
     super();
     this.setupEventForwarding();
+    this.listenToInputEvents();
   }
 
   public static getInstance(): GameManager {
@@ -47,13 +48,13 @@ export class GameManager extends EventEmitter {
     return GameManager.instance;
   }
 
-  public async initialize(): Promise<void> {
+  public async startGame(): Promise<void> {
+
+    // Initialize the game components and event listeners
     await this.soundPlayer.initialize();
     this.inputManager.start();
-    this.listenToInputEvents();
-  }
 
-  public async startGame(): Promise<void> {
+    // Start the game
     this.game.startGame();
     this.emit(GameManagerEventType.GAME_STARTED);
 
@@ -81,6 +82,7 @@ export class GameManager extends EventEmitter {
   public stopGame(): void {
     this.gameScheduler.reset();
     this.game.stopGame();
+    this.inputManager.stop();
     this.playedNotesCallbacks.forEach((callback) => callback());
     this.playedNotesCallbacks.clear();
     this.playerTurnStartBeat = 0;

@@ -13,7 +13,13 @@ export class TestAnimatedEnemy extends AnimatedEnemy {
       {beat: 1, duration: 1, note: 62, damage: 1, weight: 1},
       {beat: 2, duration: 1, note: 64, damage: 1, weight: 1},
       {beat: 3, duration: 1, note: 67, damage: 1, weight: 1},
-    ], 240, 4, 4),
+    ], 60, 4, 4),
+    new Attack([
+      {beat: 0, duration: 1, note: 65, damage: 2, weight: 1},
+      {beat: 1, duration: 1, note: 67, damage: 2, weight: 1},
+      {beat: 2, duration: 1, note: 69, damage: 2, weight: 1},
+      {beat: 3, duration: 1, note: 72, damage: 2, weight: 1},
+    ], 60, 4, 4),
   ]
 
   constructor(maxHp: number = 20, score: number = 50) {

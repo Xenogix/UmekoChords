@@ -32,10 +32,11 @@ export abstract class Popup extends Container {
       fontSize: 12,
       align: "center",
     }});
+    this.title.y = 5;
     this.title.anchor.set(0.5, 0);
     this.content.addChild(this.title);
     
-    this.layout = new List({type: "vertical", elementsMargin: 2});
+    this.layout = new List({type: "vertical", elementsMargin: 5});
     this.layout.y = this.title.height + this.title.y + 8;
     this.content.addChild(this.layout);
   }

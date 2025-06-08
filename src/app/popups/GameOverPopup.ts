@@ -1,7 +1,7 @@
 import { Popup } from "./Popup";
 import { PixelButton } from "../ui/PixelButton";
 import { engine } from "../getEngine";
-import { GameScreen } from "../screens/game/GameScreen";
+import { GameScreen } from "../screens/GameScreen";
 
 export class GameOverPopup extends Popup {
 
@@ -12,8 +12,11 @@ export class GameOverPopup extends Popup {
   constructor() {
     super();
 
+    this.layout.y = 30;
+
     const restartButton = new PixelButton({ text: "Restart" });
     restartButton.onPress.connect(() => {
+      engine().navigation.dismissPopup();
       engine().navigation.showScreen(GameScreen)
     });
     this.layout.addChild(restartButton);

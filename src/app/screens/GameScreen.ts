@@ -1,16 +1,16 @@
 import { Container, Ticker } from "pixi.js";
-import { Measure } from "./Measure";
-import { Piano } from "./Piano";
-import { GameManager, GameManagerEventType } from "../../game/GameManager";
-import { HealthBar } from "./HealthBar";
-import { GameInputEventType } from "../../game/inputs/GameInput";
-import { GameEventType } from "../../game/Game";
-import { AttackResolverEventType } from "../../game/attacks/AttackResolver";
-import { Scene } from "./Scene";
-import { PixelButton } from "../../ui/PixelButton";
-import { SettingsPopup } from "../../popups/SettingsPopup";
-import { engine } from "../../getEngine";
-import { GameOverPopup } from "../../popups/GameOverPopup";
+import { GameManager, GameManagerEventType } from "../game/GameManager";
+import { GameInputEventType } from "../game/inputs/GameInput";
+import { GameEventType } from "../game/Game";
+import { AttackResolverEventType } from "../game/attacks/AttackResolver";
+import { PixelButton } from "../ui/PixelButton";
+import { SettingsPopup } from "../popups/SettingsPopup";
+import { engine } from "../getEngine";
+import { GameOverPopup } from "../popups/GameOverPopup";
+import { Measure } from "../ui/Measure";
+import { Piano } from "../ui/Piano";
+import { HealthBar } from "../ui/HealthBar";
+import { Scene } from "../ui/Scene";
 
 export class GameScreen extends Container {
 
@@ -67,7 +67,6 @@ export class GameScreen extends Container {
   }
 
   public async show(): Promise<void> {
-    await this.gameManager.initialize();
     this.gameManager.startGame();
   }
 
@@ -88,7 +87,7 @@ export class GameScreen extends Container {
   public async pause(): Promise<void> {
     this.gameManager.pauseGame();
     this.isPaused = true;
-    this.scene.enemy.animationSpeed = 0;
+    this.scene.enemy.stopAnimation();
     this.measure.visible = false;
   }
 
@@ -116,16 +115,18 @@ export class GameScreen extends Container {
 
     this.gameManager.on(GameEventType.ENEMY_SPAWNED, (enemy) => {
       this.scene.enemy.setEnemy(enemy);
-      this.scene.enemy.gotoAndStop(0);
+      this.scene.enemy.restartAnimation();
       this.scene.enemyHealthBar.setMaxHealth(enemy.getMaxHp());
       this.scene.enemyHealthBar.setHealth(enemy.getHp());
     });
 
-    this.gameManager.on(GameEventType.ENEMY_DAMAGED, () => {
+    this.gameManager.on(GameEventType.ENEMY_DEFEATED, () => {
+      this.scene.enemy.showDeathAnimation();
+      this.scene.enemy.stopAnimation();
     });
 
     this.gameManager.on(GameManagerEventType.ENEMY_ATTACK_STARTED, (attack) => {
-      this.scene.enemy.gotoAndPlay(0);
+      this.scene.enemy.restartAnimation();
       this.measure.setAttack(attack);
       this.scene.hideMainLight();
       this.scene.showLeftLight();
@@ -134,17 +135,17 @@ export class GameScreen extends Container {
     });
   
     this.gameManager.on(GameManagerEventType.ENEMY_ATTACK_ENDED, () => {
-      this.scene.enemy.gotoAndStop(0);
+      this.scene.enemy.stopAnimation();
     });
 
     this.gameManager.on(GameManagerEventType.PLAYER_TURN_STARTED, () => {
-      this.scene.enemy.gotoAndPlay(0);
+      this.scene.enemy.restartAnimation();
       this.scene.hideLeftLight();
       this.scene.showRightLight();
     });
 
     this.gameManager.on(GameManagerEventType.PLAYER_TURN_ENDED, () => {
-      this.scene.enemy.gotoAndStop(0);
+      this.scene.enemy.stopAnimation();
       this.scene.hideRightLight();
       this.scene.showMainLight();
     });

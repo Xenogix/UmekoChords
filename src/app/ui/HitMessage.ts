@@ -1,6 +1,6 @@
-import { BitmapText, Container, Ticker } from "pixi.js";
-import { AttackAccuracy } from "../../game/attacks/AttackResolver";
+import { BitmapText, Container } from "pixi.js";
 import { animate } from "motion";
+import { AttackAccuracy } from "../game/attacks/AttackResolver";
 
 export class HitMessage extends Container {
 
