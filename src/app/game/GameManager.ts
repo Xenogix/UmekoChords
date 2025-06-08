@@ -86,6 +86,7 @@ export class GameManager extends EventEmitter {
     this.playedNotesCallbacks.clear();
     this.playerTurnStartBeat = 0;
     this.currentEnemyAttack = undefined;
+    this.paused = false;
     this.emit(GameManagerEventType.GAME_STOPPED);
   }
 

@@ -1,8 +1,8 @@
 import { Container, Ticker } from "pixi.js";
 import { GameManager, GameManagerEventType } from "../game/GameManager";
-import { GameInputEventType } from "../game/inputs/GameInput";
+import { GameInputEventType, NoteEvent } from "../game/inputs/GameInput";
 import { GameEventType } from "../game/Game";
-import { AttackResolverEventType } from "../game/attacks/AttackResolver";
+import { AttackAccuracy, AttackResolverEventType } from "../game/attacks/AttackResolver";
 import { PixelButton } from "../ui/PixelButton";
 import { SettingsPopup } from "../popups/SettingsPopup";
 import { engine } from "../getEngine";
@@ -11,6 +11,8 @@ import { Measure } from "../ui/Measure";
 import { Piano } from "../ui/Piano";
 import { HealthBar } from "../ui/HealthBar";
 import { Scene } from "../ui/Scene";
+import { AnimatedEnemy } from "../game/enemies/AnimatedEnemy";
+import { Attack } from "../game/attacks/Attacks";
 
 export class GameScreen extends Container {
   // Asset bundles
@@ -61,16 +63,17 @@ export class GameScreen extends Container {
     this.settingsButton.y = 5;
     this.settingsButton.onPress.connect(() => engine().navigation.presentPopup(SettingsPopup));
     this.container.addChild(this.settingsButton);
-
-    this.setupEventHandlers();
   }
 
   public async show(): Promise<void> {
     this.gameManager.startGame();
+    this.setupEventHandlers();
+    console.log("Game started");
   }
 
-  public hide(): Promise<void> {
-    return Promise.resolve();
+  public async hide(): Promise<void> {
+    this.removeEventHandlers();
+    this.gameManager.stopGame();
   }
 
   public update(ticker: Ticker) {
@@ -97,69 +100,98 @@ export class GameScreen extends Container {
   }
 
   private setupEventHandlers(): void {
-    this.gameManager.on(GameInputEventType.NOTE_PRESSED, (event) => {
-      this.piano.pressNote(event.note);
-      this.scene.player.setNewAnimation();
-    });
-
-    this.gameManager.on(GameInputEventType.NOTE_RELEASED, (event) => {
-      this.piano.releaseNote(event.note);
-    });
-
-    this.gameManager.on(GameEventType.HP_CHANGED, (hp, maxHp) => {
-      this.playerHealthBar.setHealth(hp);
-      this.playerHealthBar.setMaxHealth(maxHp);
-    });
-
-    this.gameManager.on(GameEventType.ENEMY_SPAWNED, (enemy) => {
-      this.scene.enemy.setEnemy(enemy);
-      this.scene.enemy.restartAnimation();
-      this.scene.enemyHealthBar.setMaxHealth(enemy.getMaxHp());
-      this.scene.enemyHealthBar.setHealth(enemy.getHp());
-    });
-
-    this.gameManager.on(GameEventType.ENEMY_DEFEATED, () => {
-      this.scene.enemy.showDeathAnimation();
-      this.scene.enemy.stopAnimation();
-    });
-
-    this.gameManager.on(GameManagerEventType.ENEMY_ATTACK_STARTED, (attack) => {
-      this.scene.enemy.restartAnimation();
-      this.measure.setAttack(attack);
-      this.scene.hideMainLight();
-      this.scene.showLeftLight();
-      this.scene.hideRightLight();
-      this.scene.enemy.setAttack(attack);
-    });
-
-    this.gameManager.on(GameManagerEventType.ENEMY_ATTACK_ENDED, () => {
-      this.scene.enemy.stopAnimation();
-    });
-
-    this.gameManager.on(GameManagerEventType.PLAYER_TURN_STARTED, () => {
-      this.scene.enemy.restartAnimation();
-      this.scene.hideLeftLight();
-      this.scene.showRightLight();
-    });
-
-    this.gameManager.on(GameManagerEventType.PLAYER_TURN_ENDED, () => {
-      this.scene.enemy.stopAnimation();
-      this.scene.hideRightLight();
-      this.scene.showMainLight();
-    });
-
-    this.gameManager.on(AttackResolverEventType.ACCURACY_RESOLVED, (accuracy, isReleased) => {
-      if (!isReleased) {
-        this.scene.hitMessage.showMessage(accuracy);
-      }
-    });
-
-    this.gameManager.on(GameEventType.ENEMY_DAMAGED, (enemy) => {
-      this.scene.enemyHealthBar.setHealth(enemy.getHp());
-    });
-
-    this.gameManager.on(GameEventType.GAME_OVER, () => {
-      engine().navigation.presentPopup(GameOverPopup);
-    });
+    this.gameManager.on(GameInputEventType.NOTE_PRESSED, this.onNotePressed);
+    this.gameManager.on(GameInputEventType.NOTE_RELEASED, this.onNoteReleased);
+    this.gameManager.on(GameEventType.HP_CHANGED, this.onHpChanged);
+    this.gameManager.on(GameEventType.ENEMY_SPAWNED, this.onEnemySpawned);
+    this.gameManager.on(GameEventType.ENEMY_DEFEATED, this.onEnemyDefeated);
+    this.gameManager.on(GameManagerEventType.ENEMY_ATTACK_STARTED, this.onEnemyAttackStarted);
+    this.gameManager.on(GameManagerEventType.ENEMY_ATTACK_ENDED, this.onEnemyAttackEnded);
+    this.gameManager.on(GameManagerEventType.PLAYER_TURN_STARTED, this.onPlayerTurnStarted);
+    this.gameManager.on(GameManagerEventType.PLAYER_TURN_ENDED, this.onPlayerTurnEnded);
+    this.gameManager.on(AttackResolverEventType.ACCURACY_RESOLVED, this.onAccuracyResolved);
+    this.gameManager.on(GameEventType.ENEMY_DAMAGED, this.onEnemyDamaged);
+    this.gameManager.on(GameEventType.GAME_OVER, this.onGameOver);
   }
+
+  private removeEventHandlers(): void {
+    this.gameManager.off(GameInputEventType.NOTE_PRESSED, this.onNotePressed);
+    this.gameManager.off(GameInputEventType.NOTE_RELEASED, this.onNoteReleased);
+    this.gameManager.off(GameEventType.HP_CHANGED, this.onHpChanged);
+    this.gameManager.off(GameEventType.ENEMY_SPAWNED, this.onEnemySpawned);
+    this.gameManager.off(GameEventType.ENEMY_DEFEATED, this.onEnemyDefeated);
+    this.gameManager.off(GameManagerEventType.ENEMY_ATTACK_STARTED, this.onEnemyAttackStarted);
+    this.gameManager.off(GameManagerEventType.ENEMY_ATTACK_ENDED, this.onEnemyAttackEnded);
+    this.gameManager.off(GameManagerEventType.PLAYER_TURN_STARTED, this.onPlayerTurnStarted);
+    this.gameManager.off(GameManagerEventType.PLAYER_TURN_ENDED, this.onPlayerTurnEnded);
+    this.gameManager.off(AttackResolverEventType.ACCURACY_RESOLVED, this.onAccuracyResolved);
+    this.gameManager.off(GameEventType.ENEMY_DAMAGED, this.onEnemyDamaged);
+    this.gameManager.off(GameEventType.GAME_OVER, this.onGameOver);
+  }
+
+  private onNotePressed = (event: NoteEvent) => {
+    this.piano.pressNote(event.note);
+    this.scene.player.setNewAnimation();
+  };
+
+  private onNoteReleased = (event: NoteEvent) => {
+    this.piano.releaseNote(event.note);
+  };
+
+  private onHpChanged = (hp: number, maxHp: number) => {
+    this.playerHealthBar.setHealth(hp);
+    this.playerHealthBar.setMaxHealth(maxHp);
+  };
+
+  private onEnemySpawned = (enemy: AnimatedEnemy) => {
+    this.scene.enemy.setEnemy(enemy);
+    this.scene.enemy.restartAnimation();
+    this.scene.enemyHealthBar.setMaxHealth(enemy.getMaxHp());
+    this.scene.enemyHealthBar.setHealth(enemy.getHp());
+  };
+
+  private onEnemyDefeated = () => {
+    this.scene.enemy.showDeathAnimation();
+    this.scene.enemy.stopAnimation();
+  };
+
+  private onEnemyAttackStarted = (attack: Attack) => {
+    this.scene.enemy.restartAnimation();
+    this.measure.setAttack(attack);
+    this.scene.hideMainLight();
+    this.scene.showLeftLight();
+    this.scene.hideRightLight();
+    this.scene.enemy.setAttack(attack);
+  };
+
+  private onEnemyAttackEnded = () => {
+    this.scene.enemy.stopAnimation();
+  };
+
+  private onPlayerTurnStarted = () => {
+    this.scene.enemy.restartAnimation();
+    this.scene.hideLeftLight();
+    this.scene.showRightLight();
+  };
+
+  private onPlayerTurnEnded = () => {
+    this.scene.enemy.stopAnimation();
+    this.scene.hideRightLight();
+    this.scene.showMainLight();
+  };
+
+  private onAccuracyResolved = (accuracy: AttackAccuracy, isReleased: boolean) => {
+    if (!isReleased) {
+      this.scene.hitMessage.showMessage(accuracy);
+    }
+  };
+
+  private onEnemyDamaged = (enemy: AnimatedEnemy) => {
+    this.scene.enemyHealthBar.setHealth(enemy.getHp());
+  };
+
+  private onGameOver = () => {
+    engine().navigation.presentPopup(GameOverPopup);
+  };
+
 }
