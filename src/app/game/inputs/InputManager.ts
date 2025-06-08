@@ -1,6 +1,7 @@
 import { EventEmitter } from "pixi.js";
 import { GameInput, GameInputEventType } from "./GameInput";
 import { KeyboardInput } from "./KeyboardInput";
+import { MidiInput } from "./MidiInput";
 
 export class InputManager extends EventEmitter implements GameInput {
   private inputs: GameInput[] = [];
@@ -10,6 +11,7 @@ export class InputManager extends EventEmitter implements GameInput {
 
     // Register inputs
     this.inputs.push(new KeyboardInput());
+    this.inputs.push(new MidiInput());
   }
 
   public start(): void {

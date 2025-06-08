@@ -68,7 +68,6 @@ export class GameScreen extends Container {
   public async show(): Promise<void> {
     this.gameManager.startGame();
     this.setupEventHandlers();
-    console.log("Game started");
   }
 
   public async hide(): Promise<void> {
@@ -193,5 +192,4 @@ export class GameScreen extends Container {
   private onGameOver = () => {
     engine().navigation.presentPopup(GameOverPopup);
   };
-
 }
