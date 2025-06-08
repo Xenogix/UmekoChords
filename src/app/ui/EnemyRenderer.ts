@@ -43,21 +43,15 @@ export class EnemyRenderer extends Container {
   }
 
   public stopAnimation(): void {
-    if (this.enemySprite) {
-      this.enemySprite.stop();
-    }
+    this.enemySprite.stop();
   }
 
   public startAnimation(): void {
-    if (this.enemySprite) {
-      this.enemySprite.play();
-    }
+    this.enemySprite.play();
   }
 
   public restartAnimation(): void {
-    if (this.enemySprite) {
-      this.enemySprite.gotoAndPlay(0);
-    }
+    this.enemySprite.gotoAndPlay(0);
   }
 
   public showDeathAnimation(): void {

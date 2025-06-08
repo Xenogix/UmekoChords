@@ -1,19 +1,21 @@
 import { Attack } from "../attacks/Attacks";
 import { AnimatedEnemy } from "./AnimatedEnemy";
 
-export class TestAnimatedEnemy extends AnimatedEnemy {
+export class SimpleEnemy extends AnimatedEnemy {
 
   protected override spriteSheetResource: string = "conductor.json";
 
   private currentAttackIndex: number = 0;
 
   private attacks: Attack[] = [
+    
     new Attack([
       {beat: 0, duration: 1, note: 60, damage: 1, weight: 1},
       {beat: 1, duration: 1, note: 62, damage: 1, weight: 1},
       {beat: 2, duration: 1, note: 64, damage: 1, weight: 1},
       {beat: 3, duration: 1, note: 67, damage: 1, weight: 1},
     ], 60, 4, 4),
+
     new Attack([
       {beat: 0, duration: 1, note: 65, damage: 2, weight: 1},
       {beat: 1, duration: 1, note: 67, damage: 2, weight: 1},
