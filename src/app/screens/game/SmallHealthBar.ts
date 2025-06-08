@@ -17,7 +17,6 @@ export class SmallHealthBar extends ProgressBar {
 
   public setHealth(health: number): void {
     this.progress = health / this.maxHealth * 100;
-    console.log(`Health set to ${health}, progress: ${this.progress}`);
   }
 
   public setMaxHealth(maxHealth: number): void {

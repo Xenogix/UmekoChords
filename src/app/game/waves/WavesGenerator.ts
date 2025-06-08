@@ -8,6 +8,7 @@ export class WavesGenerator {
     // Example wave with a single enemy
     const wave1 = new Wave();
     wave1.addEnemy(new TestAnimatedEnemy());
+    wave1.addEnemy(new TestAnimatedEnemy());
     waves.push(wave1);
 
     return waves;

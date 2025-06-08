@@ -120,7 +120,7 @@ export class GameManager extends EventEmitter {
     }
 
     // Get the enemy's attack and beat information
-    const roundAttack = enemy.getAttack();
+    const roundAttack = enemy.getAttack().clone();
     const attackBeatCount = roundAttack.getDuration();
 
     // Schedule the round start and the enemy attack
