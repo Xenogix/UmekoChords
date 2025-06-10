@@ -10,28 +10,35 @@ export class AttackNotationConverter {
     return `${this.NOTE_NAMES[noteIndex]}${octave}`;
   }
 
-  private static beatDurationToVexDuration(duration: number): string {
-    const map: Record<number, string> = {
-      4: "w",
-      3: "hd",
-      2: "h",
-      1.5: "q.",
-      1: "q",
-      0.75: "8.",
-      0.5: "8",
-      0.375: "16.",
-      0.25: "16",
-      0.1875: "32.",
-      0.125: "32",
-    };
-
-    const keys = Object.keys(map)
-      .map(parseFloat)
-      .sort((a, b) => b - a);
-    for (const key of keys) {
-      if (duration >= key) return map[key];
+  private static beatDurationToVexDurations(duration: number): string[] {
+    // Supported durations in descending order
+    const durations: Array<[number, string]> = [
+      [4, "w"],
+      [2, "h"],
+      [1.5, "q."],
+      [1, "q"],
+      [0.75, "8."],
+      [0.5, "8"],
+      [0.375, "16."],
+      [0.25, "16"],
+      [0.1875, "32."],
+      [0.125, "32"],
+    ];
+    // We maybe need to use multiple durations to cover the full duration
+    const result: string[] = [];
+    let remaining = duration;
+    for (const [val, name] of durations) {
+      // Deal with floating point precision issues
+      while (remaining >= val - 1e-6) {
+        result.push(name);
+        remaining -= val;
+      }
     }
-    return "32";
+    // If there's a small leftover, add a 32nd note as fallback
+    if (remaining > 1e-3) {
+      result.push("32");
+    }
+    return result;
   }
 
   public static createNotesFromAttack(factory: Factory, attack: Attack): Array<Voice> {
@@ -52,8 +59,8 @@ export class AttackNotationConverter {
       .forEach(([, group]) => {
         const keys = group.map((p) => this.midiNoteToVexNote(p.note));
         const shortestDuration = Math.min(...group.map((p) => p.duration));
-        const duration = this.beatDurationToVexDuration(shortestDuration);
-        noteObjects.push({ keys, duration });
+        const durations = this.beatDurationToVexDurations(shortestDuration);
+        durations.forEach((duration) => noteObjects.push({ keys, duration }));
       });
 
     const voiceNotes = noteObjects.flatMap((note) => {
@@ -72,6 +79,8 @@ export class AttackNotationConverter {
     });
 
     const timeSignature = attack.getTimeSignatureNumerator() + "/" + attack.getTimeSignatureDenominator();
-    return [score.voice(voiceNotes, { time: timeSignature })];
+    const voice = score.voice(voiceNotes, { time: timeSignature });
+
+    return [voice];
   }
 }

@@ -32,7 +32,7 @@ export class GameManager extends EventEmitter {
   // State and configuration
   private playedNotesCallbacks: Map<number, NoteStopCallback> = new Map<number, NoteStopCallback>();
   private currentEnemyAttack: Attack | undefined;
-  private playerTurnStartBeat: number = 0;
+  private playerTurnStartBeat: number | undefined;
   private paused: boolean = false;
 
   private constructor() {
@@ -225,8 +225,8 @@ export class GameManager extends EventEmitter {
   }
 
   private processPlayerInput(event: NoteEvent, isRelease: boolean): void {
-    // Ignore inputs if there is no current enemy attack
-    if (this.currentEnemyAttack) {
+    // Ignore inputs if there is no current enemy attack or if the player turn has not started yet
+    if (this.currentEnemyAttack && this.playerTurnStartBeat) {
       // Create an attack input to judge
       const attackInput = {
         note: event.note,

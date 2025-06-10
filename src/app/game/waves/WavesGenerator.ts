@@ -6,7 +6,7 @@ export class WavesGenerator {
   public generateWaves(): Wave[] {
     const waves: Wave[] = [];
 
-    // Example wave with a single enemy
+    // Example wave
     const wave1 = new Wave();
     wave1.addEnemy(new SimpleEnemy());
     wave1.addEnemy(new ChordEnemy());
