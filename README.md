@@ -3,7 +3,7 @@
 Umeko Chords is a rhythm-based game built with PixiJS, featuring piano input, musical notation rendering, and real-time gameplay. 
 The game is designed for learning and fun, with support for custom keyboard layouts, MIDI input, and dynamic audio.
 
-This is work in progress and multiple bugs are still present in new versions of the game. Known issues and bugs are listed below.
+This is a work in progress and multiple bugs are still present in new versions of the game. Known issues and bugs are listed below.
 
 ![Screenshot of the gameplay](doc/gameplay.png)
 
