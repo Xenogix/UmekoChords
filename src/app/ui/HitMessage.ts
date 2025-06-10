@@ -38,7 +38,7 @@ export class HitMessage extends Container {
       case "poor":
         messageToAnimate.style.fontSize = 38;
         messageToAnimate.style.fill = 0xeb8034;
-        messageToAnimate.text = "Ok";
+        messageToAnimate.text = "Poor";
         break;
       case "error":
         messageToAnimate.style.fontSize = 34;
