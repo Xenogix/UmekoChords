@@ -5,7 +5,7 @@ The game is designed for learning and fun, with support for custom keyboard layo
 
 This is work in progress and multiple bugs are still present in new versions of the game. Known issues and bugs are listed below.
 
-![Screenshot of the main menu](doc/mainImage.png)
+![Screenshot of the gameplay](doc/gameplay.png)
 
 ## Table of contents
 
