@@ -5,6 +5,26 @@ The game is designed for learning and fun, with support for custom keyboard layo
 
 This is work in progress and multiple bugs are still present in new versions of the game. Known issues and bugs are listed below.
 
+![Screenshot of the main menu](doc/mainImage.png)
+
+## Table of contents
+
+- [UmekoChords](#umekochords)
+  - [Table of contents](#table-of-contents)
+  - [Features](#features)
+  - [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Installation](#installation)
+    - [Development](#development)
+  - [Project Structure](#project-structure)
+  - [Gameplay](#gameplay)
+    - [Accuracy Judgement](#accuracy-judgement)
+    - [Damage System](#damage-system)
+    - [Keyboard input](#keyboard-input)
+    - [Midi input](#midi-input)
+  - [Known Issues \& Limitations](#known-issues--limitations)
+  - [License](#license)
+
 ## Features
 
 - Pixel-art style game rendered using [Pixi JS](https://github.com/pixijs/pixijs)
